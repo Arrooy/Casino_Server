@@ -1,0 +1,7 @@
+{
+  "PortDatabase":2020,
+  "DireccioDatabase":"127.0.0.1",
+  "NomDatabase":"DATABASE_NAME",
+  "UsuariBadeDades":"NOM_USUARI",
+  "PortClients":2525
+}
