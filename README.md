@@ -5,7 +5,7 @@
 2. [ ] Leer y entender MySQL.
 3. [ ] Dividir trabajo en sprints.
 
-##INSTALAR  :exclamation::exclamation: [LogMeIn HAMACHI](http://help.logmein.com/articles/en_US/Downloads/LogMeIn-Hamachi-Windows-sfdwn0105) :exclamation::exclamation:
+## INSTALAR  :exclamation::exclamation: [LogMeIn HAMACHI](http://help.logmein.com/articles/en_US/Downloads/LogMeIn-Hamachi-Windows-sfdwn0105) :exclamation::exclamation:
 
 ## Tutorial GIT! :heart_eyes::heart_eyes::heart_eyes: :exclamation:
 1. Descargar e instalar ([Git](https://git-scm.com/downloads))
