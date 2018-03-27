@@ -19,19 +19,18 @@ public class JsonManager {
      * @throws FileNotFoundException En cas de no trobar el json especificat saltarà aquesta excepció
      */
 
-    public static String[] llegirJson(String ... campsJson) throws FileNotFoundException {
+    public static Object[] llegirJson(String ... campsJson) throws FileNotFoundException {
 
-        String [] informacioExtreta = new String[campsJson.length];
+        Object [] informacioExtreta = new Object[campsJson.length];
 
-        //Es llegeix l'arxiu json fins el caracter '}'.
-        //Al acabar la lectura, s'afegeix al final del string resultant un '}'
+        //Es llegeix l'arxiu json
         JSONObject jsonObject =  JsonManager.getJSONObject();
 
         int index = 0;
 
         //Per a tots els camps especificats s'extreu la informacio del json
         for(String camp : campsJson){
-            informacioExtreta[index++] = jsonObject.has(camp) ? jsonObject.getString(camp) : null;
+            informacioExtreta[index++] = jsonObject.has(camp) ? jsonObject.get(camp) : null;
         }
 
         return informacioExtreta;

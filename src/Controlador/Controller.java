@@ -2,6 +2,7 @@ package Controlador;
 
 import Network.NetworkManager;
 import Vista.MainView;
+import Vista.Tray;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,9 +24,22 @@ public class Controller implements WindowListener, ActionListener{
 
     }
 
+    public void displayError(String title, String errorText){
+        vista.displayError(title,errorText);
+    }
+
+    public void exitProgram(int status){
+        Tray.exit();
+        System.exit(status);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        switch (e.getActionCommand()){
+            case "trayButtonExit" :
+                exitProgram(0);
+            break;
+        }
     }
 
     @Override
@@ -35,7 +49,8 @@ public class Controller implements WindowListener, ActionListener{
 
     @Override
     public void windowClosing(WindowEvent e) {
-        System.out.println("CERRANDO VISTA");
+        if(vista.displayQuestion("Want to exit?"))
+            exitProgram(0);
     }
 
     @Override

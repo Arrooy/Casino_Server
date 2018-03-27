@@ -4,20 +4,19 @@ import java.util.ArrayList;
 
 /** Usuari basic del casino. TipoMoneda defineix el tipo de variable per les monedes ex: int,long,double... */
 
-public class User <TipoMoneda>{
+public class User {
 
     private String name;
     private String mail;
-    private TipoMoneda wallet;
-    private ArrayList<TipoMoneda> coinEvolution;
+    private long wallet;
+    private ArrayList<Long> coinEvolution;
 
-    public User(String name, String mail, TipoMoneda wallet){
+    public User(String name, String mail, long wallet){
         this.name = name;
         this.mail = mail;
         this.wallet = wallet;
         coinEvolution = new ArrayList<>();
     }
-
 
     /** GETTERS I SETTERS */
 
@@ -37,19 +36,19 @@ public class User <TipoMoneda>{
         this.mail = mail;
     }
 
-    public TipoMoneda getWallet() {
+    public long getWallet() {
         return wallet;
     }
 
-    public void setWallet(TipoMoneda wallet) {
+    public void setWallet(long wallet) {
         this.wallet = wallet;
     }
 
-    public ArrayList<TipoMoneda> getCoinEvolution() {
+    public ArrayList<Long> getCoinEvolution() {
         return coinEvolution;
     }
 
-    public void setCoinEvolution(ArrayList<TipoMoneda> coinEvolution) {
+    public void setCoinEvolution(ArrayList<Long> coinEvolution) {
         this.coinEvolution = coinEvolution;
     }
 
