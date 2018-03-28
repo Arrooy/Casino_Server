@@ -1,31 +1,64 @@
 package Model;
 
+import Network.Message;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
-/** Usuari basic del casino. TipoMoneda defineix el tipo de variable per les monedes ex: int,long,double... */
+/** Usuari basic del casino*/
 
-public class User {
+public class User extends Message implements Serializable {
 
-    private String name;
+    private final double ID;
+    private String username;
+    private String password;
+    private boolean credentialsOk;
+    private boolean online;
+
     private String mail;
     private long wallet;
     private ArrayList<Long> coinEvolution;
 
-    public User(String name, String mail, long wallet){
-        this.name = name;
-        this.mail = mail;
-        this.wallet = wallet;
+    public User(String name, String password) {
+
         coinEvolution = new ArrayList<>();
+        ID = Math.random();
+
+        this.username = name;
+        this.password = password;
+        this.credentialsOk = false;
     }
+
+
 
     /** GETTERS I SETTERS */
 
-    public String getName() {
-        return name;
+    public boolean areCredentialsOk() {
+        return credentialsOk;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCredentialsOk(boolean credentialsOk) {
+        this.credentialsOk = credentialsOk;
+    }
+
+    public double getID() {
+        return ID;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getMail() {
@@ -52,4 +85,12 @@ public class User {
         this.coinEvolution = coinEvolution;
     }
 
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
 }

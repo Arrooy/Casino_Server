@@ -41,7 +41,7 @@ public class NetworkManager extends Thread{
 
                 //Afegeim el client a la llista de clients
                 usuarisConnectats.add(nouClient);
-
+                System.out.println("MIDA: " + usuarisConnectats.size());
                 //Iniciem el client
                 nouClient.start();
 

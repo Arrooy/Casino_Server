@@ -16,21 +16,26 @@ public class JsonManager {
      * retorna la informació que contenen aquests identificadors del json objectiu
      * @param campsJson Camps que es volen llegir d'un json
      * @return Informació dels camps del json sol·licitats
-     * @throws FileNotFoundException En cas de no trobar el json especificat saltarà aquesta excepció
      */
 
-    public static Object[] llegirJson(String ... campsJson) throws FileNotFoundException {
+    public static Object[] llegirJson(String ... campsJson){
 
         Object [] informacioExtreta = new Object[campsJson.length];
 
         //Es llegeix l'arxiu json
-        JSONObject jsonObject =  JsonManager.getJSONObject();
+        JSONObject jsonObject;
 
-        int index = 0;
+        try {
+            jsonObject = JsonManager.getJSONObject();
+            int index = 0;
 
-        //Per a tots els camps especificats s'extreu la informacio del json
-        for(String camp : campsJson){
-            informacioExtreta[index++] = jsonObject.has(camp) ? jsonObject.get(camp) : null;
+            //Per a tots els camps especificats s'extreu la informacio del json
+            for(String camp : campsJson){
+                informacioExtreta[index++] = jsonObject.has(camp) ? jsonObject.get(camp) : null;
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Fitxer de configuracio no trobat");
         }
 
         return informacioExtreta;

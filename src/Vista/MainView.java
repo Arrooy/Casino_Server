@@ -26,6 +26,7 @@ public class MainView extends JFrame {
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 
+    /** Afegeix el controlador del programa a la vista*/
     public void addController(Controller c){
         Tray.addController(c);
         addWindowListener(c);
