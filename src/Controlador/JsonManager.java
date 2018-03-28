@@ -65,7 +65,6 @@ public class JsonManager {
     }
 
     private static JSONObject getJSONObject() throws FileNotFoundException {
-
         //Es llegeix l'arxiu json sencer i es retorna en forma de JSONObject
         return  new JSONObject((new Scanner(new File("data/" + CONFIG_FILENAME)).useDelimiter("}").next()) + "}");
     }

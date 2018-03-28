@@ -10,26 +10,34 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/** ServidorDedicat a un client*/
+
 public class Client extends Thread {
 
+    /** Controlador del sistema*/
     private Controller controller;
 
+    /** Llistat d'usuaris connectats al servidor*/
     private ArrayList<Client> usuarisConnectats;
+
+    /** Socket connectat al client*/
     private Socket socket;
+
     /** La persona amb la que tracta el client*/
     private User user;
 
+    /** Canals de entrada / sortida d'objectes servidorDedicat*/
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 
-
+    /** Inicialitza un nou client.*/
     public Client(ArrayList<Client> usuarisConnectats, Socket socket, Controller controller) {
-        System.out.println("New client in");
 
         this.controller = controller;
         this.usuarisConnectats = usuarisConnectats;
         this.socket = socket;
 
+        //S'intentan guardar les referencies dels streams d'entrada i sortida del socket
         try {
             oos = new ObjectOutputStream(socket.getOutputStream());
             ois = new ObjectInputStream(socket.getInputStream());
@@ -40,7 +48,6 @@ public class Client extends Thread {
 
     @Override
     public void run() {
-        System.out.println("IniciBucle START");
         while (user == null || user.isOnline()) {
             try {
                 Message reading = (Message) ois.readObject();
