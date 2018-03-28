@@ -10,11 +10,16 @@ import java.util.ArrayList;
 public class NetworkManager extends Thread{
 
 
+    /** Controlador del sistema*/
     private Controller controller;
+
+    /** Socket del servidor on tots els clients demanaran un servidorDedicat*/
     private ServerSocket serverSocket;
 
+    /** Llistat d'usuaris connectats al servidor*/
     private ArrayList<Client> usuarisConnectats;
 
+    /** Inicialitza el newtWorkManager i obre el port determinat al json de configuracio*/
     public NetworkManager(){
         controller = null;
         usuarisConnectats = new ArrayList<>();
@@ -26,6 +31,7 @@ public class NetworkManager extends Thread{
         }
     }
 
+    /** Inicia la acceptacio de nous usuaris*/
     public void initServer(Controller controller) {
         this.controller = controller;
         start();
@@ -35,7 +41,6 @@ public class NetworkManager extends Thread{
     public void run() {
         while(true){
             try {
-
                 //Esperem i creem un client per a cada nova conexio entrant
                 Client nouClient = new Client(usuarisConnectats,serverSocket.accept(),controller);
 

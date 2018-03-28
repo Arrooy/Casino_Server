@@ -55,7 +55,6 @@ public class Client extends Thread {
                     //El user vol entrar les creedencials
                     User auxUser = (User) reading;
                     if (BaseDades.checkUserLogIn(auxUser).areCredentialsOk()) {
-                        System.out.println("Usuari correcte: " + auxUser.getID());
                         user = auxUser;
                         oos.writeObject(user);
                     } else {
@@ -68,7 +67,6 @@ public class Client extends Thread {
                             //Alguna comanda relacionada amb l'user
 
                         } else {
-                            System.out.println("Bye!");
                             user.setOnline(false);
                             oos.writeObject(user);
                             disconnectMe();
@@ -79,9 +77,9 @@ public class Client extends Thread {
 
             }
         }
-        System.out.println("FI BUCLE START");
     }
 
+    /** Desconnecta al usuari*/
     public void disconnectMe(){
         usuarisConnectats.remove(this);
     }
