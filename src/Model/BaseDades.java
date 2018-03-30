@@ -18,34 +18,36 @@ import java.util.LinkedList;
  */
 public class BaseDades {
 
-    public static final String CNAME_ID = "id";
-    public static final String CNAME_NOM = "nom";
-    public static final String CNAME_COGNOM = "cognoms";
-    public static final String CNAME_USERNAME = "username";
-    public static final String CNAME_MAIL = "mail";
-    public static final String CNAME_PASSWORD = "password";
-    public static final String CNAME_WALLET = "wallet";
-    public static final String CNAME_COINHISTORY = "coinHistory";
+    //   ---   CONSTANTS QUE INDIQUEN EL NOM DE LES COLUMNES DE LA TAULA DE LA BDD   ---   //
+    private static final String CNAME_ID = "id";
+    private static final String CNAME_NOM = "nom";
+    private static final String CNAME_COGNOM = "cognoms";
+    private static final String CNAME_USERNAME = "username";
+    private static final String CNAME_MAIL = "mail";
+    private static final String CNAME_PASSWORD = "password";
+    private static final String CNAME_WALLET = "wallet";
+    private static final String CNAME_COINHISTORY = "coinHistory";
 
     private static final String[] COLUMN_NAMES = {CNAME_ID, CNAME_NOM, CNAME_COGNOM, CNAME_USERNAME, CNAME_MAIL, CNAME_PASSWORD, CNAME_WALLET, CNAME_COINHISTORY};
 
-    private static final String dbUrl = "jdbc:mysql://localhost:3306/Casino_Database";
+    //   ---   INFORMACIÓ PER A ESTABLIR LA CONNEXIÓ AMB LA BASE DE DADES   ---   //
+    private static final String dbUrl = "jdbc:mysql://localhost:3306/Casino_Database?useServerPrepStmts=true&useSSL=false";
     private static final String username = "root";
-    private static final String password = "root";
+    private static final String password = "casino";
 
     private static Connection conn;
 
-    /**
+    /** //TODO: Modifica explicacio
      * Constructor de la classe. Tot i que aquesta consisteix en una classe de filosofia
      * estàtica, és necessari cridar aquest constructor en algun punt del codi previ a qualsevol
      * ús d'alguna de les funcions que ofereix la classe; ja que en aquest constructor s'estableix
      * la connexió entre la base de dades i el programa, que permetrà que aquest últim realitzi
      * peticions a la base de dades per a consultar, inserir, eliminar o modificar informació.
      */
-    public BaseDades() {
+    public static void initBaseDades() {
         try {
-            //TODO: Arreglar la connexió a la DataBase
             Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.jdbc.Connection");
             conn = DriverManager.getConnection(dbUrl, username, password);
         } catch (Exception e) {
             //TODO: Fer algo aqui per a que no peti tot després
@@ -53,6 +55,7 @@ public class BaseDades {
         }
     }
 
+    //Mètode que insereix una Query a la base de dades. És a dir que fa una petició.
     private static ResultSet insertQuery(String query){
         try {
             Statement s = conn.createStatement();
@@ -65,10 +68,11 @@ public class BaseDades {
         return null;
     }
 
+    //Funció que indica si un nom correspon a una possible columna de la taula de la bdd
     private static boolean comprovaColumnName(String name) {
         boolean b = false;
 
-        for (String s: COLUMN_NAMES) b = name.equals(s);
+        for (String s: COLUMN_NAMES) if (name.equals(s)) b = true;
         return b;
     }
 
