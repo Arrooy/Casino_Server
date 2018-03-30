@@ -1,6 +1,8 @@
 package Model;
 
+import javax.jws.soap.SOAPBinding;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -31,7 +33,10 @@ public class BaseDades {
     private static final String[] COLUMN_NAMES = {CNAME_ID, CNAME_NOM, CNAME_COGNOM, CNAME_USERNAME, CNAME_MAIL, CNAME_PASSWORD, CNAME_WALLET, CNAME_COINHISTORY};
 
     //   ---   INFORMACIÓ PER A ESTABLIR LA CONNEXIÓ AMB LA BASE DE DADES   ---   //
-    private static final String dbUrl = "jdbc:mysql://localhost:3306/Casino_Database?useServerPrepStmts=true&useSSL=false";
+    private static final String host = "localhost";
+    private static final String port = "3306";
+    private static final String database = "Casino_Database";
+    private static final String dbUrl = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useServerPrepStmts=true&useSSL=false";
     private static final String username = "root";
     private static final String password = "casino";
 
@@ -55,8 +60,8 @@ public class BaseDades {
         }
     }
 
-    //Mètode que insereix una Query a la base de dades. És a dir que fa una petició.
-    private static ResultSet insertQuery(String query){
+    //Mètode que executa una Query a la base de dades per demanar informació.
+    private static ResultSet selectQuery(String query){
         try {
             Statement s = conn.createStatement();
             return s.executeQuery(query);
@@ -64,8 +69,38 @@ public class BaseDades {
             //TODO: gestionar degudament
             e.printStackTrace();
         }
-
         return null;
+    }
+
+    //Mètode que executa una Query a la base de dades per modificar informació.
+    private static void insertQuery(String query){
+        try {
+            Statement s = conn.createStatement();
+            s.executeUpdate(query);
+        } catch (Exception e) {
+            //TODO: gestionar degudament
+            e.printStackTrace();
+        }
+    }
+
+    public static void insertNewUser(User user) {
+        insertQuery("insert into Usuaris (id, username, mail, password, wallet, coinHistory) values ('" +
+                user.getID() + "', '" +
+                user.getUsername() + "', '" +
+                user.getMail() + "', '" +
+                user.getPassword() + "', '" +
+                user.getWallet() + "', '" +
+                user.getCoinEvolution() + "')");
+    }
+
+    public static void updateUser(User user) {}
+
+    public static void deleteUser(User user) {}
+
+    private static String coinHistoryToString(ArrayList<Long> coinHistory) {
+        String s = coinHistory.size() > 1 ? coinHistory.get(0).toString() : "";
+        for (int i = 1; i < coinHistory.size(); i++) s += "_" + coinHistory.get(i);
+        return s;
     }
 
     //Funció que indica si un nom correspon a una possible columna de la taula de la bdd
@@ -89,7 +124,7 @@ public class BaseDades {
      */
     public static LinkedList<String[]> getInfo(String ... columnNames) throws Exception {
         //Es fa la petició al servidor de la database
-        ResultSet rs = insertQuery("SELECT * FROM `Usuaris`");
+        ResultSet rs = selectQuery("SELECT * FROM `Usuaris`");
 
         //Es comprova que totes les columnes demanades siguin existents
         for (String s: columnNames) if (s.equals("wallet") || !comprovaColumnName(s))
