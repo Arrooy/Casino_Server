@@ -29,23 +29,54 @@ public class User extends Message {
     private long wallet;
 
     /** Evolucio dels diners del usuari*/
-    private ArrayList<Long> coinEvolution;
+    private ArrayList<Long> coinHistory;
 
 
     /**
      * Crea un usuari amb un nom i una password.
      * Aquest usuari se li adjudica un IdentificadorAleatori per a una millor comunicacio client - servidor.
+     * El constructor es refereix a un usuari ja registrat prèviament.
      * @param name Username del usuari que es vol crear
      * @param password Password del usuari que es vol crear
      */
-
     public User(String name, String password) {
 
-        coinEvolution = new ArrayList<>();
         ID = Math.random();
 
         this.username = name;
         this.password = password;
+        this.credentialsOk = false;
+
+        //TODO: S'hauria d'eliminar el try/catch i llençar la excepció a fora - Miquel
+        try {
+            Database.fillUser(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Constructor per a un Usuari que s'acaba de registrar
+     * @param username login i identificador de l'usuari (se suposa que no generarà col·lisió)
+     * @param password contrassenya necessària per a realitzar el login
+     * @param mail correu de contacte de l'usuari
+     */
+    public User(String username, String password, String mail) {
+
+        coinHistory = new ArrayList<>();
+
+        ID = Math.random();
+
+        this.username = username;
+        this.password = password;
+        this.mail = mail;
+
+        wallet = 0;
+        long aux = wallet;
+        coinHistory.add(aux);
+
+        Database.insertNewUser(this);
+
         this.credentialsOk = false;
     }
 
@@ -95,12 +126,12 @@ public class User extends Message {
         this.wallet = wallet;
     }
 
-    public ArrayList<Long> getCoinEvolution() {
-        return coinEvolution;
+    public ArrayList<Long> getCoinHistory() {
+        return coinHistory;
     }
 
-    public void setCoinEvolution(ArrayList<Long> coinEvolution) {
-        this.coinEvolution = coinEvolution;
+    public void setCoinHistory(ArrayList<Long> coinHistory) {
+        this.coinHistory = coinHistory;
     }
 
 

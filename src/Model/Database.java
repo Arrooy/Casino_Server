@@ -1,6 +1,5 @@
 package Model;
 
-import javax.jws.soap.SOAPBinding;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,19 +17,16 @@ import java.util.LinkedList;
  * @since 29/03/2018
  * @version 0.0.1
  */
-public class BaseDades {
+public class Database {
 
     //   ---   CONSTANTS QUE INDIQUEN EL NOM DE LES COLUMNES DE LA TAULA DE LA BDD   ---   //
-    private static final String CNAME_ID = "id";
-    private static final String CNAME_NOM = "nom";
-    private static final String CNAME_COGNOM = "cognoms";
     private static final String CNAME_USERNAME = "username";
     private static final String CNAME_MAIL = "mail";
     private static final String CNAME_PASSWORD = "password";
     private static final String CNAME_WALLET = "wallet";
     private static final String CNAME_COINHISTORY = "coinHistory";
 
-    private static final String[] COLUMN_NAMES = {CNAME_ID, CNAME_NOM, CNAME_COGNOM, CNAME_USERNAME, CNAME_MAIL, CNAME_PASSWORD, CNAME_WALLET, CNAME_COINHISTORY};
+    private static final String[] COLUMN_NAMES = {CNAME_USERNAME, CNAME_MAIL, CNAME_PASSWORD, CNAME_WALLET, CNAME_COINHISTORY};
 
     //   ---   INFORMACIÓ PER A ESTABLIR LA CONNEXIÓ AMB LA BASE DE DADES   ---   //
     private static final String host = "localhost";
@@ -84,16 +80,17 @@ public class BaseDades {
     }
 
     public static void insertNewUser(User user) {
-        insertQuery("insert into Usuaris (id, username, mail, password, wallet, coinHistory) values ('" +
-                user.getID() + "', '" +
+        insertQuery("insert into Usuaris (username, mail, password, wallet, coinHistory) values ('" +
                 user.getUsername() + "', '" +
                 user.getMail() + "', '" +
                 user.getPassword() + "', '" +
                 user.getWallet() + "', '" +
-                user.getCoinEvolution() + "')");
+                user.getCoinHistory() + "')");
     }
 
-    public static void updateUser(User user) {}
+    public static void updateUser(User user) {
+
+    }
 
     public static void deleteUser(User user) {}
 
@@ -122,7 +119,7 @@ public class BaseDades {
      * @return Llista d'arrays de Strings amb tots els camps demanats
      * @throws Exception En cas de demanar alguna informació inexistent.
      */
-    public static LinkedList<String[]> getInfo(String ... columnNames) throws Exception {
+    private static LinkedList<String[]> getInfo(String ... columnNames) throws Exception {
         //Es fa la petició al servidor de la database
         ResultSet rs = selectQuery("SELECT * FROM `Usuaris`");
 
@@ -145,7 +142,7 @@ public class BaseDades {
             //TODO: gestiona esto tete
             e.printStackTrace();
 
-            return null;
+            return new LinkedList<>();
         }
     }
 
@@ -156,7 +153,7 @@ public class BaseDades {
      * @return Array amb tots els valors registrats de l'usuari indicat
      * @throws Exception En cas de no haver trobat l'usuari indicat
      */
-    public static long[] getUserCoinHistory(String username) throws Exception {
+    public static ArrayList<Long> getUserCoinHistory(String username) throws Exception {
         LinkedList<String[]> info = getInfo(CNAME_USERNAME, CNAME_COINHISTORY);
         String coinHistory = null;
 
@@ -164,9 +161,9 @@ public class BaseDades {
         if (coinHistory == null) throw new Exception("No s'ha trobat l'usuari");
 
         String[] coins = coinHistory.split("_");
-        long[] parsedHistory = new long[coins.length];
+        ArrayList<Long> parsedHistory = new ArrayList<>();
 
-        for (int i = 0; i < coins.length; i++) parsedHistory[i] = Long.parseLong(coins[i]);
+        for (int i = 0; i < coins.length; i++) parsedHistory.add(Long.parseLong(coins[i]));
 
         return parsedHistory;
     }
@@ -193,6 +190,25 @@ public class BaseDades {
             user.setCredentialsOk(true);
             user.setOnline(true);
             return user;
+        }
+    }
+
+    private static ArrayList<Long> parseCoinHistory(String coinHistoryString) {
+        String[] coins = coinHistoryString.split("_");
+        ArrayList<Long> parsedHistory = new ArrayList<>();
+
+        for (int i = 0; i < coins.length; i++) parsedHistory.add(Long.parseLong(coins[i]));
+
+        return parsedHistory;
+    }
+
+    public static void fillUser(User user) throws Exception {
+        LinkedList<String[]> info = getInfo("username", "password", "mail", "wallet", "coinHistory");
+
+        for (String[] s: info) if (s[0].equals(user.getUsername())) {
+            if (!user.getPassword().equals(s[1])) throw new Exception("No coincideix la contrassenya");
+            user.setWallet(Integer.parseInt(s[3]));
+            user.setCoinHistory(parseCoinHistory(s[4]));
         }
     }
 }

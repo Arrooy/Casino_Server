@@ -1,7 +1,7 @@
 package Network;
 
 import Controlador.Controller;
-import Model.BaseDades;
+import Model.Database;
 import Model.User;
 
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class Client extends Thread {
                 if (user == null) {
                     //El user vol entrar les creedencials
                     User auxUser = (User) reading;
-                    if (BaseDades.checkUserLogIn(auxUser).areCredentialsOk()) {
+                    if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
                         user = auxUser;
                         oos.writeObject(user);
                     } else {
