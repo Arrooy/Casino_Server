@@ -234,7 +234,8 @@ public class Database {
         }
     }
 
-    public static ArrayList<Long> parseCoinHistory(String coinHistoryString) {
+    //Funció que converteix un coinHistory de format String a format usable
+    private static ArrayList<Long> parseCoinHistory(String coinHistoryString) {
         String[] coins = coinHistoryString.split("_");
         ArrayList<Long> parsedHistory = new ArrayList<>();
 
@@ -243,6 +244,11 @@ public class Database {
         return parsedHistory;
     }
 
+    /**
+     * Mètode per a completar la informació d'un usuari
+     * @param user Usuari a completar
+     * @throws Exception En cas de no coincidir la contrasenya
+     */
     public static void fillUser(User user) throws Exception {
         LinkedList<String[]> info = getInfo("username", "password", "mail", "wallet", "coinHistory");
 

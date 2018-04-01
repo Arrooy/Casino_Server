@@ -4,36 +4,52 @@ import Controlador.Controller;
 import Network.NetworkManager;
 import Vista.MainView;
 
+import javax.swing.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+/**
+ * Classe principal del programa pel servidor. S'encarrega d'establir la connexió amb
+ * la base de dades, iniciar la vista amb el seu respectiu controlador i iniciar
+ * el gestor dels clients.
+ *
+ * @since 13/3/2018
+ * @version 0.2
+ */
 public class Casino_Server {
     public static void main(String[] args) {
 
         //Iniciem connexió amb la base de dades
         try {
+            //S'estableix la connexió amb la base de dades
             Database.initBaseDades();
+
+            // Es crea la vista del Servidor
+            MainView vista = new MainView(640,480);
+
+            //Es defineix el gestor de clients
+            NetworkManager networkManager = new NetworkManager();
+
+            //Es crea el controlador del sistema i es relacionen controlador amb vista i controlador amb el gestor
+            Controller controlador = new Controller(vista,networkManager);
+
+            //S'inicia el servidor i es crea l'enllaç gestor amb controlador
+            networkManager.initServer(controlador);
+
+            //Es crea l'enllaç vista amb controlador
+            vista.addController(controlador);
+
+            //Es fa visible la finestra grafica
+            vista.setVisible(true);
+
         } catch (Exception e) {
-            //TODO: decidir que fer en cas de que no es pugui realitzar la connexió amb la base de dades
-            e.printStackTrace();
+
+            if (e instanceof SQLException || e instanceof ClassNotFoundException)
+                JOptionPane.showMessageDialog(new JFrame(), "No s'ha pogut iniciar el servidor degut a un problema de connexió amb la base de dades",
+                    "Error connexió Database", JOptionPane.ERROR_MESSAGE);
+            else e.printStackTrace();
+
         }
-
-        // Es crea la vista del Servidor
-        MainView vista = new MainView(640,480);
-
-        //Es defineix el gestor de clients
-        NetworkManager networkManager = new NetworkManager();
-
-        //Es crea el controlador del sistema i es relacionen controlador amb vista i controlador amb el gestor
-        Controller controlador = new Controller(vista,networkManager);
-
-        //S'inicia el servidor i es crea l'enllaç gestor amb controlador
-        networkManager.initServer(controlador);
-
-        //Es crea l'enllaç vista amb controlador
-        vista.addController(controlador);
-
-        //Es fa visible la finestra grafica
-        vista.setVisible(true);
     }
 }
