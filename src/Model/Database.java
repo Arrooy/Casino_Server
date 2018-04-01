@@ -26,6 +26,12 @@ public class Database {
     private static final String CNAME_WALLET = "wallet";
     private static final String CNAME_COINHISTORY = "coinHistory";
 
+    //   ---   CONSTANTS QUE INDIQUEN LA INFORMACIO A CERCAR DE LA LLISTA QUE RETORNA LA FUNCIO GETUSERINFO()   ---   //
+    public static final int INDEX_PASSWORD = 0;
+    public static final int INDEX_MAIL = 1;
+    public static final int INDEX_WALLET = 2;
+    public static final int INDEX_COINHISTORY = 3;
+
     private static final String[] COLUMN_NAMES = {CNAME_USERNAME, CNAME_MAIL, CNAME_PASSWORD, CNAME_WALLET, CNAME_COINHISTORY};
 
     //   ---   INFORMACIÓ PER A ESTABLIR LA CONNEXIÓ AMB LA BASE DE DADES   ---   //
@@ -45,15 +51,10 @@ public class Database {
      * la connexió entre la base de dades i el programa, que permetrà que aquest últim realitzi
      * peticions a la base de dades per a consultar, inserir, eliminar o modificar informació.
      */
-    public static void initBaseDades() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Class.forName("com.mysql.jdbc.Connection");
-            conn = DriverManager.getConnection(dbUrl, username, password);
-        } catch (Exception e) {
-            //TODO: Fer algo aqui per a que no peti tot després
-            e.printStackTrace();
-        }
+    public static void initBaseDades() throws Exception {
+        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName("com.mysql.jdbc.Connection");
+        conn = DriverManager.getConnection(dbUrl, username, password);
     }
 
     //Mètode que executa una Query a la base de dades per demanar informació.
@@ -88,12 +89,38 @@ public class Database {
                 user.getCoinHistory() + "')");
     }
 
+    /**
+     * Mètode per a actualitzar la informació d'un usuari a la base de dades.
+     * S'utilitza com a referencia el nom d'usuari, per tant tot el que s'hagi modificat
+     * de l'usuari en sí es reescriurà a la base de dades
+     * @param user Usuari a actualitzar
+     */
     public static void updateUser(User user) {
-
+        insertQuery("update Usuaris set " +
+                        CNAME_WALLET + "='" + user.getWallet() + "', " +
+                        CNAME_COINHISTORY + "='" + coinHistoryToString(user.getCoinHistory()) + "', " +
+                        CNAME_MAIL + "='" + user.getMail() + "', " +
+                        CNAME_PASSWORD + "='" + user.getPassword() + "'" +
+                        "where " + CNAME_USERNAME + "='" + user.getUsername() + "'");
     }
 
-    public static void deleteUser(User user) {}
+    /**
+     * Mètode per a eliminar un usuari de la base de dades
+     * @param user Usuari a eliminar
+     */
+    public static void deleteUser(User user) {
+        deleteUser(user.getUsername());
+    }
 
+    /**
+     * Mètode per a eliminar un usuari de la base de dades a partir del nom d'usuari
+     * @param username Nom de l'usuari
+     */
+    public static void deleteUser(String username) {
+        insertQuery("delete from Usuaris where username='" + username + "'");
+    }
+
+    //Mètode que obté la String a escriure a la base de dades a partir de la llista oroginal
     private static String coinHistoryToString(ArrayList<Long> coinHistory) {
         String s = coinHistory.size() > 1 ? coinHistory.get(0).toString() : "";
         for (int i = 1; i < coinHistory.size(); i++) s += "_" + coinHistory.get(i);
@@ -119,7 +146,7 @@ public class Database {
      * @return Llista d'arrays de Strings amb tots els camps demanats
      * @throws Exception En cas de demanar alguna informació inexistent.
      */
-    private static LinkedList<String[]> getInfo(String ... columnNames) throws Exception {
+    public static LinkedList<String[]> getInfo(String ... columnNames) throws Exception {
         //Es fa la petició al servidor de la database
         ResultSet rs = selectQuery("SELECT * FROM `Usuaris`");
 
@@ -144,6 +171,20 @@ public class Database {
 
             return new LinkedList<>();
         }
+    }
+
+    public static LinkedList<String> getUserInfo(String username) throws SQLException{
+        ResultSet rs = conn.createStatement().executeQuery(
+                "select * from Usuaris where username='" + username + "'");
+
+        LinkedList<String> info = new LinkedList<>();
+        rs.next();
+        info.add(rs.getString(CNAME_PASSWORD));
+        info.add(rs.getString(CNAME_MAIL));
+        info.add(rs.getString(CNAME_WALLET));
+        info.add(rs.getString(CNAME_COINHISTORY));
+
+        return info;
     }
 
     /**
@@ -193,7 +234,7 @@ public class Database {
         }
     }
 
-    private static ArrayList<Long> parseCoinHistory(String coinHistoryString) {
+    public static ArrayList<Long> parseCoinHistory(String coinHistoryString) {
         String[] coins = coinHistoryString.split("_");
         ArrayList<Long> parsedHistory = new ArrayList<>();
 

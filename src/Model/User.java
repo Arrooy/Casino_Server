@@ -39,7 +39,7 @@ public class User extends Message {
      * @param name Username del usuari que es vol crear
      * @param password Password del usuari que es vol crear
      */
-    public User(String name, String password) {
+    public User(String name, String password) throws Exception {
 
         ID = Math.random();
 
@@ -47,12 +47,7 @@ public class User extends Message {
         this.password = password;
         this.credentialsOk = false;
 
-        //TODO: S'hauria d'eliminar el try/catch i llençar la excepció a fora - Miquel
-        try {
-            Database.fillUser(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Database.fillUser(this);
     }
 
     /**

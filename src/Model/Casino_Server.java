@@ -4,11 +4,19 @@ import Controlador.Controller;
 import Network.NetworkManager;
 import Vista.MainView;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+
 public class Casino_Server {
     public static void main(String[] args) {
 
         //Iniciem connexió amb la base de dades
-        Database.initBaseDades();
+        try {
+            Database.initBaseDades();
+        } catch (Exception e) {
+            //TODO: decidir que fer en cas de que no es pugui realitzar la connexió amb la base de dades
+            e.printStackTrace();
+        }
 
         // Es crea la vista del Servidor
         MainView vista = new MainView(640,480);
