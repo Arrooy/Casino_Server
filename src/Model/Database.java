@@ -42,28 +42,41 @@ public class Database {
     private static final String username = "root";
     private static final String password = "casino";
 
-    private static Connection conn;
+    public static final int WELCOME_GIFT = 500;
 
-    /** //TODO: Modifica explicacio
-     * Constructor de la classe. Tot i que aquesta consisteix en una classe de filosofia
-     * estàtica, és necessari cridar aquest constructor en algun punt del codi previ a qualsevol
-     * ús d'alguna de les funcions que ofereix la classe; ja que en aquest constructor s'estableix
-     * la connexió entre la base de dades i el programa, que permetrà que aquest últim realitzi
-     * peticions a la base de dades per a consultar, inserir, eliminar o modificar informació.
+    private static Connection conn;
+    private static long lastID = 0;
+
+    /**
+     * Aquest mètode consisteix en una classe de filosofiacestàtica, tot i així és necessari
+     * cridar aquest mètode en algun punt del codi previ a qualsevol ús d'alguna de les funcions
+     * que ofereix la classe; ja que en aquest mètode s'estableix la connexió entre la base de
+     * dades i el programa, que permetrà que aquest últim realitza peticions a la base de dades
+     * per a consultar, inserir, eliminar o modificar informació.
+     * @throws Exception En cas de fallar la inicialització del driver o la connexió al servidor
      */
     public static void initBaseDades() throws Exception {
         Class.forName("com.mysql.jdbc.Driver");
         Class.forName("com.mysql.jdbc.Connection");
         conn = DriverManager.getConnection(dbUrl, username, password);
+
+        ResultSet rs = conn.createStatement().executeQuery("select id from Transaccions");
+        while (rs.next()) lastID = rs.getLong("id");
     }
 
+    private static long getLastID() {
+        lastID++;
+        return lastID;
+    }
+
+/*
+@deprecated
     //Mètode que executa una Query a la base de dades per demanar informació.
     private static ResultSet selectQuery(String query){
         try {
             Statement s = conn.createStatement();
             return s.executeQuery(query);
         } catch (Exception e) {
-            //TODO: gestionar degudament
             e.printStackTrace();
         }
         return null;
@@ -79,26 +92,38 @@ public class Database {
             e.printStackTrace();
         }
     }
-
-    public static void insertNewUser(User user) {
-        insertQuery("insert into Usuaris (username, mail, password, wallet, coinHistory) values ('" +
+*/
+    public static void insertNewUser(User user) throws Exception { // TODO: fer transacció inicial de cash
+        conn.createStatement().executeUpdate("insert into Usuaris (username, mail, password) values ('" +
                 user.getUsername() + "', '" +
                 user.getMail() + "', '" +
-                user.getPassword() + "', '" +
-                user.getWallet() + "', '" +
-                user.getCoinHistory() + "')");
+                user.getPassword() + "')");
+
+        conn.createStatement().executeUpdate("insert into Transaccions (id, date, earnings, type, username) values (" +
+                getLastID() + ", '" +
+                getDate() + "', '" +
+                WELCOME_GIFT + "', " +
+                "'Ingres'" + ", '" +
+                user.getUsername() +"')");
+
+        user.setWallet(WELCOME_GIFT);
     }
+
+    private static String getDate() {return "";} //TODO
 
     /**
      * Mètode per a actualitzar la informació d'un usuari a la base de dades.
      * S'utilitza com a referencia el nom d'usuari, per tant tot el que s'hagi modificat
-     * de l'usuari en sí es reescriurà a la base de dades
+     * de l'usuari en sí es reescriurà a la base de dades.
+     * @param online Indica si l'usuari esta o no en línea
      * @param user Usuari a actualitzar
      */
-    public static void updateUser(User user) {
-        insertQuery("update Usuaris set " +
-                        CNAME_WALLET + "='" + user.getWallet() + "', " +
-                        CNAME_COINHISTORY + "='" + coinHistoryToString(user.getCoinHistory()) + "', " +
+    public static void updateUser(User user, boolean online) throws Exception {
+
+        String lastLogin = online ? getDate() : "'null'";
+
+        conn.createStatement().executeUpdate("update Usuaris set " +
+                        "lastLogin = " + lastLogin + ", " +
                         CNAME_MAIL + "='" + user.getMail() + "', " +
                         CNAME_PASSWORD + "='" + user.getPassword() + "'" +
                         "where " + CNAME_USERNAME + "='" + user.getUsername() + "'");
@@ -107,28 +132,31 @@ public class Database {
     /**
      * Mètode per a eliminar un usuari de la base de dades
      * @param user Usuari a eliminar
+     * @deprecated No es pot eliminar a un usuari
      */
-    public static void deleteUser(User user) {
+    public static void deleteUser(User user) throws Exception {
         deleteUser(user.getUsername());
     }
 
     /**
      * Mètode per a eliminar un usuari de la base de dades a partir del nom d'usuari
      * @param username Nom de l'usuari
+     * @deprecated No es pot eliminar a un usuari
      */
-    public static void deleteUser(String username) {
-        insertQuery("delete from Usuaris where username='" + username + "'");
+    public static void deleteUser(String username) throws Exception {
+        conn.createStatement().executeUpdate("delete from Usuaris where username='" + username + "'");
     }
-
+/*
+@deprecated
     //Mètode que obté la String a escriure a la base de dades a partir de la llista oroginal
     private static String coinHistoryToString(ArrayList<Long> coinHistory) {
         String s = coinHistory.size() > 1 ? coinHistory.get(0).toString() : "";
         for (int i = 1; i < coinHistory.size(); i++) s += "_" + coinHistory.get(i);
         return s;
     }
-
+*/
     //Funció que indica si un nom correspon a una possible columna de la taula de la bdd
-    private static boolean comprovaColumnName(String name) {
+    private static boolean comprovaColumnName(String name) { //Near to deprecation
         boolean b = false;
 
         for (String s: COLUMN_NAMES) if (name.equals(s)) b = true;
@@ -148,7 +176,7 @@ public class Database {
      */
     public static LinkedList<String[]> getInfo(String ... columnNames) throws Exception {
         //Es fa la petició al servidor de la database
-        ResultSet rs = selectQuery("SELECT * FROM `Usuaris`");
+        ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Usuaris");
 
         //Es comprova que totes les columnes demanades siguin existents
         for (String s: columnNames) if (s.equals("wallet") || !comprovaColumnName(s))
@@ -193,6 +221,7 @@ public class Database {
      * @param username Nom del usuari del que es vol cercar la informació
      * @return Array amb tots els valors registrats de l'usuari indicat
      * @throws Exception En cas de no haver trobat l'usuari indicat
+     * @deprecated
      */
     public static ArrayList<Long> getUserCoinHistory(String username) throws Exception {
         LinkedList<String[]> info = getInfo(CNAME_USERNAME, CNAME_COINHISTORY);
@@ -250,12 +279,23 @@ public class Database {
      * @throws Exception En cas de no coincidir la contrasenya
      */
     public static void fillUser(User user) throws Exception {
-        LinkedList<String[]> info = getInfo("username", "password", "mail", "wallet", "coinHistory");
+        LinkedList<String[]> info = getInfo("username", "password", "mail");
 
         for (String[] s: info) if (s[0].equals(user.getUsername())) {
             if (!user.getPassword().equals(s[1])) throw new Exception("No coincideix la contrassenya");
-            user.setWallet(Integer.parseInt(s[3]));
-            user.setCoinHistory(parseCoinHistory(s[4]));
+            user.setMail(s[2]);
+            user.setWallet(getUserWallet(user.getUsername()));
         }
     }
+
+    //Reconstrueix el wallet d'un usuari a partir de l'historial de transaccions
+    private static long getUserWallet(String username) throws Exception {
+        ResultSet rs = conn.createStatement().executeQuery("select earnings from Transactions where username = " + username);
+        long wallet = 0;
+
+        while (rs.next()) wallet += rs.getLong("earnings");
+
+        return wallet;
+    }
+
 }
