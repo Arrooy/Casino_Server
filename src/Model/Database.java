@@ -237,6 +237,18 @@ public class Database {
         return parsedHistory;
     }
 
+    public static void test() {
+        try {
+            ResultSet rs = conn.createStatement().executeQuery("select password from Usuaris where username = 'miquelsaula'");
+            while(rs.next()) {
+                System.out.println(rs.getString("password"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     /**
      *  Verifica que les creedencials al interior de user son correctes.
      *  Retorna el user que s'ha verificat amb el camp CredentialsOk a true en cas afirmatiu.
@@ -244,7 +256,7 @@ public class Database {
      */
     public static User checkUserLogIn(User user){
         try {
-            ResultSet rs = conn.createStatement().executeQuery("select password from Usuaris where username = " + user.getUsername());
+            ResultSet rs = conn.createStatement().executeQuery("select password from Usuaris where username = '" + user.getUsername() + "'");
             rs.next();
             String pass = rs.getString("password");
 

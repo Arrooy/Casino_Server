@@ -28,6 +28,14 @@ public class Casino_Server {
             //S'estableix la connexió amb la base de dades
             Database.initBaseDades();
 
+            System.out.println();
+            System.out.println();
+
+            Database.test();
+
+            System.out.println();
+            System.out.println();
+
             /*User u = new User("miquelsaula", "1234", "miquelsaula@gmail.com");
             Database.deleteUser(u.getUsername());
             Database.insertNewUser(u);*/

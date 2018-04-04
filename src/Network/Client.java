@@ -53,8 +53,7 @@ public class Client extends Thread {
             try {
 
                 Message reading = (Message) ois.readObject();
-                System.out.println(reading.getID());
-                System.out.println("olasd" + (user == null));
+
                 if (user == null) {
                     //El user vol entrar les creedencials
                     User auxUser = (User) reading;
@@ -64,6 +63,8 @@ public class Client extends Thread {
                         oos.writeObject(user);
                     } else {
                         System.out.println("Creedencials WRONG");
+                        System.out.println(auxUser.getUsername());
+                        System.out.println(auxUser.getPassword());
                         oos.writeObject(auxUser);
                     }
                 } else {
