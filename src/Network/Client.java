@@ -57,6 +57,9 @@ public class Client extends Thread {
                 if (user == null) {
                     //El user vol entrar les creedencials
                     User auxUser = (User) reading;
+
+                    System.out.println("Is online: " + auxUser.isOnline());
+
                     if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
                         System.out.println("Creedencials ok");
                         user = auxUser;
@@ -74,14 +77,18 @@ public class Client extends Thread {
                             //Alguna comanda relacionada amb l'user
 
                         } else {
+                            System.out.println("apagan2");
                             user.setOnline(false);
+                            user.setContext("logout");
                             oos.writeObject(user);
                             disconnectMe();
+                            socket.close();
+                            break;
                         }
                     }
                 }
             }catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }

@@ -261,12 +261,12 @@ public class Database {
             String pass = rs.getString("password");
 
             user.setCredentialsOk(user.getPassword().equals(pass));
-            user.setOnline(user.getPassword().equals(pass));
+            //user.setOnline(user.getPassword().equals(pass));
 
             return user;
         } catch (Exception e) {
             user.setCredentialsOk(false);
-            user.setOnline(false);
+            //user.setOnline(false);
             return user;
         }
     }
