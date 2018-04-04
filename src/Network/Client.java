@@ -36,6 +36,7 @@ public class Client extends Thread {
         this.controller = controller;
         this.usuarisConnectats = usuarisConnectats;
         this.socket = socket;
+        this.user = null;
 
         //S'intentan guardar les referencies dels streams d'entrada i sortida del socket
         try {
@@ -50,14 +51,19 @@ public class Client extends Thread {
     public void run() {
         while (user == null || user.isOnline()) {
             try {
+
                 Message reading = (Message) ois.readObject();
+                System.out.println(reading.getID());
+                System.out.println("olasd" + (user == null));
                 if (user == null) {
                     //El user vol entrar les creedencials
                     User auxUser = (User) reading;
                     if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
+                        System.out.println("Creedencials ok");
                         user = auxUser;
                         oos.writeObject(user);
                     } else {
+                        System.out.println("Creedencials WRONG");
                         oos.writeObject(auxUser);
                     }
                 } else {
@@ -74,7 +80,7 @@ public class Client extends Thread {
                     }
                 }
             }catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
     }

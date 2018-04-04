@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import static Model.Casino_Server.WELCOME_GIFT;
+
 /**
  * Classe que gestiona la comunicació entre el programa i el servidor
  * de la base de dades. La classe implementa mètodes estàtics que permeten
@@ -41,8 +43,6 @@ public class Database {
     private static final String dbUrl = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useServerPrepStmts=true&useSSL=false";
     private static final String username = "root";
     private static final String password = "casino";
-
-    public static final int WELCOME_GIFT = 500;
 
     private static Connection conn;
     private static long lastID = 0;
@@ -99,14 +99,12 @@ public class Database {
                 user.getMail() + "', '" +
                 user.getPassword() + "')");
 
-        conn.createStatement().executeUpdate("insert into Transaccions (id, date, earnings, type, username) values (" +
+        conn.createStatement().executeUpdate("insert into Transaccions (id, earnings, type, username) values (" +
                 getLastID() + ", '" +
-                getDate() + "', '" +
-                WELCOME_GIFT + "', " +
-                "'Ingres'" + ", '" +
-                user.getUsername() +"')");
+                Casino_Server.WELCOME_GIFT + "', " +
+                "'0', '" + user.getUsername() +"')");
 
-        user.setWallet(WELCOME_GIFT);
+        user.setWallet(Casino_Server.WELCOME_GIFT);
     }
 
     private static String getDate() {return "";} //TODO
@@ -173,6 +171,7 @@ public class Database {
      * @param columnNames Llistat de noms de les columnes a consultar
      * @return Llista d'arrays de Strings amb tots els camps demanats
      * @throws Exception En cas de demanar alguna informació inexistent.
+     * @deprecated
      */
     public static LinkedList<String[]> getInfo(String ... columnNames) throws Exception {
         //Es fa la petició al servidor de la database
@@ -245,20 +244,17 @@ public class Database {
      */
     public static User checkUserLogIn(User user){
         try {
-            LinkedList<String[]> info = getInfo(CNAME_USERNAME, CNAME_MAIL, CNAME_PASSWORD);
+            ResultSet rs = conn.createStatement().executeQuery("select password from Usuaris where username = " + user.getUsername());
+            rs.next();
+            String pass = rs.getString("password");
 
-            user.setCredentialsOk(false);
-            user.setOnline(false);
-
-            for (String[] s: info) if ((s[1].equals(user.getMail()) || s[0].equals(user.getUsername())) && s[2].equals(user.getPassword())) {
-                user.setOnline(true);
-                user.setCredentialsOk(true);
-            }
+            user.setCredentialsOk(user.getPassword().equals(pass));
+            user.setOnline(user.getPassword().equals(pass));
 
             return user;
         } catch (Exception e) {
-            user.setCredentialsOk(true);
-            user.setOnline(true);
+            user.setCredentialsOk(false);
+            user.setOnline(false);
             return user;
         }
     }

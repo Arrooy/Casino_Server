@@ -39,15 +39,13 @@ public class User extends Message {
      * @param name Username del usuari que es vol crear
      * @param password Password del usuari que es vol crear
      */
-    public User(String name, String password) throws Exception {
+    public User(String name, String password) {
 
         ID = Math.random();
 
         this.username = name;
         this.password = password;
         this.credentialsOk = false;
-
-        Database.fillUser(this);
     }
 
     /**
@@ -69,8 +67,6 @@ public class User extends Message {
         wallet = 0;
         long aux = wallet;
         coinHistory.add(aux);
-
-        Database.insertNewUser(this);
 
         this.credentialsOk = false;
     }
@@ -128,7 +124,6 @@ public class User extends Message {
     public void setCoinHistory(ArrayList<Long> coinHistory) {
         this.coinHistory = coinHistory;
     }
-
 
     public boolean isOnline() {
         return online;

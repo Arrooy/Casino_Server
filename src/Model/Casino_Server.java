@@ -18,12 +18,19 @@ import java.util.LinkedList;
  * @version 0.2
  */
 public class Casino_Server {
+
+    public static final int WELCOME_GIFT = 500;
+
     public static void main(String[] args) {
 
         //Iniciem connexió amb la base de dades
         try {
             //S'estableix la connexió amb la base de dades
             Database.initBaseDades();
+
+            /*User u = new User("miquelsaula", "1234", "miquelsaula@gmail.com");
+            Database.deleteUser(u.getUsername());
+            Database.insertNewUser(u);*/
 
             // Es crea la vista del Servidor
             MainView vista = new MainView(640,480);
@@ -48,7 +55,7 @@ public class Casino_Server {
             if (e instanceof SQLException || e instanceof ClassNotFoundException)
                 JOptionPane.showMessageDialog(new JFrame(), "No s'ha pogut iniciar el servidor degut a un problema de connexió amb la base de dades",
                     "Error connexió Database", JOptionPane.ERROR_MESSAGE);
-            else e.printStackTrace();
+            /*else*/ e.printStackTrace();
 
         }
     }
