@@ -107,8 +107,6 @@ public class Database {
         user.setWallet(Casino_Server.WELCOME_GIFT);
     }
 
-    private static String getDate() {return "";} //TODO
-
     /**
      * Mètode per a actualitzar la informació d'un usuari a la base de dades.
      * S'utilitza com a referencia el nom d'usuari, per tant tot el que s'hagi modificat
@@ -118,7 +116,7 @@ public class Database {
      */
     public static void updateUser(User user, boolean online) throws Exception {
 
-        String lastLogin = online ? getDate() : "'null'";
+        String lastLogin = online ? "" : "'null'";
 
         conn.createStatement().executeUpdate("update Usuaris set " +
                         "lastLogin = " + lastLogin + ", " +
