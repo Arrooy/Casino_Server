@@ -10,15 +10,9 @@ public class MainView extends View {
     JButton jbRankingBalance;
     JButton jbTop5;
 
-    /**
-     *  Crea la vista del servidor amb una amplada i una alçada determinades per width i height
-     * @param width indica l'amplada de la vista
-     * @param height indica l'altura de la vista
-     */
+   /**Crea la vista del servidor*/
 
     public MainView(){
-
-        Tray.init();
 
         this.setLayout(new BorderLayout());
 
@@ -58,6 +52,11 @@ public class MainView extends View {
     @Override
     public void addController(Controller c){
 
+        jbRankingBalance.setActionCommand("rankings");
+        jbTop5.setActionCommand("top5");
+
+        jbTop5.addActionListener(c);
+        jbTop5.addActionListener(c);;
     }
 
 }

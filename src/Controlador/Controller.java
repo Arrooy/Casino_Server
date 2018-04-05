@@ -6,6 +6,7 @@ import Vista.MainView;
 import Vista.Top5OptionsView;
 import Vista.Tray;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -49,10 +50,27 @@ public class Controller implements WindowListener, ActionListener{
         this.top5 = top5;
     }
 
-
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()){
+            case "rankings":
+                vista.setRankings();
+                break;
+            case "top5":
+                vista.setTop5();
+                break;
+            case "blackJackGraph":
+                top5.setGraphContent(new JLabel("blackJackGraph"));
+                break;
+            case "horseGraph":
+                top5.setGraphContent(new JLabel("horseGraph"));
+                break;
+            case "rouletteGraph":
+                top5.setGraphContent(new JLabel("rouletteGraph"));
+                break;
+            case "returnMainView":
+                vista.setMainView();
+                break;
             //En el cas de apretar l'opcio de sortir desde la Tray
             case "trayButtonExit" :
                 //Es surt del programa sense indicar cap error

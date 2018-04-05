@@ -54,6 +54,10 @@ public class Finestra extends JFrame {
         layout.show(getContentPane(), "top5");
     }
 
+    public void setRankings() {
+        //layout.show(getContentPane(), "top5");
+    }
+
     /** Obra una finestra indicant un error*/
     public void displayError(String title,String errorText) {
         JOptionPane.showMessageDialog(this,title,errorText,JOptionPane.ERROR_MESSAGE);

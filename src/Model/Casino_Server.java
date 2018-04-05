@@ -27,12 +27,12 @@ public class Casino_Server {
         //Iniciem connexió amb la base de dades
         try {
             //S'estableix la connexió amb la base de dades
-            Database.initBaseDades();
+            //Database.initBaseDades();
 
             System.out.println();
             System.out.println();
 
-            Database.test();
+            //Database.test();
 
             System.out.println();
             System.out.println();

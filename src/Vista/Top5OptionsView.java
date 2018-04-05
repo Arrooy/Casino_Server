@@ -6,10 +6,14 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Top5OptionsView extends View {
+
     private JButton jbMenu;
+
     private JButton jbHorseRace;
     private JButton jbBlackJack;
     private JButton jbRoulette;
+
+    private JPanel jpGraphicContainer;
 
     public Top5OptionsView(){
         this.setLayout(new BorderLayout());
@@ -65,17 +69,34 @@ public class Top5OptionsView extends View {
 
         this.add(jpgblBotons, BorderLayout.LINE_START);
 
-        JPanel jpGraphic = new JPanel(new GridBagLayout());
-        jpGraphic.setBorder(BorderFactory.createTitledBorder("Graphic"));
+        jpGraphicContainer = new JPanel(new GridBagLayout());
+        jpGraphicContainer.setBorder(BorderFactory.createTitledBorder("Graphic"));
         c.gridy = 0;
         c.insets = new Insets(0,0,0,0);
-        jpGraphic.add(new JLabel("GRAPHIC"), c);
-        this.add(jpGraphic, BorderLayout.CENTER);
+        jpGraphicContainer.add(new JLabel("GRAPHIC"), c);
+        this.add(jpGraphicContainer, BorderLayout.CENTER);
 
         this.add(Box.createHorizontalStrut(100), BorderLayout.LINE_END);
     }
+
+    public void setGraphContent(Component graph){
+        jpGraphicContainer.removeAll();
+        jpGraphicContainer.add(graph);
+        jpGraphicContainer.updateUI();
+    }
+
     @Override
     public void addController(Controller c){
 
+        jbMenu.setActionCommand("returnMainView");
+        jbMenu.addActionListener(c);
+
+        jbBlackJack.setActionCommand("blackJackGraph");
+        jbHorseRace.setActionCommand("horseGraph");
+        jbRoulette.setActionCommand("rouletteGraph");
+
+        jbBlackJack.addActionListener(c);
+        jbHorseRace.addActionListener(c);
+        jbRoulette.addActionListener(c);
     }
 }
