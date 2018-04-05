@@ -49,21 +49,30 @@ public class Top5OptionsView extends View {
         jbRoulette.setFocusable(false);
 
         //Marges
-        c.insets = new Insets(0,0,0,20);
+        c.insets = new Insets(0,50,20,50);
 
         //S'afegeixen els botons dels jocs
         c.gridy = 0;
         c.gridx = 0;
         jpgblBotons.add(jbBlackJack, c);
 
-        c.gridx = 1;
+        c.gridy = 1;
         jpgblBotons.add(jbHorseRace, c);
 
-        c.gridx = 2;
-        c.insets = new Insets(0,0,0,0);
+        c.gridy = 2;
+        c.insets = new Insets(0,50,0,50);
         jpgblBotons.add(jbRoulette, c);
 
-        this.add(jpgblBotons, BorderLayout.CENTER);
+        this.add(jpgblBotons, BorderLayout.LINE_START);
+
+        JPanel jpGraphic = new JPanel(new GridBagLayout());
+        jpGraphic.setBorder(BorderFactory.createTitledBorder("Graphic"));
+        c.gridy = 0;
+        c.insets = new Insets(0,0,0,0);
+        jpGraphic.add(new JLabel("GRAPHIC"), c);
+        this.add(jpGraphic, BorderLayout.CENTER);
+
+        this.add(Box.createHorizontalStrut(100), BorderLayout.LINE_END);
     }
     @Override
     public void addController(Controller c){
