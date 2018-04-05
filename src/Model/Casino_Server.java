@@ -2,6 +2,7 @@ package Model;
 
 import Controlador.Controller;
 import Network.NetworkManager;
+import Vista.Finestra;
 import Vista.MainView;
 
 import javax.swing.*;
@@ -41,7 +42,7 @@ public class Casino_Server {
             Database.insertNewUser(u);*/
 
             // Es crea la vista del Servidor
-            MainView vista = new MainView(640,480);
+            Finestra vista = new Finestra();
 
             //Es defineix el gestor de clients
             NetworkManager networkManager = new NetworkManager();

@@ -1,9 +1,11 @@
 package Vista;
 
+import Controlador.Controller;
+
 import javax.swing.*;
 import java.awt.*;
 
-public class Top5OptionsView extends JPanel {
+public class Top5OptionsView extends View {
     private JButton jbMenu;
     private JButton jbHorseRace;
     private JButton jbBlackJack;
@@ -45,6 +47,7 @@ public class Top5OptionsView extends JPanel {
         jbHorseRace.setFocusable(false);
         jbRoulette = new JButton("ROULETTE");
         jbRoulette.setFocusable(false);
+
         //Marges
         c.insets = new Insets(0,0,0,20);
 
@@ -61,5 +64,9 @@ public class Top5OptionsView extends JPanel {
         jpgblBotons.add(jbRoulette, c);
 
         this.add(jpgblBotons, BorderLayout.CENTER);
+    }
+    @Override
+    public void addController(Controller c){
+
     }
 }

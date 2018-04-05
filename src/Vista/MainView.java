@@ -5,10 +5,10 @@ import Controlador.Controller;
 import javax.swing.*;
 import java.awt.*;
 
-public class MainView extends JFrame {
+public class MainView extends View {
 
-    private JButton jbTop5;
-    private JButton jbRankingBalance;
+    JButton jbRankingBalance;
+    JButton jbTop5;
 
     /**
      *  Crea la vista del servidor amb una amplada i una alçada determinades per width i height
@@ -16,22 +16,9 @@ public class MainView extends JFrame {
      * @param height indica l'altura de la vista
      */
 
-    public MainView(int width,int height){
+    public MainView(){
 
         Tray.init();
-
-        generaVista();
-
-        //Es determinen les dimensions de la finestra
-        setSize(width,height);
-
-        //Es centra la finestra en el centre de la pantalla
-        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - getSize().width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2 - getSize().height / 2);
-        setTitle("Casino_Servidor");
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-    }
-
-    private void generaVista(){
 
         this.setLayout(new BorderLayout());
 
@@ -68,19 +55,9 @@ public class MainView extends JFrame {
     }
 
     /** Afegeix el controlador del programa a la vista*/
+    @Override
     public void addController(Controller c){
-        Tray.addController(c);
-        addWindowListener(c);
+
     }
 
-    /** Obra una finestra indicant un error*/
-    public void displayError(String title,String errorText) {
-        JOptionPane.showMessageDialog(this,title,errorText,JOptionPane.ERROR_MESSAGE);
-    }
-
-    public boolean displayQuestion(String message) {
-        //Retorna true si
-        //Retorn false no
-        return JOptionPane.showConfirmDialog(this,message,"Are you sure?",JOptionPane.YES_NO_OPTION) == 0;
-    }
 }

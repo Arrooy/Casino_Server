@@ -1,7 +1,9 @@
 package Controlador;
 
 import Network.NetworkManager;
+import Vista.Finestra;
 import Vista.MainView;
+import Vista.Top5OptionsView;
 import Vista.Tray;
 
 import java.awt.event.ActionEvent;
@@ -14,13 +16,16 @@ import java.awt.event.WindowListener;
 public class Controller implements WindowListener, ActionListener{
 
     /** Finestra grafica del servidor*/
-    private MainView vista;
+    /** Finestra grafica del client*/
+    private Finestra vista;
+    private MainView mainView;
+    private Top5OptionsView top5;
 
     /** Gestor de la network*/
     private NetworkManager networkManager;
 
     /** Inicialitza el controlador del servidor*/
-    public Controller(MainView vista, NetworkManager networkManager){
+    public Controller(Finestra vista, NetworkManager networkManager){
         this.vista = vista;
         this.networkManager = networkManager;
     }
@@ -29,11 +34,21 @@ public class Controller implements WindowListener, ActionListener{
     public void displayError(String title, String errorText){
         vista.displayError(title,errorText);
     }
+
     /** Metode per a tencar el servidor de forma segura.*/
     public void exitProgram(int status){
         Tray.exit();
         System.exit(status);
     }
+
+    public void setMainView(MainView mainView) {
+        this.mainView = mainView;
+    }
+
+    public void setLogInView(Top5OptionsView top5) {
+        this.top5 = top5;
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
