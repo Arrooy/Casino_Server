@@ -14,6 +14,10 @@ import java.util.ArrayList;
 
 public class Client extends Thread {
 
+    public static final String CONTEXT_LOGIN = "login";
+    public static final String CONTEXT_LOGOUT = "logout";
+    public static final String CONTEXT_SIGNUP = "signup";
+
     /** Controlador del sistema*/
     private Controller controller;
 
@@ -51,45 +55,88 @@ public class Client extends Thread {
     public void run() {
         while (user == null || user.isOnline()) {
             try {
+                Message msg = (Message) ois.readObject();
 
-                Message reading = (Message) ois.readObject();
+                switch (msg.getContext()) {
+                    case CONTEXT_LOGIN:
+                        logIn(msg);
+                        break;
+                    case CONTEXT_SIGNUP:
+                        signUp(msg);
+                        break;
 
-                if (user == null) {
-                    //El user vol entrar les creedencials
-                    User auxUser = (User) reading;
-
-                    System.out.println("Is online: " + auxUser.isOnline());
-
-                    if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
-                        System.out.println("Creedencials ok");
-                        user = auxUser;
-                        oos.writeObject(user);
-                    } else {
-                        System.out.println("Creedencials WRONG");
-                        System.out.println(auxUser.getUsername());
-                        System.out.println(auxUser.getPassword());
-                        oos.writeObject(auxUser);
-                    }
-                } else {
-                    //El user ja esta registrat
-                    if(reading instanceof User) {
-                        if (((User) reading).isOnline()) {
-                            //Alguna comanda relacionada amb l'user
-
-                        } else {
-                            System.out.println("apagan2");
-                            user.setOnline(false);
-                            user.setContext("logout");
-                            oos.writeObject(user);
-                            disconnectMe();
-                            socket.close();
-                            break;
-                        }
-                    }
                 }
-            }catch (Exception e) {
-                //e.printStackTrace();
+            } catch (Exception e) {
+
             }
+        }
+    }
+
+    private void signUp(Message msg) {
+
+        User request = (User) msg;
+        boolean b = false;
+
+        if (Database.usernamePicked(request.getUsername())) {
+            b = true;
+        } else {
+            try {
+                Database.insertNewUser(request);
+                request.setCredentialsOk(true);
+                oos.writeObject(request);
+            } catch (Exception e) {
+                b = true;
+            }
+        }
+
+        if (b) {
+            try {
+                request.setCredentialsOk(false);
+                oos.writeObject(request);
+            } catch (Exception e) {
+                System.out.println("No s'ha pogut retornar la peticio de signup");
+            }
+        }
+    }
+
+    private void logIn(Message reading) {
+        try {
+            //El user vol entrar les creedencials
+            User auxUser = (User) reading;
+
+            System.out.println("Is online: " + auxUser.isOnline());
+
+            if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
+                System.out.println("Creedencials ok");
+                user = auxUser;
+                oos.writeObject(user);
+            } else {
+                System.out.println("Creedencials WRONG");
+                System.out.println(auxUser.getUsername());
+                System.out.println(auxUser.getPassword());
+                oos.writeObject(auxUser);
+            }
+        }catch (Exception e) {
+            //e.printStackTrace();
+        }
+    }
+
+    private void logOut(Message reading) {
+        try {
+            //El user ja esta registrat
+            if (((User) reading).isOnline()) {
+                //Alguna comanda relacionada amb l'user
+
+            } else {
+                System.out.println("apagan2");
+                user.setOnline(false);
+                user.setContext("logout");
+                oos.writeObject(user);
+                disconnectMe();
+                socket.close();
+            }
+        } catch (Exception e) {
+
         }
     }
 

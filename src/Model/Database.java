@@ -304,4 +304,15 @@ public class Database {
         return wallet;
     }
 
+    public static boolean usernamePicked(String username) {
+        try {
+            ResultSet rs = conn.createStatement().executeQuery("select username from Usuaris");
+            while (rs.next()) if (username.equals(rs.getString("username"))) return true;
+        } catch (SQLException e) {
+            //TODO
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }
