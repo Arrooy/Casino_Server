@@ -1,6 +1,7 @@
 package Network;
 
 import Controlador.Controller;
+import Model.Card;
 import Model.Database;
 import Model.User;
 
@@ -8,7 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.*;
 
 /** ServidorDedicat a un client*/
 
@@ -17,6 +18,8 @@ public class Client extends Thread {
     public static final String CONTEXT_LOGIN = "login";
     public static final String CONTEXT_LOGOUT = "logout";
     public static final String CONTEXT_SIGNUP = "signup";
+    public static final String CONTEXT_BLACK_JACK = "blackjack";
+    public static final String CONTEXT_BLACK_JACK_INIT = "blackjackinit";
 
     /** Controlador del sistema*/
     private Controller controller;
@@ -34,8 +37,13 @@ public class Client extends Thread {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 
+
+    private Stack<String> baralla;
+
     /** Inicialitza un nou client.*/
     public Client(ArrayList<Client> usuarisConnectats, Socket socket, Controller controller) {
+
+        baralla = new Stack<>();
 
         this.controller = controller;
         this.usuarisConnectats = usuarisConnectats;
@@ -63,6 +71,12 @@ public class Client extends Thread {
                         break;
                     case CONTEXT_SIGNUP:
                         signUp(msg);
+                        break;
+                    case CONTEXT_BLACK_JACK_INIT:
+                        blackJackInit(msg);
+                        break;
+                    case CONTEXT_BLACK_JACK:
+                        blackJack(msg);
                         break;
 
                 }
@@ -104,8 +118,11 @@ public class Client extends Thread {
             //El user vol entrar les creedencials
             User auxUser = (User) reading;
 
-            System.out.println("Is online: " + auxUser.isOnline());
-
+            System.out.println(auxUser.getUsername() + " is online.");
+            auxUser.setCredentialsOk(true);
+            user = auxUser;
+            oos.writeObject(user);
+            /*
             if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
                 System.out.println("Creedencials ok");
                 user = auxUser;
@@ -116,6 +133,7 @@ public class Client extends Thread {
                 System.out.println(auxUser.getPassword());
                 oos.writeObject(auxUser);
             }
+            */
         }catch (Exception e) {
             //e.printStackTrace();
         }
@@ -137,6 +155,50 @@ public class Client extends Thread {
             }
         } catch (Exception e) {
 
+        }
+    }
+
+    private void blackJackInit(Message reading) {
+        Card carta = (Card)reading;
+
+        baralla.clear();
+        baralla = carta.getNomCartes();
+        System.out.println(Arrays.toString(baralla.toArray()));
+        Collections.shuffle(baralla);
+        blackJack(carta);
+    }
+
+    private void blackJack(Message reading){
+
+        Card carta = (Card)reading;
+
+        try{
+            if(!baralla.isEmpty()) {
+                carta.setReverseName("back-black.png"); //TODO: DB GET REVERSE FROM USER
+                carta.setCardName(baralla.pop());
+                carta.setValue(calculaValorBlackJackCard(carta.getCardName()));
+                if (carta.isForIA())
+                    carta.setGirada(true);
+
+                oos.writeObject(carta);
+            }else{
+                sleep(100);
+                blackJack(carta);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private int calculaValorBlackJackCard(String cardName) {
+
+        if(cardName.contains("king") || cardName.contains("queen") || cardName.contains("jack") || cardName.charAt(0) == '1'){
+            return 10;
+        }else if(cardName.charAt(0) == 'a') {
+            return 1;
+        }else{
+            return Integer.parseInt(cardName.substring(0,1));
         }
     }
 
