@@ -63,8 +63,9 @@ public class Client extends Thread {
     public void run() {
         while (user == null || user.isOnline()) {
             try {
+                System.out.println("Reading next message now");
                 Message msg = (Message) ois.readObject();
-
+                System.out.println("New Message: " + msg.getContext());
                 switch (msg.getContext()) {
                     case CONTEXT_LOGIN:
                         logIn(msg);
@@ -80,8 +81,9 @@ public class Client extends Thread {
                         break;
 
                 }
+                //TODO: FICAR EXCEPCIONS CONCRETES AMB SOLUCIONS UTILS
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
     }
@@ -174,18 +176,14 @@ public class Client extends Thread {
 
         try{
             if(!baralla.isEmpty()) {
-                carta.setReverseName("back-black.png"); //TODO: DB GET REVERSE FROM USER
+                carta.setReverseName("back-red.png"); //TODO: DB GET REVERSE FROM USER
                 carta.setCardName(baralla.pop());
                 carta.setValue(calculaValorBlackJackCard(carta.getCardName()));
                 if (carta.isForIA())
                     carta.setGirada(true);
-
+                System.out.println("Sending carta: " + carta.getCardName());
                 oos.writeObject(carta);
-            }else{
-                sleep(100);
-                blackJack(carta);
             }
-
         }catch (Exception e){
             e.printStackTrace();
         }
