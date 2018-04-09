@@ -37,11 +37,11 @@ public class Database {
     private static final String[] COLUMN_NAMES = {CNAME_USERNAME, CNAME_MAIL, CNAME_PASSWORD, CNAME_WALLET, CNAME_COINHISTORY};
 
     //   ---   INFORMACIÓ PER A ESTABLIR LA CONNEXIÓ AMB LA BASE DE DADES   ---   //
-    private static final String host = "localhost";
+    private static final String host = "128.199.32.184";
     private static final String port = "3306";
     private static final String database = "Casino_Database";
     private static final String dbUrl = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useServerPrepStmts=true&useSSL=false";
-    private static final String username = "root";
+    private static final String username = "casino";
     private static final String password = "casino";
 
     private static Connection conn;
@@ -60,7 +60,7 @@ public class Database {
         Class.forName("com.mysql.jdbc.Connection");
         conn = DriverManager.getConnection(dbUrl, username, password);
 
-        ResultSet rs = conn.createStatement().executeQuery("select id from Transaccions");
+        ResultSet rs = conn.createStatement().executeQuery("select id from Transactions");
         while (rs.next()) lastID = rs.getLong("id");
     }
 
@@ -94,12 +94,12 @@ public class Database {
     }
 */
     public static void insertNewUser(User user) throws Exception { // TODO: fer transacció inicial de cash
-        conn.createStatement().executeUpdate("insert into Usuaris (username, mail, password) values ('" +
+        conn.createStatement().executeUpdate("insert into Users (username, mail, password) values ('" +
                 user.getUsername() + "', '" +
                 user.getMail() + "', '" +
                 user.getPassword() + "')");
 
-        conn.createStatement().executeUpdate("insert into Transaccions (id, earnings, type, username) values (" +
+        conn.createStatement().executeUpdate("insert into Transactions (id, earnings, type, username) values (" +
                 getLastID() + ", '" +
                 Casino_Server.WELCOME_GIFT + "', " +
                 "'0', '" + user.getUsername() +"')");
@@ -118,7 +118,7 @@ public class Database {
 
         String lastLogin = online ? "" : "'null'";
 
-        conn.createStatement().executeUpdate("update Usuaris set " +
+        conn.createStatement().executeUpdate("update Users set " +
                         "lastLogin = " + lastLogin + ", " +
                         CNAME_MAIL + "='" + user.getMail() + "', " +
                         CNAME_PASSWORD + "='" + user.getPassword() + "'" +
@@ -140,7 +140,7 @@ public class Database {
      * @deprecated No es pot eliminar a un usuari
      */
     public static void deleteUser(String username) throws Exception {
-        conn.createStatement().executeUpdate("delete from Usuaris where username='" + username + "'");
+        conn.createStatement().executeUpdate("delete from Users where username='" + username + "'");
     }
 /*
 @deprecated
@@ -173,7 +173,7 @@ public class Database {
      */
     public static LinkedList<String[]> getInfo(String ... columnNames) throws Exception {
         //Es fa la petició al servidor de la database
-        ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Usuaris");
+        ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Users");
 
         //Es comprova que totes les columnes demanades siguin existents
         for (String s: columnNames) if (s.equals("wallet") || !comprovaColumnName(s))
@@ -200,7 +200,7 @@ public class Database {
 
     public static LinkedList<String> getUserInfo(String username) throws SQLException{
         ResultSet rs = conn.createStatement().executeQuery(
-                "select * from Usuaris where username='" + username + "'");
+                "select * from Users where username='" + username + "'");
 
         LinkedList<String> info = new LinkedList<>();
         rs.next();
@@ -237,7 +237,7 @@ public class Database {
 
     public static void test() {
         try {
-            ResultSet rs = conn.createStatement().executeQuery("select password from Usuaris where username = 'miquelsaula'");
+            ResultSet rs = conn.createStatement().executeQuery("select password from Users where username = 'miquelsaula'");
             while(rs.next()) {
                 System.out.println(rs.getString("password"));
             }
@@ -254,7 +254,7 @@ public class Database {
      */
     public static User checkUserLogIn(User user){
         try {
-            ResultSet rs = conn.createStatement().executeQuery("select password from Usuaris where username = '" + user.getUsername() + "'");
+            ResultSet rs = conn.createStatement().executeQuery("select password from Users where username = '" + user.getUsername() + "'");
             rs.next();
             String pass = rs.getString("password");
 
@@ -306,7 +306,7 @@ public class Database {
 
     public static boolean usernamePicked(String username) {
         try {
-            ResultSet rs = conn.createStatement().executeQuery("select username from Usuaris");
+            ResultSet rs = conn.createStatement().executeQuery("select username from Users");
             while (rs.next()) if (username.equals(rs.getString("username"))) return true;
         } catch (SQLException e) {
             //TODO
