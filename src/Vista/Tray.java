@@ -17,8 +17,7 @@ public class Tray {
 
             PopupMenu popup = new PopupMenu();
 
-            trayIcon = new TrayIcon(new ImageIcon("data/PitchTrayIcon.gif").getImage());
-
+            trayIcon = new TrayIcon(new ImageIcon(/*"data/trayIcon.gif"*/"./data/king_of_hearts2.png").getImage());
             trayIcon.setImageAutoSize(true);
 
             SystemTray tray = SystemTray.getSystemTray();
@@ -31,10 +30,16 @@ public class Tray {
 
             try {
                 tray.add(trayIcon);
+
             } catch (AWTException e) {
                 System.out.println("TrayIcon could not be added.");
             }
         }
+    }
+
+    public static void showNotification(String title,String content){
+        System.out.println("Showing message");
+        trayIcon.displayMessage(title,content, TrayIcon.MessageType.WARNING);
     }
 
     public static void addController(Controller c) {

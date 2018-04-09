@@ -4,6 +4,7 @@ import Controlador.Controller;
 import Network.NetworkManager;
 import Vista.Finestra;
 import Vista.MainView;
+import Vista.Tray;
 
 import javax.swing.*;
 import java.sql.SQLException;
@@ -37,7 +38,8 @@ public class Casino_Server {
 
             // Es crea la vista del Servidor
             Finestra vista = new Finestra();
-
+            Tray.showNotification("asd","asd");
+            /*
             //Es defineix el gestor de clients
             NetworkManager networkManager = new NetworkManager();
 
@@ -48,7 +50,7 @@ public class Casino_Server {
             networkManager.initServer(controlador);
 
             //Es crea l'enllaç vista amb controlador
-            vista.addController(controlador);
+            vista.addController(controlador);*/
 
             //Es fa visible la finestra grafica
             vista.setVisible(true);

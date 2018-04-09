@@ -4,6 +4,7 @@ import Controlador.Controller;
 import Model.Card;
 import Model.Database;
 import Model.User;
+import Vista.Tray;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -63,9 +64,9 @@ public class Client extends Thread {
     public void run() {
         while (user == null || user.isOnline()) {
             try {
-                System.out.println("Reading next message now");
+                System.out.println("[DEBUG]: Reading next message now");
                 Message msg = (Message) ois.readObject();
-                System.out.println("New Message: " + msg.getContext());
+                System.out.println("[DEBUG]: New Message: " + msg.getContext());
                 switch (msg.getContext()) {
                     case CONTEXT_LOGIN:
                         logIn(msg);
@@ -79,11 +80,15 @@ public class Client extends Thread {
                     case CONTEXT_BLACK_JACK:
                         blackJack(msg);
                         break;
-
+                    case CONTEXT_LOGOUT:
+                        logOut();
+                        break;
                 }
                 //TODO: FICAR EXCEPCIONS CONCRETES AMB SOLUCIONS UTILS
             } catch (Exception e) {
-                e.printStackTrace();
+                Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
+                usuarisConnectats.remove(this);
+                break;
             }
         }
     }
@@ -141,22 +146,17 @@ public class Client extends Thread {
         }
     }
 
-    private void logOut(Message reading) {
+    private void logOut() {
         try {
-            //El user ja esta registrat
-            if (((User) reading).isOnline()) {
-                //Alguna comanda relacionada amb l'user
-
-            } else {
-                System.out.println("apagan2");
-                user.setOnline(false);
-                user.setContext("logout");
-                oos.writeObject(user);
-                disconnectMe();
-                socket.close();
-            }
+            Tray.showNotification("Usuari desconectat","Total de clients actius: " + (usuarisConnectats.size() - 1));
+            if(user == null) user = new User("","",CONTEXT_LOGOUT);
+            user.setOnline(false);
+            user.setContext(CONTEXT_LOGOUT);
+            usuarisConnectats.remove(this);
+            oos.writeObject(user);
+            socket.close();
         } catch (Exception e) {
-
+            System.out.println("Impossible desconectarse per les bones.");
         }
     }
 
@@ -198,10 +198,5 @@ public class Client extends Thread {
         }else{
             return Integer.parseInt(cardName.substring(0,1));
         }
-    }
-
-    /** Desconnecta al usuari*/
-    public void disconnectMe(){
-        usuarisConnectats.remove(this);
     }
 }

@@ -2,6 +2,7 @@ package Network;
 
 import Controlador.Controller;
 import Controlador.JsonManager;
+import Vista.Tray;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -46,7 +47,7 @@ public class NetworkManager extends Thread{
 
                 //Afegeim el client a la llista de clients
                 usuarisConnectats.add(nouClient);
-                System.out.println("[NEW CLIENT OBERT]\n[CLIENT COUNT]: " + usuarisConnectats.size());
+                Tray.showNotification("Nou client connectat","Total de clients actius: " + usuarisConnectats.size());
                 //Iniciem el client
                 nouClient.start();
 
