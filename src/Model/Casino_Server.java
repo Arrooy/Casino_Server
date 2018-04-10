@@ -38,7 +38,6 @@ public class Casino_Server {
 
             // Es crea la vista del Servidor
             Finestra vista = new Finestra();
-            Tray.showNotification("asd","asd");
 
             //Es defineix el gestor de clients
             NetworkManager networkManager = new NetworkManager();

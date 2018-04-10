@@ -30,7 +30,6 @@ public class Tray {
 
             try {
                 tray.add(trayIcon);
-
             } catch (AWTException e) {
                 System.out.println("TrayIcon could not be added.");
             }
@@ -38,8 +37,7 @@ public class Tray {
     }
 
     public static void showNotification(String title,String content){
-        System.out.println("Showing message");
-        trayIcon.displayMessage(title,content, TrayIcon.MessageType.WARNING);
+        trayIcon.displayMessage(title,content, TrayIcon.MessageType.INFO);
     }
 
     public static void addController(Controller c) {
