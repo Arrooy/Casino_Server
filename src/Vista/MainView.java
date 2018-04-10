@@ -51,12 +51,12 @@ public class MainView extends View {
     /** Afegeix el controlador del programa a la vista*/
     @Override
     public void addController(Controller c){
-
         jbRankingBalance.setActionCommand("rankings");
         jbTop5.setActionCommand("top5");
 
         jbTop5.addActionListener(c);
-        jbTop5.addActionListener(c);;
+        jbTop5.addActionListener(c);
+        jbRankingBalance.addActionListener(c);
     }
 
 }

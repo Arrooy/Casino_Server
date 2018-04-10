@@ -1,10 +1,7 @@
 package Controlador;
 
 import Network.NetworkManager;
-import Vista.Finestra;
-import Vista.MainView;
-import Vista.Top5OptionsView;
-import Vista.Tray;
+import Vista.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -21,6 +18,7 @@ public class Controller implements WindowListener, ActionListener{
     private Finestra vista;
     private MainView mainView;
     private Top5OptionsView top5;
+    private RankingView ranking;
 
     /** Gestor de la network*/
     private NetworkManager networkManager;
@@ -48,6 +46,10 @@ public class Controller implements WindowListener, ActionListener{
 
     public void setLogInView(Top5OptionsView top5) {
         this.top5 = top5;
+    }
+
+    public void setRankingView(RankingView ranking) {
+        this.ranking = ranking;
     }
 
     @Override

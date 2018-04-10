@@ -12,6 +12,7 @@ public class Finestra extends JFrame {
     private CardLayout layout;
     private MainView mainView;
     private Top5OptionsView top5;
+    private RankingView ranking;
 
     public Finestra() {
 
@@ -29,10 +30,12 @@ public class Finestra extends JFrame {
 
         mainView = new MainView();
         top5 = new Top5OptionsView();
+        ranking = new RankingView();
 
 
         add("main", mainView);
         add("top5", top5);
+        add("ranking", ranking);
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setSize(640, 480);
@@ -48,9 +51,11 @@ public class Finestra extends JFrame {
 
         mainView.addController(c);
         top5.addController(c);
+        ranking.addController(c);
 
         c.setMainView(mainView);
         c.setLogInView(top5);
+        c.setRankingView(ranking);
 
         addWindowListener(c);
     }
@@ -63,9 +68,7 @@ public class Finestra extends JFrame {
         layout.show(getContentPane(), "top5");
     }
 
-    public void setRankings() {
-        //layout.show(getContentPane(), "top5");
-    }
+    public void setRankings() { layout.show(getContentPane(), "ranking"); }
 
     /** Obra una finestra indicant un error*/
     public void displayError(String title,String errorText) {
