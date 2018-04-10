@@ -17,6 +17,7 @@ import java.util.*;
 public class Client extends Thread {
 
     public static final String CONTEXT_LOGIN = "login";
+    public static final String CONTEXT_LOGIN_GUEST = "loginGuest";
     public static final String CONTEXT_LOGOUT = "logout";
     public static final String CONTEXT_SIGNUP = "signup";
     public static final String CONTEXT_BLACK_JACK = "blackjack";
@@ -85,6 +86,11 @@ public class Client extends Thread {
                     case CONTEXT_LOGOUT:
                         logOut();
                         break;
+                    case CONTEXT_LOGIN_GUEST:
+                        logInGuest(msg);
+                        break;
+                        default:
+                            System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND");
                 }
                 //TODO: FICAR EXCEPCIONS CONCRETES AMB SOLUCIONS UTILS
             } catch (Exception e) {
@@ -95,12 +101,24 @@ public class Client extends Thread {
         }
     }
 
+    private void logInGuest(Message msg) {
+
+        User request = (User) msg;
+        request.setCredentialsOk(true);
+        try {
+            oos.writeObject(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void signUp(Message msg) {
 
         User request = (User) msg;
         boolean b = false;
 
         if (Database.usernamePicked(request.getUsername())) {
+            System.out.println("USERNAME PICKED");
             b = true;
         } else {
             try {
@@ -109,6 +127,7 @@ public class Client extends Thread {
                 oos.writeObject(request);
             } catch (Exception e) {
                 b = true;
+                e.printStackTrace();
             }
         }
 
