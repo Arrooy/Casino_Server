@@ -105,6 +105,9 @@ public class Database {
                 "'0', '" + user.getUsername() +"')");
 
         user.setWallet(Casino_Server.WELCOME_GIFT);
+
+        conn.createStatement().executeUpdate("insert into Levels (username, currentWallet) values ('" + user.getUsername() +
+                "', '" + user.getWallet() + "')");
     }
 
     /**
