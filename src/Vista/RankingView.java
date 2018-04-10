@@ -1,6 +1,7 @@
 package Vista;
 
 import Controlador.Controller;
+import javafx.scene.layout.Border;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,18 +40,17 @@ public class RankingView extends View {
 
         rankingData = data;
         jtRanking = new JTable(rankingData, columnNames);
-        jtRanking.setBorder(null);
         jtRanking.setColumnSelectionAllowed(false);
         jtRanking.setFocusable(false);
-        jtRanking.setSurrendersFocusOnKeystroke(false);
+        jtRanking.setDragEnabled(false);
 
         JPanel jpgblTaula = new JPanel(new GridBagLayout());
-        jpgblTaula.setBorder(null);
+        jpgblTaula.setBorder(BorderFactory.createEmptyBorder());
         c.insets = new Insets(20, 20, 20, 20);
         c.fill = GridBagConstraints.BOTH;
 
         JScrollPane jspRank = new JScrollPane(jtRanking);
-        jspRank.setBorder(null);
+        jspRank.setBorder(BorderFactory.createEmptyBorder());
         jpgblTaula.add(jspRank, c);
         add(jpgblTaula, BorderLayout.CENTER);
 
