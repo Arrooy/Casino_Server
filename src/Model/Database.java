@@ -4,8 +4,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import static Model.Casino_Server.WELCOME_GIFT;
-
 /**
  * Classe que gestiona la comunicació entre el programa i el servidor
  * de la base de dades. La classe implementa mètodes estàtics que permeten
@@ -15,7 +13,6 @@ import static Model.Casino_Server.WELCOME_GIFT;
  * funció de la classe, ja que aquest estableix la connexió entre el programa i
  * la base de dades. El qual és essencial per a que funcioni tota la resta.
  *
- * @author Miquel Saula
  * @since 29/03/2018
  * @version 0.0.1
  */
@@ -318,4 +315,32 @@ public class Database {
         return false;
     }
 
+    public static String getUserColor(String username){
+        try{
+            int levelMax = 0;
+            ResultSet rs = conn.createStatement().executeQuery("select level from Levels where username='" + username + "';");
+
+            while(rs.next()){
+                if (rs.getInt("level") > levelMax) {
+                    levelMax = rs.getInt("level");
+                }
+            }
+
+            if(levelMax == 1)
+                return "back-red.png";
+            else if(levelMax == 2)
+                return "back-red.png";
+            else if(levelMax == 4)
+                return "back-red.png";
+            else if(levelMax == 5)
+                return "back-red.png";
+            else if(levelMax == 6)
+                return "back-red.png";
+            else return "back-red.png";
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return "back-red.png";
+    }
 }

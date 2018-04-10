@@ -2,8 +2,10 @@ package Vista;
 
 import Controlador.Controller;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 public class Finestra extends JFrame {
 
@@ -14,6 +16,13 @@ public class Finestra extends JFrame {
     public Finestra() {
 
         Tray.init();
+
+        try{
+            setIconImage(ImageIO.read(new File("./data/ico.png")));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         layout = new CardLayout();
         getContentPane().setLayout(layout);

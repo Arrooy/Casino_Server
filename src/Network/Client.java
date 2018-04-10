@@ -40,11 +40,13 @@ public class Client extends Thread {
 
 
     private Stack<String> baralla;
+    private int numberOfUserCards;
 
     /** Inicialitza un nou client.*/
     public Client(ArrayList<Client> usuarisConnectats, Socket socket, Controller controller) {
 
         baralla = new Stack<>();
+
 
         this.controller = controller;
         this.usuarisConnectats = usuarisConnectats;
@@ -125,24 +127,16 @@ public class Client extends Thread {
             //El user vol entrar les creedencials
             User auxUser = (User) reading;
 
-            System.out.println(auxUser.getUsername() + " is online.");
-            auxUser.setCredentialsOk(true);
-            user = auxUser;
-            oos.writeObject(user);
-            /*
             if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
-                System.out.println("Creedencials ok");
                 user = auxUser;
                 oos.writeObject(user);
             } else {
-                System.out.println("Creedencials WRONG");
                 System.out.println(auxUser.getUsername());
                 System.out.println(auxUser.getPassword());
                 oos.writeObject(auxUser);
             }
-            */
         }catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -164,8 +158,8 @@ public class Client extends Thread {
         Card carta = (Card)reading;
 
         baralla.clear();
+        numberOfUserCards = 0;
         baralla = carta.getNomCartes();
-        System.out.println(Arrays.toString(baralla.toArray()));
         Collections.shuffle(baralla);
         blackJack(carta);
     }
@@ -175,13 +169,18 @@ public class Client extends Thread {
         Card carta = (Card)reading;
 
         try{
-            if(!baralla.isEmpty()) {
-                carta.setReverseName("back-red.png"); //TODO: DB GET REVERSE FROM USER
+            if(!baralla.isEmpty() && numberOfUserCards <= 12) {
+
+                carta.setReverseName(Database.getUserColor(user.getUsername())); //TODO: DB GET REVERSE FROM USER
                 carta.setCardName(baralla.pop());
                 carta.setValue(calculaValorBlackJackCard(carta.getCardName()));
-                if (carta.isForIA())
+
+                if (carta.isForIA()){
                     carta.setGirada(true);
-                System.out.println("Sending carta: " + carta.getCardName());
+                }else {
+                    numberOfUserCards++;
+                }
+
                 oos.writeObject(carta);
             }
         }catch (Exception e){

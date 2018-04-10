@@ -17,7 +17,7 @@ public class Tray {
 
             PopupMenu popup = new PopupMenu();
 
-            trayIcon = new TrayIcon(new ImageIcon("data/ico64.png").getImage());
+            trayIcon = new TrayIcon(new ImageIcon("data/ico.png").getImage());
             trayIcon.setImageAutoSize(true);
 
             SystemTray tray = SystemTray.getSystemTray();
