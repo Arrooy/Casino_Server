@@ -315,32 +315,41 @@ public class Database {
         return false;
     }
 
+    /**
+     * Busca en la DB el nivell del usuari. D'aquesta manera l'usuari te un color del dorsal de les seves cartes segons el nivell amb el que es troba
+     * @param username Usuari que vol obtenir una carta
+     * @return El color del dorsal que ha d'obtenir, basat en el seu nivell actual.
+     */
     public static String getUserColor(String username){
         try{
             int levelMax = 0;
+            //Es demana a la DB l'evolucio del nivell de l'usuari amb el temps
             ResultSet rs = conn.createStatement().executeQuery("select level from Levels where username='" + username + "';");
 
+            //S'agafa el nivell maxim d'aquesta evolucio
             while(rs.next()){
                 if (rs.getInt("level") > levelMax) {
                     levelMax = rs.getInt("level");
                 }
             }
 
+            //Es retorna un color o unaltre, segons el nivell
             if(levelMax == 1)
                 return "back-red.png";
             else if(levelMax == 2)
-                return "back-red.png";
+                return "back-orange.png";
             else if(levelMax == 4)
-                return "back-red.png";
+                return "back-blue.png";
             else if(levelMax == 5)
-                return "back-red.png";
+                return "back-green.png";
             else if(levelMax == 6)
-                return "back-red.png";
-            else return "back-red.png";
+                return "back-purple.png";
+            else return "back-black.png";
 
         }catch (SQLException e){
             e.printStackTrace();
         }
+        //Si no s'ha trobar l'usuari o ha sorgir algun error, es retorna el color del nivell 1
         return "back-red.png";
     }
 }

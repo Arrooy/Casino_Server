@@ -12,15 +12,29 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.*;
 
-/** ServidorDedicat a un client*/
+/**
+ * ServidorDedicat a un client. Si el client vols jugar al blackJack, es aquesta clase qui gestiona la seva logica.
+ * La classe client, a mes a mes, s'encarrega de gestionar el logIn, logOut i registre del usuari.
+ */
 
 public class Client extends Thread {
 
+    /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_LOGIN = "login";
+
+    /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_LOGIN_GUEST = "loginGuest";
+
+    /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_LOGOUT = "logout";
+
+    /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_SIGNUP = "signup";
+
+    /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_BLACK_JACK = "blackjack";
+
+    /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_BLACK_JACK_INIT = "blackjackinit";
 
     /** Controlador del sistema*/
@@ -39,12 +53,17 @@ public class Client extends Thread {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 
+    /** Inidica si s'ha de seguir en el loop del thread o no*/
+    private boolean keepLooping;
 
+    /** Baralla de cartes per al joc BlackJack*/
     private Stack<String> baralla;
+    /** Nombre de cartes de l'usuari que esta jugant al BlackJack. Com a maxim aquest pot tenir 12*/
     private int numberOfUserCards;
 
     /** Inicialitza un nou client.*/
     public Client(ArrayList<Client> usuarisConnectats, Socket socket, Controller controller) {
+        keepLooping = true;
 
         baralla = new Stack<>();
 
@@ -65,7 +84,7 @@ public class Client extends Thread {
 
     @Override
     public void run() {
-        while (user == null || user.isOnline()) {
+        while ((user == null || user.isOnline()) && keepLooping) {
             try {
                 System.out.println("[DEBUG]: Reading next message now");
                 Message msg = (Message) ois.readObject();
@@ -84,54 +103,79 @@ public class Client extends Thread {
                         blackJack(msg);
                         break;
                     case CONTEXT_LOGOUT:
-                        logOut();
+                        logOut(msg);
                         break;
                     case CONTEXT_LOGIN_GUEST:
                         logInGuest(msg);
                         break;
                         default:
                             System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND");
+
                 }
                 //TODO: FICAR EXCEPCIONS CONCRETES AMB SOLUCIONS UTILS
             } catch (Exception e) {
                 Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
                 usuarisConnectats.remove(this);
+                //Si es surt sense fer logIn, peta el read.
+                e.printStackTrace();
                 break;
             }
         }
     }
 
-    private void logInGuest(Message msg) {
+    /**
+     * Gestiona el logIn d'un guest. Guarda una copia del logIn i el retorna amb les creedencials verificades
+     * @param msg missatge del client que conte un usuari tipo guest.
+     */
 
+    private void logInGuest(Message msg) {
+        //Es transforma el missatge en user
         User request = (User) msg;
+
+        //Es guarda el user
+        user = request;
+
+        //Es verifica l'user
         request.setCredentialsOk(true);
         try {
+            //Es torna al clinet l'user amb la verificacio
             oos.writeObject(request);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+
+    /**
+     * Permet al client registrar-se al servidor.
+     * @param msg missatge del client que conte un usuari inflat amb les noves dades de la persona que vol
+     * fer el registre.
+     */
+
     private void signUp(Message msg) {
 
+        //Es tradueix el missatge a usuari
         User request = (User) msg;
-        boolean b = false;
+        //En el cas de sorgir algun error, impossibleRegistrar s'encarrega de enviar que no s'ha pogut fer el registre.
+        boolean impossibleRegistrar = false;
 
+        //En el cas de trobar una persona amb el mateix username que es vol registrar, es nega el registre al client.
         if (Database.usernamePicked(request.getUsername())) {
-            System.out.println("USERNAME PICKED");
-            b = true;
+            impossibleRegistrar  = true;
         } else {
+            //Si no existeix el nom, s'intenta crear el nou usuari
             try {
                 Database.insertNewUser(request);
+                //Es verifica el nou usuari i es reenvia al client amb el mateix ID amb el que s'ha demanat el registre
                 request.setCredentialsOk(true);
                 oos.writeObject(request);
             } catch (Exception e) {
-                b = true;
+                impossibleRegistrar  = true;
                 e.printStackTrace();
             }
         }
-
-        if (b) {
+        //En el cas de no ser possible registrar al nou client, es nega el registre i es notifica al client.
+        if (impossibleRegistrar ) {
             try {
                 request.setCredentialsOk(false);
                 oos.writeObject(request);
@@ -141,17 +185,23 @@ public class Client extends Thread {
         }
     }
 
+    /**
+     * Gestiona el logIn d'un usuari ja resgistrat al sistema.
+     * @param reading usuari amb les creedencials que volen entrar al sistema
+     */
     private void logIn(Message reading) {
+
         try {
-            //El user vol entrar les creedencials
+            //Es tradueix el missatge a un user on es troben les creedencials
             User auxUser = (User) reading;
 
+            //Es verifica l'existencia del usuari a la base de dades
             if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
+                //Si tot es correcte, auxUser s'haura omplert amb creedentialsOk = true;
                 user = auxUser;
                 oos.writeObject(user);
             } else {
-                System.out.println(auxUser.getUsername());
-                System.out.println(auxUser.getPassword());
+                //Sino, es retornara el mateix missatge del client, que ja internament esta indicat que creedentiasOk = false;
                 oos.writeObject(auxUser);
             }
         }catch (Exception e) {
@@ -159,41 +209,86 @@ public class Client extends Thread {
         }
     }
 
-    private void logOut() {
+    /**
+     * Gestiona el logOut del client
+     * @param msg user amb l'indicador online a false
+     */
+    private void logOut(Message msg) {
         try {
-            Tray.showNotification("Usuari desconectat","Total de clients actius: " + (usuarisConnectats.size() - 1));
-            if(user == null) user = new User("","",CONTEXT_LOGOUT);
-            user.setOnline(false);
-            user.setContext(CONTEXT_LOGOUT);
-            usuarisConnectats.remove(this);
-            oos.writeObject(user);
+            //Es tradueix el missatge a usuari
+            User request = (User) msg;
+
+            //S'indica que s'ha desconectat un user
+            Tray.showNotification("Usuari desconectat " + user.getUsername(),"Total de clients actius: " + (usuarisConnectats.size() - 1));
+
+            //Modifiquem el setOnline per sortir de bucle infinit en el thread.
+            if(user != null){
+                user.setOnline(false);
+            }
+
+            //S'encarrega de sortir del bucle infinit en el cas de que user == null
+            keepLooping = false;
+
+            //S'inidca online false per verificar que ja es pot de desconectar el client
+            request.setOnline(false);
+            request.setContext(CONTEXT_LOGOUT);
+
+            //Es retorna el missatge
+            oos.writeObject(request);
+
+            //Es tanca el socket i s'elimina l'usuari de la llista d'usuaris
             socket.close();
+            usuarisConnectats.remove(this);
         } catch (Exception e) {
             System.out.println("Impossible desconectarse per les bones.");
         }
     }
 
+    /**
+     * Inicialitza una partida del joc blackJack. Creant una nova baralla de cartes i barrejant-les
+     * @param reading Carta que conte la baralla al seu interior. Tambe es la primera carta del usuari.
+     */
+
     private void blackJackInit(Message reading) {
+
+        //Es transforma el missatge a carta.
         Card carta = (Card)reading;
 
+        //Es borra la baralla si existeix una
         baralla.clear();
+
+        //Es reinicia el nombre maxim de cartes d'una persona
         numberOfUserCards = 0;
+
+        //Es copia la baralla
         baralla = carta.getNomCartes();
+
+        //Es barreja la baralla
         Collections.shuffle(baralla);
+
+        //S'afegeix la carta al joc
         blackJack(carta);
     }
 
-    private void blackJack(Message reading){
+    /**
+     * Reparteix una carta al usuari o a la IA del blackJack.
+     * @param reading Solicitud de carta buida. El servidor en aquest metode omple la carta amb la proxima carta de la baralla.
+     */
 
+    private void blackJack(Message reading){
+        //Es transforma el missatge en carta
         Card carta = (Card)reading;
 
         try{
+            //Si la baralla no esta buida o si el nombre de cartes que ha demanat l'usuari es menor de 12
             if(!baralla.isEmpty() && numberOfUserCards <= 12) {
 
+                //Omplim la carta amb les dades necesaries
                 carta.setReverseName(Database.getUserColor(user.getUsername())); //TODO: DB GET REVERSE FROM USER
                 carta.setCardName(baralla.pop());
                 carta.setValue(calculaValorBlackJackCard(carta.getCardName()));
 
+                //Si la carta es per a la IA, s'envia la carta girada
                 if (carta.isForIA()){
                     carta.setGirada(true);
                 }else {
@@ -207,13 +302,21 @@ public class Client extends Thread {
         }
     }
 
+    /**
+     * Calucla el valor d'una carta del blackJack
+     * @param cardName El nom de la carta de la que es vol calcular el valor
+     * @return Un numero del 1 a 11. Sent valors correctes del 1 - 10 i el 11 es l'identificador de un A
+     */
     private int calculaValorBlackJackCard(String cardName) {
 
+        //Si al carta no es un numero o es un 10, es retorna el valor 10
         if(cardName.contains("king") || cardName.contains("queen") || cardName.contains("jack") || cardName.charAt(0) == '1'){
             return 10;
+            //Si la carta es un as, es torna l'identificador d'as
         }else if(cardName.charAt(0) == 'a') {
-            return 1;
+            return 11;
         }else{
+            //En el cas contrari, es retorna l'atoi del primer numero de la carta
             return Integer.parseInt(cardName.substring(0,1));
         }
     }
