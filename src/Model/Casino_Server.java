@@ -2,6 +2,7 @@ package Model;
 
 import Controlador.Controller;
 import Network.NetworkManager;
+import Vista.CoinHistoryView;
 import Vista.Finestra;
 import Vista.MainView;
 import Vista.Tray;
@@ -30,7 +31,7 @@ public class Casino_Server {
             //S'estableix la connexió amb la base de dades
             Database.initBaseDades();
 
-            //Database.test();
+            Database.test();
 
             /*User u = new User("miquelsaula", "1234", "miquelsaula@gmail.com");
             Database.deleteUser(u.getUsername());
@@ -59,7 +60,7 @@ public class Casino_Server {
             if (e instanceof SQLException || e instanceof ClassNotFoundException)
                 JOptionPane.showMessageDialog(new JFrame(), "No s'ha pogut iniciar el servidor degut a un problema de connexió amb la base de dades",
                     "Error connexió Database", JOptionPane.ERROR_MESSAGE);
-            /*else*/ e.printStackTrace();
+            else e.printStackTrace();
 
         }
     }

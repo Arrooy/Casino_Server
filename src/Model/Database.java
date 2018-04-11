@@ -1,6 +1,7 @@
 package Model;
 
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -239,7 +240,7 @@ public class Database {
         try {
             ResultSet rs = conn.createStatement().executeQuery("select password from Users where username = 'miquelsaula'");
             while(rs.next()) {
-                System.out.println(rs.getString("password"));
+                System.out.println(rs.getString("password") + " - " + rs.getString("username"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -313,6 +314,30 @@ public class Database {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static void registerTransaction(Transaction transaction) {
+        try {
+            conn.createStatement().executeUpdate("insert (username, id, earnings, type) values ('" + transaction.getUsername()
+                    + "', '" + transaction.getID()
+                    + "', '" + transaction.getGain()
+                    + "', '" + transaction.getType() + "') into Transactions");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static String getPassedTime(Timestamp back) {
+        Timestamp now = Timestamp.from(Instant.now());
+
+        long diff = (now.getTime() - back.getTime()) / 1000;
+
+        if (diff < 60) return diff + "s ago";
+        else if (diff < 60 * 60) return diff/60 + "min ago";
+        else if (diff < 60 * 60 * 24) return diff/(60*60) + "h ago";
+        else if (diff < 60 * 60 * 24 * 2) return diff/(60*60*24) + "day ago";
+        else return diff/(60*60*24) + "days ago";
     }
 
     /**

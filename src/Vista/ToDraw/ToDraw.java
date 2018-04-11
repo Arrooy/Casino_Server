@@ -1,9 +1,11 @@
-package Vista;
+package Vista.ToDraw;
+
+import Vista.GraphicsPanel;
 
 import java.awt.*;
 
 public interface ToDraw {
-    void init();
+    void init(GraphicsPanel graphicsPanel);
     void update(float delta);
     void render(Graphics g);
 }

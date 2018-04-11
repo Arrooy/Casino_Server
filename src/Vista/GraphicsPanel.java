@@ -1,6 +1,7 @@
 package Vista;
 
 import Controlador.GraphicsController;
+import Vista.ToDraw.ToDraw;
 
 import java.awt.*;
 import javax.swing.JPanel;
@@ -28,7 +29,7 @@ public class GraphicsPanel extends JPanel implements Runnable {
 
     public void setCurrentDrawing(ToDraw newState, GraphicsController controller) {
         System.gc();
-        newState.init();
+        newState.init(this);
         currentDrawing = newState;
         this.controller = controller;
         registraControllador(controller);
@@ -101,5 +102,8 @@ public class GraphicsPanel extends JPanel implements Runnable {
     private void registraControllador(GraphicsController c) {
         addKeyListener(c);
         addMouseListener(c);
+        addMouseMotionListener(c);
     }
+
+    //TODO:implementar d'alguna manera un resize
 }
