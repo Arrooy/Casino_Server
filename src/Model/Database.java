@@ -352,4 +352,37 @@ public class Database {
         //Si no s'ha trobar l'usuari o ha sorgir algun error, es retorna el color del nivell 1
         return "back-red.png";
     }
+
+    public static Object[][] getInfoRank(){
+        try {
+            ResultSet rs = conn.createStatement().executeQuery("select * from Users;");
+            LinkedList<Object[]> users = new LinkedList<>();
+
+            while(rs.next()){
+                Object[] s = new Object[3];
+
+                s[0] = rs.getString("username");
+
+                try {
+                    s[1] = getUserWallet((String) s[0]);
+                } catch (Exception e) {
+                    s[1] = 0;
+                }
+
+                s[2] = rs.getTimestamp("lastLogin");
+
+                users.add(s);
+            }
+
+            Object[][] list = new Object[users.size()][3];
+
+            for(int i = 0; i < users.size(); i++) for (int j = 0; j < 3; j++) list[i][j] = users.get(i)[j];
+            return list;
+        } catch (Exception e) {
+            System.out.println("Hellowis Bebitos " + e.getMessage());
+            e.printStackTrace();
+            Object[][] data = {};
+            return  data;
+        }
+    }
 }
