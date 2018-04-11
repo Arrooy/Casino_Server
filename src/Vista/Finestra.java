@@ -32,7 +32,6 @@ public class Finestra extends JFrame {
         top5 = new Top5OptionsView();
         ranking = new RankingView();
 
-
         add("main", mainView);
         add("top5", top5);
         add("ranking", ranking);

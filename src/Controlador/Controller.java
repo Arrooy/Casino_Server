@@ -1,5 +1,6 @@
 package Controlador;
 
+import Model.Database;
 import Network.NetworkManager;
 import Vista.*;
 
@@ -57,6 +58,8 @@ public class Controller implements WindowListener, ActionListener{
         switch (e.getActionCommand()){
             case "rankings":
                 vista.setRankings();
+                Object[][] data = {{"Meri", "500", "Connected"}, {"John", "20", "3 days ago"}, {"Sue", "50","Connected"},{"Senyor Miquel", "0","Connected"}};
+                ranking.updateTable(Database.getInfoRank());
                 break;
             case "top5":
                 vista.setTop5();
