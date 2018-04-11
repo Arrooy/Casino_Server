@@ -95,13 +95,8 @@ public class RankingView extends View {
         jbViewGraghic.addActionListener(c);
     }
 
-    public Object[] getData(){
-        Object[] o = new Object[3];
-        int i = jtRanking.getSelectedRow();
-        o[0] = jtRanking.getValueAt(i,0);
-        o[1] = jtRanking.getValueAt(i,1);
-        o[2] = jtRanking.getValueAt(i,2);
-        return o;
+    public Object getData(){
+        return jtRanking.getValueAt(jtRanking.getSelectedRow(),0);
     }
 
     public void updateTable(Object[][] objects){

@@ -54,6 +54,7 @@ public class Database {
      * @throws Exception En cas de fallar la inicialització del driver o la connexió al servidor
      */
     public static void initBaseDades() throws Exception {
+        //TODO: connect with json
         Class.forName("com.mysql.jdbc.Driver");
         Class.forName("com.mysql.jdbc.Connection");
         conn = DriverManager.getConnection(dbUrl, username, password);
