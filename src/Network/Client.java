@@ -39,9 +39,6 @@ public class Client extends Thread {
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_BLACK_JACK_INIT = "blackjackinit";
-
-    /** Constant per a contexualitzar els missatges entre client i servidor*/
-    public static final String CONTEXT_BJ_IA = "blackjackIA";
     /**
      * Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_BJ_FINISH_USER = "blackjackFinish";
@@ -82,7 +79,6 @@ public class Client extends Thread {
     /** Valor de les cartes de l'usuari*/
     private int valorIA;
 
-    private boolean isIATurn;
 
 
 
@@ -297,11 +293,12 @@ public class Client extends Thread {
         Card carta = (Card)reading;
 
         baralla = new Stack<>();
+        baralla.removeAllElements();
 
         valorUsuari = 0;
         valorIA = 0;
-        isIATurn = false;
-        System.out.println("RESTARTING BJ!");
+
+        System.out.println("\n\nNew game of BJ!\n**************");
 
         //Es reinicia el nombre maxim de cartes d'una persona
         numberOfUserCards = 0;
@@ -335,34 +332,61 @@ public class Client extends Thread {
                 }else{
                     carta.setReverseName(Database.getUserColor(user.getUsername()));
                 }
+
                 carta.setCardName(baralla.pop());
                 carta.setValue(calculaValorBlackJackCard(carta.getCardName()));
-                carta.setGirada(isIATurn);
 
-                //Si la carta es per a la IA, s'envia la carta girada
-                if (carta.isForIA()){
-                    valorIA += carta.getValue();
-                    carta.setDerrota("false");
-                    if(valorIA > 21){
-                        carta.setDerrota("IA");
-                        System.out.println("IA DONE");
+                if(carta.getContext().equals(CONTEXT_BJ_FINISH_USER)){
+                    carta.setForIA(true);
+                    if(valorIA >= valorUsuari){
+                        System.out.println("UsuariRetrasat");
+                        carta.setDerrota("user-instant");
                     }else{
-                        if(valorIA > valorUsuari){
-                            carta.setDerrota("user");
-                            System.out.println("IA WON GAME");
+                        valorIA += carta.getValue();
+                        if(valorIA > 21) {
+                            carta.setDerrota("IA");
+                            System.out.println("La ia s'ha passat.");
+                        }else{
+                            if(valorIA >= valorUsuari){
+                                carta.setDerrota("user");
+                            }else{
+                                carta.setDerrota("false");
+                            }
+                            carta.setGirada(false);
                         }
                     }
-                }else {
-                    numberOfUserCards++;
-                    valorUsuari += carta.getValue();
-                    System.out.println("Valor user " + valorUsuari);
-                    if(valorUsuari > 21) {
-                        carta.setDerrota("user");
-                        System.out.println("USER LOST");
-                    }else{
+
+                }else{
+                    //Si una de les 4 cartes inicials es per a la IA, s'envia aquesta girada
+                    if (carta.isForIA()){
+                        if(carta.getValue() == 11){
+                            if(valorIA + 10 < 21)
+                                carta.setValue(10);
+                            else
+                                carta.setValue(1);
+                        }
+                        valorIA += carta.getValue();
+                        carta.setGirada(true);
                         carta.setDerrota("false");
+                    }else {
+                        numberOfUserCards++;
+                        if(carta.getValue() == 11){
+                            if(valorUsuari + 10 < 21)
+                                carta.setValue(10);
+                            else
+                                carta.setValue(1);
+                        }
+                        valorUsuari += carta.getValue();
+                        if(valorUsuari > 21) {
+                            carta.setDerrota("user");
+                            System.out.println("El user s'ha pasat de 21 [" + valorUsuari + "]");
+                        }else{
+                            carta.setDerrota("false");
+                        }
                     }
                 }
+
+                System.out.println("Sending context: " + carta.getContext());
                 oos.writeObject(carta);
             }
         }catch (Exception e){
