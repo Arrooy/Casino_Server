@@ -20,6 +20,7 @@ import java.util.LinkedList;
  * @since 13/3/2018
  * @version 0.2
  */
+
 public class Casino_Server {
 
     public static final int WELCOME_GIFT = 500;
