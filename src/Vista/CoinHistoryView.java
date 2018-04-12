@@ -1,17 +1,41 @@
 package Vista;
 
 import Controlador.CoinHistoryController;
+import Controlador.Controller;
 import Vista.ToDraw.Coin_History.CoinHistoryDraw;
+import Vista.ToDraw.ToDraw;
+
 import javax.swing.*;
+import java.awt.*;
 import java.util.LinkedList;
 
-public class CoinHistoryView extends JPanel {
+public class CoinHistoryView extends View {
 
-    private Integer width = 1280;
-    private Integer height = 720;
+    private int width;
+    private int height;
+
+    private boolean isActive;
+
+    GraphicsPanel gp;
+    CoinHistoryDraw chd;
+    CoinHistoryController chc;
 
     public CoinHistoryView() {
 
+        isActive = false;
+        chc = new CoinHistoryController();
+
+        /*graphicsPanel = new GraphicsPanel(width, height);
+        coinHistoryController = new CoinHistoryController();
+        coinHistoryDraw = new CoinHistoryDraw(width, height, testArray());
+
+        graphicsPanel = new GraphicsPanel(width, height);
+        graphicsPanel.setCurrentDrawing(coinHistoryDraw, coinHistoryController);
+        add(graphicsPanel);
+        coinHistoryController.setDraw(coinHistoryDraw);*/
+    }
+
+    private LinkedList<Long> testArray() {
         LinkedList<Long> prova = new LinkedList<>();
         prova.add(200L);
         prova.add(2000L);
@@ -27,16 +51,39 @@ public class CoinHistoryView extends JPanel {
         prova.add(-5000L);
         prova.add(1000L);
         prova.add(3000L);
-
-        GraphicsPanel graphicsPanel = new GraphicsPanel(width, height);
-
-        CoinHistoryController coinHistoryController = new CoinHistoryController();
-        CoinHistoryDraw coinHistoryDraw = new CoinHistoryDraw(width, height, prova);
-        graphicsPanel.setCurrentDrawing(coinHistoryDraw, coinHistoryController);
-
-        coinHistoryController.setDraw(coinHistoryDraw);
-
-        add(graphicsPanel);
+        return prova;
     }
 
+    public void createCoinHistory(String username, int width, int height) {
+        this.width = width;
+        this.height = height;
+
+        gp = new GraphicsPanel(width, height);
+        chd = new CoinHistoryDraw(width, height, testArray());
+        chc.setDraw(chd);
+
+        gp.setCurrentDrawing(chd, chc);
+        add(gp);
+
+        isActive = true;
+    }
+
+    public void closeView() {
+        isActive = false;
+        gp.exit();
+        if (gp != null) remove(gp);
+    }
+
+    public void updateSize(boolean full) {
+        if (gp != null) {
+            gp.updateSize(this.getWidth(), this.getHeight(), full);
+            gp.getCurrentDrawing().updateSize(getWidth(), getHeight());
+            updateUI();
+        }
+    }
+
+    @Override
+    public void addController(Controller c) {
+        addComponentListener(c);
+    }
 }

@@ -8,6 +8,8 @@ import Vista.MainView;
 import Vista.Tray;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -28,6 +30,18 @@ public class Casino_Server {
     public static final int WELCOME_GIFT = 500;
 
     public static void main(String[] args) {
+
+
+        /*JFrame frame = new JFrame();
+
+        CoinHistoryView coinHistoryView = new CoinHistoryView();
+
+        frame.add(coinHistoryView);
+        frame.setSize(1280, 720);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        coinHistoryView.createCoinHistory("gg");*/
 
         //Iniciem connexió amb la base de dades
         try {

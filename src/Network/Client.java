@@ -3,6 +3,7 @@ package Network;
 import Controlador.Controller;
 import Model.Card;
 import Model.Database;
+import Model.Transaction;
 import Model.User;
 import Vista.Tray;
 
@@ -44,6 +45,11 @@ public class Client extends Thread {
     /**
      * Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_BJ_FINISH_USER = "blackjackFinish";
+
+    /* Constant per a contextualitzar els missatges entre client i servidor*/
+    public static final String CONTEXT_TRANSACTION = "transaction";
+    public static final String CONTEXT_GET_COINS = "userCoins";
+
 
     /** Controlador del sistema*/
     private Controller controller;
@@ -125,6 +131,16 @@ public class Client extends Thread {
                         break;
                     case CONTEXT_LOGIN_GUEST:
                         logInGuest(msg);
+                        break;
+                    case CONTEXT_GET_COINS:
+                        //TODO revisar MERI
+                        User user = (User) msg;
+                        LinkedList<String> info = Database.getUserInfo(user.getUsername());
+                        oos.writeLong(Long.parseLong(info.get(2)));
+                        break;
+                    case CONTEXT_TRANSACTION:
+                        //TODO revisar MERI
+                        Database.registerTransaction((Transaction) msg);
                         break;
                         default:
                             System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND");

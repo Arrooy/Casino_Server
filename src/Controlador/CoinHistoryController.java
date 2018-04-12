@@ -1,11 +1,9 @@
 package Controlador;
 
 import Vista.ToDraw.Coin_History.CoinHistoryDraw;
-import Vista.ToDraw.Coin_History.Point;
+import Vista.ToDraw.Coin_History.PointGain;
 import Vista.ToDraw.ToDraw;
 
-import javax.swing.event.MouseInputListener;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
@@ -64,6 +62,6 @@ public class CoinHistoryController extends GraphicsController {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        for (Point p: draw.getPoints()) p.updateMouse(e.getX(), e.getY());
+        for (PointGain p: draw.getPointGains()) p.updateMouse(e.getX(), e.getY());
     }
 }
