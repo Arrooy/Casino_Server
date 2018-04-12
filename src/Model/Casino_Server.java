@@ -31,30 +31,10 @@ public class Casino_Server {
 
     public static void main(String[] args) {
 
-
-        /*JFrame frame = new JFrame();
-
-        CoinHistoryView coinHistoryView = new CoinHistoryView();
-
-        frame.add(coinHistoryView);
-        frame.setSize(1280, 720);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        coinHistoryView.createCoinHistory("gg");*/
-
         //Iniciem connexió amb la base de dades
         try {
             //S'estableix la connexió amb la base de dades
-            if(!OFF_LINE){
-                Database.initBaseDades();
-                Database.test();
-            }
-
-
-            /*User u = new User("miquelsaula", "1234", "miquelsaula@gmail.com");
-            Database.deleteUser(u.getUsername());
-            Database.insertNewUser(u);*/
+            if(!OFF_LINE) Database.initBaseDades();
 
             // Es crea la vista del Servidor
             Finestra vista = new Finestra();

@@ -22,6 +22,7 @@ public class Transaction extends Message {
         this.context = context;
         this.gain = gain;
         this.type = type;
+        this.username = username;
 
         ID = Math.random();
     }
@@ -38,7 +39,7 @@ public class Transaction extends Message {
 
     @Override
     public String getContext() {
-        return null;
+        return context;
     }
 
     @Override
@@ -47,7 +48,6 @@ public class Transaction extends Message {
     }
 
     public void saveToDatabase() {
-        Database.registerTransaction(this);
     }
 
     public long getGain() {

@@ -43,8 +43,10 @@ public class Client extends Thread {
      * Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_BJ_FINISH_USER = "blackjackFinish";
 
-    /* Constant per a contextualitzar els missatges entre client i servidor*/
+    /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_TRANSACTION = "transaction";
+
+    /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_GET_COINS = "userCoins";
 
 
@@ -78,8 +80,6 @@ public class Client extends Thread {
 
     /** Valor de les cartes de l'usuari*/
     private int valorIA;
-
-
 
 
 
@@ -128,18 +128,16 @@ public class Client extends Thread {
                     case CONTEXT_LOGIN_GUEST:
                         logInGuest(msg);
                         break;
-                    case CONTEXT_GET_COINS:
-                        //TODO revisar MERI
-                        User user = (User) msg;
-                        LinkedList<String> info = Database.getUserInfo(user.getUsername());
-                        oos.writeLong(Long.parseLong(info.get(2)));
-                        break;
                     case CONTEXT_TRANSACTION:
-                        //TODO revisar MERI
                         Database.registerTransaction((Transaction) msg);
                         break;
-                        default:
-                            System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND");
+                    case CONTEXT_GET_COINS:
+                        User user = (User) msg;
+                        user.setWallet(Database.getUserWallet(this.user.getUsername()));
+                        oos.writeObject(user);
+                        break;
+                    default:
+                        System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND");
 
                 }
                 //TODO: FICAR EXCEPCIONS CONCRETES AMB SOLUCIONS UTILS

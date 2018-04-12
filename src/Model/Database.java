@@ -200,6 +200,9 @@ public class Database {
         }
     }
 
+    /**
+     * @deprecated
+     */
     public static LinkedList<String> getUserInfo(String username) throws SQLException{
         ResultSet rs = conn.createStatement().executeQuery(
                 "select * from Users where username='" + username + "'");
@@ -237,6 +240,7 @@ public class Database {
         return parsedHistory;
     }
 
+    /**@deprecated */
     public static void test() {
         try {
             ResultSet rs = conn.createStatement().executeQuery("select password from Users where username = 'miquelsaula'");
@@ -297,7 +301,7 @@ public class Database {
     }
 
     //Reconstrueix el wallet d'un usuari a partir de l'historial de transaccions
-    private static long getUserWallet(String username) throws Exception {
+    public static long getUserWallet(String username) throws Exception {
         ResultSet rs = conn.createStatement().executeQuery("select earnings from Transactions where username = '" + username + "';");
         long wallet = 0;
 
@@ -319,10 +323,10 @@ public class Database {
 
     public static void registerTransaction(Transaction transaction) {
         try {
-            conn.createStatement().executeUpdate("insert (username, id, earnings, type) values ('" + transaction.getUsername()
-                    + "', '" + transaction.getID()
+            conn.createStatement().executeUpdate("insert into Transactions (username, id, earnings, type) values ('" + transaction.getUsername()
+                    + "', '" + getLastID()
                     + "', '" + transaction.getGain()
-                    + "', '" + transaction.getType() + "') into Transactions");
+                    + "', '" + transaction.getType() + "');");
         } catch (SQLException e) {
             e.printStackTrace();
         }
