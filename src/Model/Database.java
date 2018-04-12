@@ -298,7 +298,7 @@ public class Database {
 
     //Reconstrueix el wallet d'un usuari a partir de l'historial de transaccions
     private static long getUserWallet(String username) throws Exception {
-        ResultSet rs = conn.createStatement().executeQuery("select earnings from Transactions where username = " + username);
+        ResultSet rs = conn.createStatement().executeQuery("select earnings from Transactions where username = '" + username + "';");
         long wallet = 0;
 
         while (rs.next()) wallet += rs.getLong("earnings");
