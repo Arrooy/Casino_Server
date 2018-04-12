@@ -37,6 +37,12 @@ public class Client extends Thread {
     /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_BLACK_JACK_INIT = "blackjackinit";
 
+    /** Constant per a contexualitzar els missatges entre client i servidor*/
+    public static final String CONTEXT_BJ_IA = "blackjackIA";
+    /**
+     * Constant per a contexualitzar els missatges entre client i servidor*/
+    public static final String CONTEXT_BJ_FINISH_USER = "blackjackFinish";
+
     /** Controlador del sistema*/
     private Controller controller;
 
@@ -58,15 +64,24 @@ public class Client extends Thread {
 
     /** Baralla de cartes per al joc BlackJack*/
     private Stack<String> baralla;
+
     /** Nombre de cartes de l'usuari que esta jugant al BlackJack. Com a maxim aquest pot tenir 12*/
     private int numberOfUserCards;
+
+    /** Valor de les cartes de l'usuari*/
+    private int valorUsuari;
+
+    /** Valor de les cartes de l'usuari*/
+    private int valorIA;
+
+    private boolean isIATurn;
+
+
+
 
     /** Inicialitza un nou client.*/
     public Client(ArrayList<Client> usuarisConnectats, Socket socket, Controller controller) {
         keepLooping = true;
-
-        baralla = new Stack<>();
-
 
         this.controller = controller;
         this.usuarisConnectats = usuarisConnectats;
@@ -100,6 +115,7 @@ public class Client extends Thread {
                         blackJackInit(msg);
                         break;
                     case CONTEXT_BLACK_JACK:
+                    case CONTEXT_BJ_FINISH_USER:
                         blackJack(msg);
                         break;
                     case CONTEXT_LOGOUT:
@@ -195,15 +211,24 @@ public class Client extends Thread {
             //Es tradueix el missatge a un user on es troben les creedencials
             User auxUser = (User) reading;
 
+
+            /*
             //Es verifica l'existencia del usuari a la base de dades
             if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
                 //Si tot es correcte, auxUser s'haura omplert amb creedentialsOk = true;
+
                 user = auxUser;
                 oos.writeObject(user);
             } else {
                 //Sino, es retornara el mateix missatge del client, que ja internament esta indicat que creedentiasOk = false;
                 oos.writeObject(auxUser);
             }
+            */
+
+            user = auxUser;
+            user.setCredentialsOk(true);
+            oos.writeObject(user);
+
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -251,11 +276,17 @@ public class Client extends Thread {
 
     private void blackJackInit(Message reading) {
 
+
+        //TODO: Verificar 54 cartes
         //Es transforma el missatge a carta.
         Card carta = (Card)reading;
 
-        //Es borra la baralla si existeix una
-        baralla.clear();
+        baralla = new Stack<>();
+
+        valorUsuari = 0;
+        valorIA = 0;
+        isIATurn = false;
+        System.out.println("RESTARTING BJ!");
 
         //Es reinicia el nombre maxim de cartes d'una persona
         numberOfUserCards = 0;
@@ -284,23 +315,42 @@ public class Client extends Thread {
             if(!baralla.isEmpty() && numberOfUserCards <= 12) {
 
                 //Omplim la carta amb les dades necesaries
-                carta.setReverseName(Database.getUserColor(user.getUsername())); //TODO: DB GET REVERSE FROM USER
+                carta.setReverseName(Database.getUserColor(user.getUsername()));
                 carta.setCardName(baralla.pop());
                 carta.setValue(calculaValorBlackJackCard(carta.getCardName()));
+                carta.setGirada(isIATurn);
 
                 //Si la carta es per a la IA, s'envia la carta girada
                 if (carta.isForIA()){
-                    carta.setGirada(true);
+                    valorIA += carta.getValue();
+                    carta.setDerrota("false");
+                    if(valorIA > 21){
+                        carta.setDerrota("IA");
+                        System.out.println("IA DONE");
+                    }else{
+                        if(valorIA > valorUsuari){
+                            carta.setDerrota("user");
+                            System.out.println("IA WON GAME");
+                        }
+                    }
                 }else {
                     numberOfUserCards++;
+                    valorUsuari += carta.getValue();
+                    System.out.println("Valor user " + valorUsuari);
+                    if(valorUsuari > 21) {
+                        carta.setDerrota("user");
+                        System.out.println("USER LOST");
+                    }else{
+                        carta.setDerrota("false");
+                    }
                 }
-
                 oos.writeObject(carta);
             }
         }catch (Exception e){
             e.printStackTrace();
         }
     }
+
 
     /**
      * Calucla el valor d'una carta del blackJack
