@@ -8,7 +8,7 @@ import java.awt.*;
 import java.sql.Timestamp;
 import java.time.Instant;
 
-public class Point {
+public class PointGain {
 
     private final float INITIAL_R = 1;
     private final float FINAL_R = 5;
@@ -23,18 +23,14 @@ public class Point {
 
     private Polygon info;
 
-    //TODO:afegir resta de dades
-
     private double r;
 
     private int x, y;
 
-    public Point(int index, long gain, long value) {
+    public PointGain(int index, long gain, long value) {
         this.index = index;
         this.gain = gain;
         timer = System.nanoTime() / 1000000d;
-
-
 
         transaction = new Transaction(gain, Timestamp.from(Instant.now()), 0);
         drawInfo = false;
@@ -57,7 +53,7 @@ public class Point {
     }
 
     public void update(float delta){
-        if (r < FINAL_R) r += (FINAL_R - INITIAL_R) * 5 * delta;//TODO: generalitzar valors
+        if (r < FINAL_R) r += (FINAL_R - INITIAL_R) * 5 * delta;
     }
 
     public void updateMouse(int mx, int my){
@@ -70,9 +66,14 @@ public class Point {
         }
     }
 
-    public void render(Graphics g, Color color, Color bg, int x, int y, boolean ended){
-        this.x = (int) (x + FINAL_R/2);
-        this.y = (int) (y + FINAL_R/2);
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void render(Graphics g, Color color, Color bg, boolean ended){
+      //  this.x = (int) (x + FINAL_R/2);
+      //  this.y = (int) (y + FINAL_R/2);
 
         g.setColor(new Color(color.getRed() - 100, color.getGreen() - 100, color.getBlue() - 100));
         g.fillOval(x - (int) r,  y - (int) r,  2 * (int) r, 2 * (int) r);
@@ -143,12 +144,12 @@ public class Point {
 
         return new Polygon(xa, ya, 7);
     }
-}
-/*
-    JFrame frame = new JFrame();
 
-        frame.add(new CoinHistoryView());
-                frame.setSize(1280, 720);
-                frame.setVisible(true);
-                frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-                */
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+}

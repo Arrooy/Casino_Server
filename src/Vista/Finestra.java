@@ -13,6 +13,7 @@ public class Finestra extends JFrame {
     private MainView mainView;
     private Top5OptionsView top5;
     private RankingView ranking;
+    private CoinHistoryView coinHistoryView;
 
     public Finestra() {
 
@@ -31,10 +32,12 @@ public class Finestra extends JFrame {
         mainView = new MainView();
         top5 = new Top5OptionsView();
         ranking = new RankingView();
+        coinHistoryView = new CoinHistoryView();
 
         add("main", mainView);
         add("top5", top5);
         add("ranking", ranking);
+        add("coinHistory", coinHistoryView);
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setSize(640, 480);
@@ -51,12 +54,15 @@ public class Finestra extends JFrame {
         mainView.addController(c);
         top5.addController(c);
         ranking.addController(c);
+        coinHistoryView.addController(c);
 
         c.setMainView(mainView);
         c.setLogInView(top5);
         c.setRankingView(ranking);
+        c.setCoinHistoryView(coinHistoryView);
 
         addWindowListener(c);
+
     }
 
     public void setMainView() {
@@ -78,5 +84,10 @@ public class Finestra extends JFrame {
         //Retorna true si
         //Retorn false no
         return JOptionPane.showConfirmDialog(this,message,"Are you sure?",JOptionPane.YES_NO_OPTION) == 0;
+    }
+
+    public void setCoinHistoryView(String username) {
+        coinHistoryView.createCoinHistory(username, getWidth(), getHeight());
+        layout.show(getContentPane(), "coinHistory");
     }
 }

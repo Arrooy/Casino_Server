@@ -8,12 +8,12 @@ import java.util.LinkedList;
 
 public class CoinHistoryDraw implements ToDraw {
 
-    public static final int DURATION = 2000;
+    public static final int DURATION = 3000;
 
     private long[] wallet;
     //private final long[] wallet = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
 
-    private LinkedList<Point> points;
+    private LinkedList<PointGain> pointGains;
     private int dist;
 
     GraphicsPanel graphicsPanel;
@@ -39,8 +39,6 @@ public class CoinHistoryDraw implements ToDraw {
         }
 
         delay = DURATION / wallet.length;
-        maxValue /= height/30;
-
         ended = false;
     }
 
@@ -48,57 +46,63 @@ public class CoinHistoryDraw implements ToDraw {
     public void init(GraphicsPanel graphicsPanel) {
         this.graphicsPanel = graphicsPanel;
 
-        points = new LinkedList<>();
+        pointGains = new LinkedList<>();
 
         //TODO: Omplir de la database
-        //for (int i = 0; i < wallet.length; i++) points.add(new Point(i, wallet[i], 1));
-        dist = width / (wallet.length + 1);//graphicsPanel.getBounds().width / (points.size() + 1);
+        //for (int i = 0; i < wallet.length; i++) pointGains.add(new PointGain(i, wallet[i], 1));
+        dist = width / (wallet.length + 1);//graphicsPanel.getBounds().width / (pointGains.size() + 1);
 
         timer = System.nanoTime() / 1000000;
         index = 0;
 
         bgc = new Color(23, 24, 24);
         linesC = new Color(191, 191, 156);
+
+        graphicsPanel.setBackgroundColor(bgc);
     }
 
     @Override
     public void update(float delta) {
+        dist = width / (wallet.length + 1);
 
         double now = System.nanoTime() / 1000000;
         if (now - timer > delay && index < wallet.length) {
-            //points.add(new Point(index, wallet[index++]));
-            points.add(new Point(index, index > 1 ? wallet[index] - wallet[index - 1] : wallet[index], wallet[index++]));
+            //pointGains.add(new PointGain(index, wallet[index++]));
+            pointGains.add(new PointGain(index, index > 1 ? wallet[index] - wallet[index - 1] : wallet[index], wallet[index++]));
+
             timer = System.nanoTime() / 1000000;
         } else if (now - timer > delay) {
-            points.getLast().update(delta);
+            pointGains.getLast().update(delta);
             ended = true;
         }
 
-        for (int i = 0; i < points.size() - 1; i++) {
-            Point p = points.get(i);
+        for (int i = 0; i < pointGains.size() - 1; i++) {
+            PointGain p = pointGains.get(i);
             p.update(delta);
-        }
+        }// height*0.85 - height * 0.7 / maxValue
+
+        for (int i = 0; i < pointGains.size(); i++) pointGains.get(i).setPosition(dist * (i + 1),
+                (int) ((double)height*0.85 - (double)height * 0.6 * ((double)pointGains.get(i).getValue()/(double)maxValue)));
     }
 
     @Override
     public void render(Graphics g) {
-        g.setColor(bgc);
-        g.fillRect(0, 0, width, height);
+        int base = (int) (height*0.85);
+
         g.setColor(linesC);
+        g.drawLine(0, base, width, base);
 
-        g.drawLine(0, height - 100, width, height - 100);
-
-        for(int i = 0; i < points.size() - 1; i++) {
-            Point p = points.get(i);
+        for(int i = 0; i < pointGains.size() - 1; i++) {
+            PointGain p = pointGains.get(i);
 
             if (i != 0) {
-                int x1 = dist * (i);
-                int y1 = height - 100 - (int) ((double)points.get(i-1).getValue() * (maxValue / 11000d));
-                int x2 = dist * (i + 1);
-                int y2 = height - 100 - (int) ((double)p.getValue() * (maxValue / 11000d));
+                int x1 = pointGains.get(i - 1).getX();
+                int y1 = pointGains.get(i - 1).getY();
+                int x2 = p.getX();
+                int y2 = p.getY();
 
                 final int[] xa = {x1, x1, x2, x2};
-                final int[] ya = {height - 100, y1, y2, height - 100};
+                final int[] ya = {base, y1, y2, base};
 
                 g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 10));
                 g.fillPolygon(new Polygon(xa, ya, 4));
@@ -111,47 +115,58 @@ public class CoinHistoryDraw implements ToDraw {
             }
         }
 
-        int x1 = points.size() >= 2 ? dist * (points.size() - 1) : 0;
-        int y1 = points.size() >= 2 ? height - 100 - (int) ((double)points.get(points.size()-2).getValue() * (maxValue / 11000d)) : 0;
-        int x2 = points.size() >= 2 ? dist * (points.size()) : 0;
-        int y2 = points.size() >= 2 ? height - 100 - (int) ((double)points.get(points.size()-1).getValue() * (maxValue / 11000d)) : 0;
+        int x1 = 0, x2 = 0, y1 = 0, y2 = 0, x0 = 0, y0 = 0;
+
         double t = System.nanoTime() / 1000000 - timer;
 
-        int x0 = (int) (x1 + (dist * points.size() - x1) * t/delay);
-        int y0 = points.size() > 1 ? (int) (y1 + (height - 100 - (int) ((double)points.getLast().getValue() * (maxValue / 11000d)) - y1) * t/delay) : y1;
+        if (pointGains.size() > 1) {
+            x1 = pointGains.get(pointGains.size() - 2).getX();
+            y1 = pointGains.get(pointGains.size() - 2).getY();
+            x2 = pointGains.getLast().getX();
+            y2 = pointGains.getLast().getY();
+
+            x0 = (int) (x1 + (x2 - x1) * t/delay);
+            y0 = (int) (y1 + (y2 - y1) * t/delay);
+        }
 
         final int[] xa = {x1, x1, x0, x0};
-        final int[] ya = {height - 100, y1, y0, height - 100};
+        final int[] ya = {base, y1, y0, base};
 
-        if (points.size() >= 2 && points.size() != wallet.length) {
-            g.drawLine(x1, y1, (int) ((x2 - x1) * t/delay) + x1, (int) ((y2 - y1) * t/delay) + y1);
+        if (pointGains.size() >= 2 && pointGains.size() != wallet.length) {
+            g.drawLine(x1, y1, x0, y0);
 
             g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 10));
             g.fillPolygon(new Polygon(xa, ya, 4));
         } else if (t < delay) {
-            g.drawLine(x1, y1, (int) ((x2 - x1) * t/delay) + x1, (int) ((y2 - y1) * t/delay) + y1);
+            g.drawLine(x1, y1, x0, y0);
 
             g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 10));
-            if (points.size() > 1) g.fillPolygon(new Polygon(xa, ya, 4));
-
+            if (pointGains.size() > 1) g.fillPolygon(new Polygon(xa, ya, 4));
         } else {
             g.drawLine(x1, y1, x2, y2);
-            if (points.size() > 0) points.get(points.size() - 1).render(g, linesC, bgc, x2, y2, ended);
+            if (pointGains.size() > 0) pointGains.get(pointGains.size() - 1).render(g, linesC, bgc, ended);
 
             final int[] xb = {x1, x1, x2, x2};
-            final int[] yb = {height - 100, y1, y2, height - 100};
+            final int[] yb = {base, y1, y2, base};
 
             g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 10));
             g.fillPolygon(new Polygon(xb, yb, 4));
         }
 
-        for(int i = 0; i < points.size() - 1; i++) {
-            Point p = points.get(i);
-            p.render(g, linesC, bgc, dist * (i + 1), height - 100 - (int) ((double)p.getValue() * (maxValue / 11000d)), ended);
+        for(int i = 0; i < pointGains.size() - 1; i++) {
+            PointGain p = pointGains.get(i);
+            p.render(g, linesC, bgc, ended);
         }
     }
 
-    public LinkedList<Point> getPoints() {
-        return points;
+    public void updateSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+
+        //TODO: update points position
+    }
+
+    public LinkedList<PointGain> getPointGains() {
+        return pointGains;
     }
 }

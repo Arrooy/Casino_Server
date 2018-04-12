@@ -18,13 +18,29 @@ public class GraphicsPanel extends JPanel implements Runnable {
 
     private GraphicsController controller;
 
+    private Color background;
+
     public GraphicsPanel(int width, int height) {
         this.width = width;
         this.height = height;
         setPreferredSize(new Dimension(width, height));
         setBackground(Color.BLACK);
+        background = Color.BLACK;
         setFocusable(true);
         requestFocus();
+    }
+
+    public void updateSize(int w, int h, boolean fully){
+        this.width = w;
+        this.height = h;
+        setPreferredSize(new Dimension(width, height));
+        if(fully)
+            image = createImage(width, height);
+    }
+
+    public void setBackgroundColor(Color color) {
+        background = color;
+
     }
 
     public void setCurrentDrawing(ToDraw newState, GraphicsController controller) {
@@ -84,8 +100,13 @@ public class GraphicsPanel extends JPanel implements Runnable {
         if (image == null) {
             image = createImage(width, height);
         }
+        if (image.getWidth(null) != width || image.getHeight(null) != height) {
+            image = createImage(width, height);
+        }
+
         Graphics g = image.getGraphics();
-        g.clearRect(0, 0, width, height);
+        g.setColor(background);
+        g.fillRect(0, 0, width, height);
     }
 
     public void exit() {
@@ -105,5 +126,7 @@ public class GraphicsPanel extends JPanel implements Runnable {
         addMouseMotionListener(c);
     }
 
-    //TODO:implementar d'alguna manera un resize
+    public ToDraw getCurrentDrawing() {
+        return currentDrawing;
+    }
 }

@@ -5,14 +5,11 @@ import Network.NetworkManager;
 import Vista.*;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 
 /** Controlador del servidor*/
 
-public class Controller implements WindowListener, ActionListener{
+public class Controller implements ActionListener, WindowListener, MouseListener, ComponentListener{
 
     /** Finestra grafica del servidor*/
     /** Finestra grafica del client*/
@@ -20,6 +17,7 @@ public class Controller implements WindowListener, ActionListener{
     private MainView mainView;
     private Top5OptionsView top5;
     private RankingView ranking;
+    private CoinHistoryView coinHistoryView;
 
     /** Gestor de la network*/
     private NetworkManager networkManager;
@@ -53,6 +51,10 @@ public class Controller implements WindowListener, ActionListener{
         this.ranking = ranking;
     }
 
+    public void setCoinHistoryView(CoinHistoryView coinHistoryView) {
+        this.coinHistoryView = coinHistoryView;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()){
@@ -79,7 +81,10 @@ public class Controller implements WindowListener, ActionListener{
             case "trayButtonExit" :
                 //Es surt del programa sense indicar cap error
                 exitProgram(0);
-            break;
+                break;
+            case "viewCoinBalance":
+                vista.setCoinHistoryView("test");
+                break;
         }
     }
 
@@ -117,6 +122,53 @@ public class Controller implements WindowListener, ActionListener{
 
     @Override
     public void windowDeactivated(WindowEvent e) {
+
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        if(coinHistoryView != null)
+            coinHistoryView.updateSize(false);
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+        if(coinHistoryView != null)
+            coinHistoryView.updateSize(true);
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
 
     }
 }
