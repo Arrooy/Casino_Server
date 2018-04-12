@@ -12,6 +12,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.*;
 
+import static Model.Casino_Server.OFF_LINE;
+
 /**
  * ServidorDedicat a un client. Si el client vols jugar al blackJack, es aquesta clase qui gestiona la seva logica.
  * La classe client, a mes a mes, s'encarrega de gestionar el logIn, logOut i registre del usuari.
@@ -210,20 +212,22 @@ public class Client extends Thread {
         try {
             //Es tradueix el missatge a un user on es troben les creedencials
             User auxUser = (User) reading;
+            if(!OFF_LINE) {
+                //Es verifica l'existencia del usuari a la base de dades
+                if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
+                    //Si tot es correcte, auxUser s'haura omplert amb creedentialsOk = true;
 
-
-
-            //Es verifica l'existencia del usuari a la base de dades
-            if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
-                //Si tot es correcte, auxUser s'haura omplert amb creedentialsOk = true;
-
+                    user = auxUser;
+                    oos.writeObject(user);
+                } else {
+                    //Sino, es retornara el mateix missatge del client, que ja internament esta indicat que creedentiasOk = false;
+                    oos.writeObject(auxUser);
+                }
+            }else{
                 user = auxUser;
+                user.setCredentialsOk(true);
                 oos.writeObject(user);
-            } else {
-                //Sino, es retornara el mateix missatge del client, que ja internament esta indicat que creedentiasOk = false;
-                oos.writeObject(auxUser);
             }
-
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -310,7 +314,11 @@ public class Client extends Thread {
             if(!baralla.isEmpty() && numberOfUserCards <= 12) {
 
                 //Omplim la carta amb les dades necesaries
-                carta.setReverseName(Database.getUserColor(user.getUsername()));
+                if(OFF_LINE){
+                    carta.setReverseName("back-red.png");
+                }else{
+                    carta.setReverseName(Database.getUserColor(user.getUsername()));
+                }
                 carta.setCardName(baralla.pop());
                 carta.setValue(calculaValorBlackJackCard(carta.getCardName()));
                 carta.setGirada(isIATurn);

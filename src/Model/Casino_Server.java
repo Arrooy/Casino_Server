@@ -23,6 +23,8 @@ import java.util.LinkedList;
 
 public class Casino_Server {
 
+    public static final boolean OFF_LINE = true;
+
     public static final int WELCOME_GIFT = 500;
 
     public static void main(String[] args) {
@@ -30,9 +32,11 @@ public class Casino_Server {
         //Iniciem connexió amb la base de dades
         try {
             //S'estableix la connexió amb la base de dades
-            Database.initBaseDades();
+            if(!OFF_LINE){
+                Database.initBaseDades();
+                Database.test();
+            }
 
-            Database.test();
 
             /*User u = new User("miquelsaula", "1234", "miquelsaula@gmail.com");
             Database.deleteUser(u.getUsername());
