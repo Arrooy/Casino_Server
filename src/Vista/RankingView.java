@@ -10,6 +10,9 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import java.awt.*;
 
+//TODO comentar totes les classes vista que he fet
+//TODO UML
+
 public class RankingView extends View {
     private JTable jtRanking;
     private static final String[] columnNames = {"User Name",
@@ -87,6 +90,7 @@ public class RankingView extends View {
 
     @Override
     public void addController(Controller c) {
+        //TODO doble clik obre grafica
         //jtRanking.addMouseListener(c);
         jbBack.setActionCommand("returnMainView");
         jbBack.addActionListener(c);
@@ -100,6 +104,7 @@ public class RankingView extends View {
     }
 
     public void updateTable(Object[][] objects){
+        //TODO ordenar per dineros
         JTable aux = new JTable(objects, columnNames);
         jtRanking.setModel(aux.getModel());
         jtRanking.revalidate();

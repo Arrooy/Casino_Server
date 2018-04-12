@@ -212,7 +212,7 @@ public class Client extends Thread {
             User auxUser = (User) reading;
 
 
-            /*
+
             //Es verifica l'existencia del usuari a la base de dades
             if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
                 //Si tot es correcte, auxUser s'haura omplert amb creedentialsOk = true;
@@ -223,11 +223,6 @@ public class Client extends Thread {
                 //Sino, es retornara el mateix missatge del client, que ja internament esta indicat que creedentiasOk = false;
                 oos.writeObject(auxUser);
             }
-            */
-
-            user = auxUser;
-            user.setCredentialsOk(true);
-            oos.writeObject(user);
 
         }catch (Exception e) {
             e.printStackTrace();
