@@ -136,6 +136,10 @@ public class Client extends Thread {
                         user.setWallet(Database.getUserWallet(this.user.getUsername()));
                         oos.writeObject(user);
                         break;
+                    case "change password":
+                        User userPass = (User) msg;
+                        Database.updateUser(userPass, true);
+                        break;
                     default:
                         System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND");
 
