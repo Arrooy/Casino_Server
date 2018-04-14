@@ -1,4 +1,4 @@
-package Vista.ToDraw.Coin_History;
+package Controlador.Grafics_Controllers.CoinHistory;
 
 import Model.Database;
 import Model.Transaction;
@@ -13,39 +13,23 @@ public class PointGain {
     private final float INITIAL_R = 1;
     private final float FINAL_R = 5;
 
-    private int index;
-    private long gain;
     private long value;
-    private double timer;
 
     private Transaction transaction;
     private boolean drawInfo;
 
-    private Polygon info;
 
     private double r;
 
     private int x, y;
 
-    public PointGain(int index, long gain, long value) {
-        this.index = index;
-        this.gain = gain;
-        timer = System.nanoTime() / 1000000d;
+    public PointGain(Transaction gain, long value) {
+        this.transaction = gain;
 
-        transaction = new Transaction(gain, Timestamp.from(Instant.now()), 0);
         drawInfo = false;
-
         r = INITIAL_R;
 
         this.value = value;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public long getGain() {
-        return gain;
     }
 
     public long getValue() {
@@ -72,9 +56,6 @@ public class PointGain {
     }
 
     public void render(Graphics g, Color color, Color bg, boolean ended){
-      //  this.x = (int) (x + FINAL_R/2);
-      //  this.y = (int) (y + FINAL_R/2);
-
         g.setColor(new Color(color.getRed() - 100, color.getGreen() - 100, color.getBlue() - 100));
         g.fillOval(x - (int) r,  y - (int) r,  2 * (int) r, 2 * (int) r);
         g.setColor(color);
@@ -110,10 +91,10 @@ public class PointGain {
         g.drawString(gain, x + (int) (r*1.3), y - (int) (gheight * 1.1) - (int)(r*1));
 
         g.setColor(color);
-        g.drawPolygon(polygon);
+        g.drawPolygon(polygon);//TODO: acabar de completar la info
     }
 
-    private String genType(int type) {
+    private String genType(int type) {//TODO: completar funcio
         if (type == 0) return "Type"; return "";
     }
 
@@ -122,7 +103,7 @@ public class PointGain {
         int[] ya = new int[7];
 
         xa[0] = x + radi;
-        ya[0] = (int) (y - radi * 2);
+        ya[0] = y - radi * 2;
 
         xa[1] = xa[0];
         ya[1] = (int) (ya[0] - height * 1.2);

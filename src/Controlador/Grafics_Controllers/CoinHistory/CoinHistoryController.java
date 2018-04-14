@@ -1,22 +1,27 @@
-package Vista.ToDraw.Coin_History;
+package Controlador.Grafics_Controllers.CoinHistory;
 
-import Vista.GraphicsPanel;
-import Vista.ToDraw.ToDraw;
-
+import Controlador.CustomGraphics.GraphicsController;
+import Model.Transaction;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 
-public class CoinHistoryDraw implements ToDraw {
+/**
+ * Controlador d'un Coin History. Genera un gràfic que mostra
+ * l'evolució temporal de la quantitat de diners d'un usuari,
+ * de manera animada i interactiva per a visualitzar informació
+ * més concreta en cas de que l'usuari ho desitji.
+ */
+public class CoinHistoryController implements GraphicsController {
 
-    public static final int DURATION = 3000;
+    private static final int DURATION = 3000;
 
     private long[] wallet;
-    //private final long[] wallet = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
+    private LinkedList<Transaction> gains;
 
     private LinkedList<PointGain> pointGains;
     private int dist;
-
-    GraphicsPanel graphicsPanel;
 
     private double timer;
     private int index;
@@ -24,18 +29,19 @@ public class CoinHistoryDraw implements ToDraw {
 
     private Color bgc, linesC;
 
-    private Integer width, height;
+    private int width, height;
     private int delay;
     private long maxValue;
 
-    public CoinHistoryDraw(Integer width, Integer height, LinkedList<Long> gains) {
+    public CoinHistoryController(int width, int height, LinkedList<Transaction> gains) {
         this.width = width;
         this.height = height;
+        this.gains = gains;
 
         wallet = new long[gains.size()];
         for (int i = 0; i < gains.size(); i++) {
-            if (maxValue < gains.get(i)) maxValue = gains.get(i);
-            wallet[i] = i == 0 ? gains.get(i) : wallet[i - 1] + gains.get(i);
+            wallet[i] = i == 0 ? gains.get(i).getGain() : wallet[i - 1] + gains.get(i).getGain();
+            if (maxValue < wallet[i]) maxValue = wallet[i];
         }
 
         delay = DURATION / wallet.length;
@@ -43,22 +49,16 @@ public class CoinHistoryDraw implements ToDraw {
     }
 
     @Override
-    public void init(GraphicsPanel graphicsPanel) {
-        this.graphicsPanel = graphicsPanel;
-
+    public void init() {
         pointGains = new LinkedList<>();
 
-        //TODO: Omplir de la database
-        //for (int i = 0; i < wallet.length; i++) pointGains.add(new PointGain(i, wallet[i], 1));
-        dist = width / (wallet.length + 1);//graphicsPanel.getBounds().width / (pointGains.size() + 1);
+        dist = width / (wallet.length + 1);
 
         timer = System.nanoTime() / 1000000;
         index = 0;
 
         bgc = new Color(23, 24, 24);
         linesC = new Color(191, 191, 156);
-
-        graphicsPanel.setBackgroundColor(bgc);
     }
 
     @Override
@@ -67,8 +67,7 @@ public class CoinHistoryDraw implements ToDraw {
 
         double now = System.nanoTime() / 1000000;
         if (now - timer > delay && index < wallet.length) {
-            //pointGains.add(new PointGain(index, wallet[index++]));
-            pointGains.add(new PointGain(index, index > 1 ? wallet[index] - wallet[index - 1] : wallet[index], wallet[index++]));
+            pointGains.add(new PointGain(gains.get(index), wallet[index++]));
 
             timer = System.nanoTime() / 1000000;
         } else if (now - timer > delay) {
@@ -79,7 +78,7 @@ public class CoinHistoryDraw implements ToDraw {
         for (int i = 0; i < pointGains.size() - 1; i++) {
             PointGain p = pointGains.get(i);
             p.update(delta);
-        }// height*0.85 - height * 0.7 / maxValue
+        }
 
         for (int i = 0; i < pointGains.size(); i++) pointGains.get(i).setPosition(dist * (i + 1),
                 (int) ((double)height*0.85 - (double)height * 0.6 * ((double)pointGains.get(i).getValue()/(double)maxValue)));
@@ -87,6 +86,9 @@ public class CoinHistoryDraw implements ToDraw {
 
     @Override
     public void render(Graphics g) {
+        g.setColor(bgc);
+        g.fillRect(0, 0, width, height);
+
         int base = (int) (height*0.85);
 
         g.setColor(linesC);
@@ -162,11 +164,30 @@ public class CoinHistoryDraw implements ToDraw {
     public void updateSize(int width, int height) {
         this.width = width;
         this.height = height;
-
-        //TODO: update points position
+        System.out.println(width + " x " + height);
     }
 
-    public LinkedList<PointGain> getPointGains() {
-        return pointGains;
+    @Override
+    public void keyTyped(KeyEvent e) {}
+    @Override
+    public void keyPressed(KeyEvent e) {}
+    @Override
+    public void keyReleased(KeyEvent e) {}
+    @Override
+    public void mouseClicked(MouseEvent e) {}
+    @Override
+    public void mousePressed(MouseEvent e) {}
+    @Override
+    public void mouseReleased(MouseEvent e) {}
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+    @Override
+    public void mouseExited(MouseEvent e) {}
+    @Override
+    public void mouseDragged(MouseEvent e) {}
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        for (PointGain p: pointGains) p.updateMouse(e.getX(), e.getY());
     }
 }

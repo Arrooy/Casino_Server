@@ -1,7 +1,7 @@
-package Controlador;
+/*package Controlador;
 
 import Vista.ToDraw.Coin_History.CoinHistoryDraw;
-import Vista.ToDraw.Coin_History.PointGain;
+import Controlador.Grafics_Controllers.CoinHistory.PointGain;
 import Vista.ToDraw.ToDraw;
 
 import java.awt.event.KeyEvent;
@@ -65,3 +65,4 @@ public class CoinHistoryController extends GraphicsController {
         for (PointGain p: draw.getPointGains()) p.updateMouse(e.getX(), e.getY());
     }
 }
+*/

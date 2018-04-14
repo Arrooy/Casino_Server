@@ -320,4 +320,26 @@ public class Database {
             return  data;
         }
     }
+
+    /**
+     * Mètode que retorna el llistat de transaccions realitzades per l'usuari indicat
+     * @param username Usuari del que es vol llistar les transaccions
+     * @return Llista de transaccions
+     */
+    public static LinkedList<Transaction> getTransactions(String username) {
+        try {
+            LinkedList<Transaction> trans = new LinkedList<>();
+            ResultSet rs = conn.createStatement().executeQuery("select * from Transactions where username = '" + username + "';");
+
+            while (rs.next()) {
+                Transaction t = new Transaction(rs.getLong("earnings"), rs.getTimestamp("date"), rs.getInt("type"));
+                trans.add(t);
+            }
+
+            return trans;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

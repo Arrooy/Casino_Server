@@ -1,40 +1,34 @@
 package Vista;
 
-import Controlador.CoinHistoryController;
 import Controlador.Controller;
-import Vista.ToDraw.Coin_History.CoinHistoryDraw;
-import Vista.ToDraw.ToDraw;
+import Controlador.CustomGraphics.GraphicsManager;
+import Controlador.Grafics_Controllers.CoinHistory.CoinHistoryController;
+import Model.Database;
+import Model.Transaction;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.LinkedList;
 
+/**
+ * Classe que gestiona els "coin history" del servidor.
+ * Consisteix en un panell buit que s'afegeix en el card layout
+ * de la finestra principal, per a carregar-hi un GraphicsController
+ * en el moment en el que es vulgui accedir a la vista i visualitzar
+ * el contingut corresponent.
+ *
+ * Important no crear coin history de no ser necessari, i tancar-lo
+ * al deixar de veure-ho, per a optimitzar recursos.
+ *
+ * @version 2.0
+ */
 public class CoinHistoryView extends View {
 
-    private int width;
-    private int height;
+    /**Panell que automatitza el funcionament dels grafics a mostrar*/
+    private GraphicsManager gp;
 
-    private boolean isActive;
+    /**Controlador que dirigeix els elements a mostrar per pantalla*/
+    private CoinHistoryController chc;
 
-    GraphicsPanel gp;
-    CoinHistoryDraw chd;
-    CoinHistoryController chc;
-
-    public CoinHistoryView() {
-
-        isActive = false;
-        chc = new CoinHistoryController();
-
-        /*graphicsPanel = new GraphicsPanel(width, height);
-        coinHistoryController = new CoinHistoryController();
-        coinHistoryDraw = new CoinHistoryDraw(width, height, testArray());
-
-        graphicsPanel = new GraphicsPanel(width, height);
-        graphicsPanel.setCurrentDrawing(coinHistoryDraw, coinHistoryController);
-        add(graphicsPanel);
-        coinHistoryController.setDraw(coinHistoryDraw);*/
-    }
-
+    //Llista de prova
     private LinkedList<Long> testArray() {
         LinkedList<Long> prova = new LinkedList<>();
         prova.add(200L);
@@ -54,32 +48,33 @@ public class CoinHistoryView extends View {
         return prova;
     }
 
+    /**
+     * Mètode que inicia una coin history donat un nom d'usuari del que
+     * obtindrà la informació necessària de la base de dades.
+     * @param username Nom del usuari a generar la taula
+     * @param width Amplada inicial de la pantalla
+     * @param height Alçada inicial de la pantalla
+     */
     public void createCoinHistory(String username, int width, int height) {
-        this.width = width;
-        this.height = height;
+        LinkedList<Transaction> info = Database.getTransactions(username);
 
-        gp = new GraphicsPanel(width, height);
-        chd = new CoinHistoryDraw(width, height, testArray());
-        chc.setDraw(chd);
-
-        gp.setCurrentDrawing(chd, chc);
-        add(gp);
-
-        isActive = true;
+        chc = new CoinHistoryController(width, height, info);
+        gp = new GraphicsManager(this, chc);
     }
 
     public void closeView() {
-        isActive = false;
         gp.exit();
-        if (gp != null) remove(gp);
     }
 
     public void updateSize(boolean full) {
         if (gp != null) {
+            chc.updateSize(getWidth(), getHeight());
+            System.out.println("dins si");
             gp.updateSize(this.getWidth(), this.getHeight(), full);
-            gp.getCurrentDrawing().updateSize(getWidth(), getHeight());
+            //gp.getCurrentDrawing().updateSize(getWidth(), getHeight());
             updateUI();
         }
+        System.out.println("fora");
     }
 
     @Override
