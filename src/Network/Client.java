@@ -372,6 +372,12 @@ public class Client extends Thread {
                         System.out.println("UsuariRetrasat");
                         carta.setDerrota("user-instant");
                     }else{
+                        if(carta.getValue() == 11){
+                            if(valorIA + 11 <= 21)
+                                carta.setValue(11);
+                            else
+                                carta.setValue(1);
+                        }
                         valorIA += carta.getValue();
                         if(valorIA > 21) {
                             carta.setDerrota("IA");
@@ -390,8 +396,8 @@ public class Client extends Thread {
                     //Si una de les 4 cartes inicials es per a la IA, s'envia aquesta girada
                     if (carta.isForIA()){
                         if(carta.getValue() == 11){
-                            if(valorIA + 10 < 21)
-                                carta.setValue(10);
+                            if(valorIA + 11 <= 21)
+                                carta.setValue(11);
                             else
                                 carta.setValue(1);
                         }
@@ -401,8 +407,8 @@ public class Client extends Thread {
                     }else {
                         numberOfUserCards++;
                         if(carta.getValue() == 11){
-                            if(valorUsuari + 10 < 21)
-                                carta.setValue(10);
+                            if(valorUsuari + 11 <= 21)
+                                carta.setValue(11);
                             else
                                 carta.setValue(1);
                         }

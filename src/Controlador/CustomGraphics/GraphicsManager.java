@@ -41,7 +41,7 @@ public class GraphicsManager implements Runnable {
         clearColor = Color.white;
 
         if(PanellObjectiu.getWidth() == 0 || PanellObjectiu.getHeight() == 0)
-            System.out.println("Error ultrafatal. El panell que mhas donat no te mida especificada!"); //ets un primo arroyo
+            System.out.println("Error ultrafatal. El panell que mhas donat no te mida especificada!"); //ets un primo arroyo ;adria:like :)
         JPanelObjectiu = PanellObjectiu;
         JPanelObjectiu.setBackground(Color.BLACK);
         JPanelObjectiu.setFocusable(true);
