@@ -233,6 +233,7 @@ public class Client extends Thread {
 
                     user = auxUser;
                     oos.writeObject(user);
+                    Database.updateUser(user, true);
                 } else {
                     //Sino, es retornara el mateix missatge del client, que ja internament esta indicat que creedentiasOk = false;
                     oos.writeObject(auxUser);
@@ -255,6 +256,8 @@ public class Client extends Thread {
         try {
             //Es tradueix el missatge a usuari
             User request = (User) msg;
+
+            Database.updateUser(request, false);
 
             //S'indica que s'ha desconectat un user
             Tray.showNotification("Usuari desconectat " + user.getUsername(),"Total de clients actius: " + (usuarisConnectats.size() - 1));
