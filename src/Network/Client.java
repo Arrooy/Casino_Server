@@ -140,6 +140,9 @@ public class Client extends Thread {
                         User userPass = (User) msg;
                         Database.updateUser(userPass, true);
                         break;
+                    case "deposit":
+                        deposit((Transaction) msg);
+                        break;
                     default:
                         System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND");
 
@@ -152,6 +155,28 @@ public class Client extends Thread {
                 e.printStackTrace();
                 break;
             }
+        }
+    }
+
+    private void deposit(Transaction transaction) {
+        try {
+            long wallet = Database.getUserWallet(transaction.getUsername());
+            wallet += transaction.getGain();
+
+            User u = user;
+            u.setCredentialsOk(wallet <= 100000);
+
+            if (u.areCredentialsOk()) Database.registerTransaction(transaction);
+
+            oos.writeObject(u);
+        } catch (Exception e) {
+            user.setCredentialsOk(false);
+            try {
+                oos.writeObject(user);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
         }
     }
 
