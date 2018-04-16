@@ -10,6 +10,7 @@ import Vista.Tray;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.*;
 
@@ -138,7 +139,13 @@ public class Client extends Thread {
                         break;
                     case "change password":
                         User userPass = (User) msg;
-                        Database.updateUser(userPass, true);
+                        System.out.println(((User) msg).getPassword());
+                        if(checkPassword(((User) msg).getPassword())){
+                            Database.updateUser(userPass, true);
+                            //Todo Envia missatge confirmació
+                        }else{
+                            //Todo envia missatge error
+                        }
                         break;
                     case "deposit":
                         deposit((Transaction) msg);
@@ -448,6 +455,51 @@ public class Client extends Thread {
         }else{
             //En el cas contrari, es retorna l'atoi del primer numero de la carta
             return Integer.parseInt(cardName.substring(0,1));
+        }
+    }
+    /**
+     * Comprova que la contrasenya que reb com a parametre tingui el format correcte
+     * @param password contrasenya a comprovar
+     * @return boolea que indica si la contrasenya introduida es correcte
+     */
+    public boolean checkPassword(String password){
+        char[] passwordChars = password.toCharArray();
+        int numbers = 0;
+        int lowerCase = 0;
+        int upperCase = 0;
+        int specialChar = 0;
+
+        if(passwordChars.length >= 8){
+            for (int i = 0; i < passwordChars.length; i++){
+                if(Character.isDigit(passwordChars[i])) {
+                    numbers++;
+                }else{
+                    if(Character.isLowerCase(passwordChars[i])){
+                        lowerCase++;
+
+                    }else{
+                        if(Character.isUpperCase(passwordChars[i])){
+                            upperCase++;
+                        }else{
+                            specialChar++;
+                        }
+                    }
+                }
+            }
+            if(upperCase <= 0 || lowerCase <= 0 || numbers <= 0 || lowerCase + upperCase < 6 ){
+                return false;
+            }else{
+                for(int i = 0; i < passwordChars.length; i++){
+                    if(Character.isSpaceChar(passwordChars[i])){
+                        return false;
+                    }else if(!Character.isDefined(passwordChars[i])){
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }else{
+            return false;
         }
     }
 }
