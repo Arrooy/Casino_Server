@@ -83,7 +83,8 @@ public class Controller implements ActionListener, WindowListener, MouseListener
                 exitProgram(0);
                 break;
             case "viewCoinBalance":
-                vista.setCoinHistoryView(ranking.getUsername());
+                if (ranking.getUsername() != null) vista.setCoinHistoryView(ranking.getUsername());
+                else ;//TODO: Avis de necessitar tenir algo seleccionat
                 break;
         }
     }
