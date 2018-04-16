@@ -28,6 +28,8 @@ public class CoinHistoryView extends View {
     /**Controlador que dirigeix els elements a mostrar per pantalla*/
     private CoinHistoryController chc;
 
+    private Controller cg;
+
     //Llista de prova
     private LinkedList<Long> testArray() {
         LinkedList<Long> prova = new LinkedList<>();
@@ -58,12 +60,15 @@ public class CoinHistoryView extends View {
     public void createCoinHistory(String username, int width, int height) {
         LinkedList<Transaction> info = Database.getTransactions(username);
 
-        chc = new CoinHistoryController(width, height, info);
+        chc = new CoinHistoryController(width, height, info, username, cg);
         gp = new GraphicsManager(this, chc);
     }
 
     public void closeView() {
         gp.exit();
+        gp = null;
+        chc = null;
+        updateUI();
     }
 
     public void updateSize(boolean full) {
@@ -80,5 +85,6 @@ public class CoinHistoryView extends View {
     @Override
     public void addController(Controller c) {
         addComponentListener(c);
+        cg = c;
     }
 }

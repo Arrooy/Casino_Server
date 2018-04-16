@@ -121,9 +121,10 @@ public class Database {
                         CNAME_PASSWORD + "='" + user.getPassword() + "'" +
                         "where " + CNAME_USERNAME + "='" + user.getUsername() + "'");
         else conn.createStatement().executeUpdate("update Users set " +
-                "lastLogin = CURRENT_TIMESTAMP, " +
+                "lastLogin = CURRENT_TIME, " +
                 CNAME_PASSWORD + "='" + user.getPassword() + "'" +
                 "where " + CNAME_USERNAME + "='" + user.getUsername() + "'");
+        System.out.println("\nuser updated\n");
     }
 
     /**
@@ -232,7 +233,7 @@ public class Database {
     public static String getPassedTime(Timestamp back) {
         Timestamp now = Timestamp.from(Instant.now());
 
-        long diff = (now.getTime() - back.getTime()) / 1000;
+        long diff = (now.getTime() - (7200000) - back.getTime()) / 1000;
 
         if (diff < 60) return diff + "s ago";
         else if (diff < 60 * 60) return diff/60 + "min ago";
@@ -242,6 +243,15 @@ public class Database {
         else if (diff < 60 * 60 * 24 * 30) return diff/(60*60*24*7) + "weeks ago";
         else if (diff < 60 * 60 * 24 * 365) return diff/(60*60*24*30) + "moths ago";
         else return diff/(60*60*24*365) + "years ago";
+    }
+
+    public static String getDelayedTime(Timestamp back, int hours) {
+        Timestamp now = Timestamp.from(Instant.now());
+        System.out.print(now.getTime() + "  vs.  ");
+        now.setTime(now.getTime() + hours * 1000 * 60 * 60);
+
+        System.out.println(now.getTime());
+        return getPassedTime(now);
     }
 
     /**
@@ -304,7 +314,7 @@ public class Database {
                     s[1] = 0;
                 }
 
-                s[2] = getPassedTime(rs.getTimestamp("lastLogin"));
+                s[2] = getPassedTime(rs.getTimestamp("lastLogin"));//getDelayedTime(rs.getTimestamp("lastLogin"), -2);
 
                 users.add(s);
             }

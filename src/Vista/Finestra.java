@@ -90,4 +90,8 @@ public class Finestra extends JFrame {
         coinHistoryView.createCoinHistory(username, getWidth(), getHeight());
         layout.show(getContentPane(), "coinHistory");
     }
+
+    public void closeCoinHistory() {
+        coinHistoryView.closeView();
+    }
 }

@@ -225,6 +225,7 @@ public class Client extends Thread {
                 Database.insertNewUser(request);
                 //Es verifica el nou usuari i es reenvia al client amb el mateix ID amb el que s'ha demanat el registre
                 request.setCredentialsOk(true);
+                Database.updateUser(request, true);
                 oos.writeObject(request);
             } catch (Exception e) {
                 impossibleRegistrar  = true;

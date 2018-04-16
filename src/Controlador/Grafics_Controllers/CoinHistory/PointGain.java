@@ -4,10 +4,12 @@ import Model.Database;
 import Model.Transaction;
 
 import javax.swing.*;
+import javax.xml.crypto.Data;
 import java.awt.*;
 import java.sql.Timestamp;
 import java.time.Instant;
 
+//TODO: IMPORTANT - que conio passa quan executes dos cops
 public class PointGain {
 
     private final float INITIAL_R = 1;
@@ -26,7 +28,7 @@ public class PointGain {
     public PointGain(Transaction gain, long value) {
         this.transaction = gain;
 
-        drawInfo = false;
+        setDrawInfo(false);
         r = INITIAL_R;
 
         this.value = value;
@@ -43,29 +45,39 @@ public class PointGain {
     public void updateMouse(int mx, int my){
         if (Math.sqrt(Math.pow(mx - x, 2) + Math.pow(my - y, 2)) < r) {
             r = 2 * FINAL_R;
-            drawInfo = true;
+            setDrawInfo(true);
         } else {
             r = FINAL_R;
-            drawInfo = false;
+            setDrawInfo(false);
         }
+        System.out.print("Update mouse: " + drawInfo + " - ");
+        System.out.printf("%.2f\n", Math.sqrt(Math.pow(mx - x, 2) + Math.pow(my - y, 2)));
     }
+
+    public synchronized void setDrawInfo(boolean b) {drawInfo = b;}
 
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public void render(Graphics g, Color color, Color bg, boolean ended){
+    public void render(Graphics g, Color color){
         g.setColor(new Color(color.getRed() - 100, color.getGreen() - 100, color.getBlue() - 100));
         g.fillOval(x - (int) r,  y - (int) r,  2 * (int) r, 2 * (int) r);
         g.setColor(color);
         g.drawOval(x - (int) r,  y - (int) r,  2 * (int) r, 2 * (int) r);
+    }
 
-        if (drawInfo && ended) pintaInfo(g, color);
+    public void renderInfo(Graphics g, boolean ended, Color color) {
+        if (drawInfo && ended) {
+            pintaInfo(g, color);
+           // System.out.println("si");
+        }
+        System.out.println(drawInfo + " - " + ended);
     }
 
     private void pintaInfo(Graphics g, Color color) {
-        String time = Database.getPassedTime(transaction.getTime());
+        String time = Database.getPassedTime(transaction.getTime());//Database.getDelayedTime(transaction.getTime(), -2);
         String gain = transaction.getGain() + "";
         String wallet = value + "";
         String type = genType(transaction.getType());

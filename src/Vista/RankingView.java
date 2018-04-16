@@ -99,8 +99,8 @@ public class RankingView extends View {
         jbViewGraghic.addActionListener(c);
     }
 
-    public Object getData(){
-        return jtRanking.getValueAt(jtRanking.getSelectedRow(),0);
+    public String getUsername(){
+        return (String) jtRanking.getValueAt(jtRanking.getSelectedRow(),0);
     }
 
     public void updateTable(Object[][] objects){
