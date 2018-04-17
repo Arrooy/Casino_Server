@@ -1,7 +1,7 @@
 package Network;
 
 import Controlador.Controller;
-import Controlador.JsonManager;
+import Utils.JsonManager;
 import Vista.Tray;
 
 import java.io.IOException;

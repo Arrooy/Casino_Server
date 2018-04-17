@@ -1,5 +1,7 @@
 package Model;
 
+import Utils.Seguretat;
+
 import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -85,6 +87,7 @@ public class Database {
      * @throws Exception En cas d'estar repetit o bé de fallar una de les Querys.
      */
     public static void insertNewUser(User user) throws Exception {
+
         //Inserim l'usuari a Users
         conn.createStatement().executeUpdate("insert into Users (username, mail, password) values ('" +
                 user.getUsername() + "', '" +
