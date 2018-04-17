@@ -36,6 +36,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
     /** Metode per a tencar el servidor de forma segura.*/
     public void exitProgram(int status){
         Tray.exit();
+        vista.dispose();
         System.exit(status);
     }
 
