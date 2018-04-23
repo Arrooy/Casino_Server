@@ -139,11 +139,13 @@ public class Client extends Thread {
                         break;
                     case "change password":
                         User userPass = (User) msg;
-                        System.out.println(((User) msg).getPassword());
+                        System.out.print(((User) msg).getPassword());
                         if(checkPassword(((User) msg).getPassword())){
+                            System.out.println("    OK");
                             Database.updateUser(userPass, true);
                             //Todo Envia missatge confirmació
                         }else{
+                            System.out.println("    KO");
                             //Todo envia missatge error
                         }
                         break;
