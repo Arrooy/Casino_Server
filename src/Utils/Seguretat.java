@@ -1,6 +1,5 @@
 package Utils;
 
-import Model.User;
 import org.jasypt.util.text.BasicTextEncryptor;
 
 public class Seguretat {

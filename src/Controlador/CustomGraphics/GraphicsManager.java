@@ -123,6 +123,14 @@ public class GraphicsManager implements Runnable {
 
     private void renderGameImage(Graphics g) {
         if (image != null) {
+            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+                    RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+//            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING,
+   //                 RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
             g.drawImage(image, 0, 0, null);
         }
         g.dispose();

@@ -2,6 +2,7 @@ package Network;
 
 import Controlador.Controller;
 import Utils.JsonManager;
+import Network.Roulette.RouletteThread;
 import Vista.Tray;
 
 import java.io.IOException;
@@ -30,6 +31,8 @@ public class NetworkManager extends Thread{
         } catch (IOException e) {
             controller.displayError("Error " + e.getLocalizedMessage(),e.getMessage());
         }
+
+        new RouletteThread(usuarisConnectats);
     }
 
     /** Inicia la acceptacio de nous usuaris*/

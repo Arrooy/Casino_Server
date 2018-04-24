@@ -100,6 +100,7 @@ public class RankingView extends View {
     }
 
     public String getUsername(){
+        if (jtRanking.getSelectedRow() == -1) return null;
         return (String) jtRanking.getValueAt(jtRanking.getSelectedRow(),0);
     }
 

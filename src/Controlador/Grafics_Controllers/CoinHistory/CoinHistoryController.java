@@ -205,19 +205,19 @@ public class CoinHistoryController implements GraphicsController {
     private void renderButton(Graphics g){
         String text = "Back";
         g.setFont(new Font("Helvetica Neue", Font.BOLD, (int) (height * .06)));
-        int width = (int) (g.getFontMetrics().getStringBounds(text, g).getBounds().width * 1.2);
+        int width = (int) (g.getFontMetrics().getStringBounds(text, g).getBounds().width + bx*0.4);
         bw = width;
 
         if (!pressed) g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 10));
-        else g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 200));
+        else g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 230));
         g.fillRect(bx, by, width, bh);
 
         g.setColor(linesC);
         g.drawRect(bx, by, width, bh);
 
         if (!pressed) g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 230));
-        else g.setColor(linesC);
-        g.drawString("Back", (int)(bx*1.1), (int) (height * .94));
+        else g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 10));
+        g.drawString("Back", (int)(bx*1.2), (int) (height * .94));
     }
 
     @Override

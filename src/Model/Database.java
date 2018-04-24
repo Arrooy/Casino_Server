@@ -157,7 +157,7 @@ public class Database {
         try {
             ResultSet rs = conn.createStatement().executeQuery("select password from Users where username = '" + user.getUsername() + "'");
             rs.next();
-            String pass = rs.getString("password");
+            String pass = (String) Seguretat.desencripta(rs.getString("password"));
 
             user.setCredentialsOk(user.getPassword().equals(pass));
             return user;

@@ -1,10 +1,9 @@
 package Network;
 
 import Controlador.Controller;
-import Model.Card;
-import Model.Database;
-import Model.Transaction;
-import Model.User;
+import Model.*;
+import Model.RouletteMessage;
+import Network.Roulette.RouletteThread;
 import Vista.Tray;
 
 import java.io.IOException;
@@ -82,6 +81,7 @@ public class Client extends Thread {
     /** Valor de les cartes de l'usuari*/
     private int valorIA;
 
+    private boolean connectedToRoulette;
 
 
     /** Inicialitza un nou client.*/
@@ -92,6 +92,8 @@ public class Client extends Thread {
         this.usuarisConnectats = usuarisConnectats;
         this.socket = socket;
         this.user = null;
+
+        connectedToRoulette = false;
 
         //S'intentan guardar les referencies dels streams d'entrada i sortida del socket
         try {
@@ -151,6 +153,14 @@ public class Client extends Thread {
                         break;
                     case "deposit":
                         deposit((Transaction) msg);
+                        break;
+                    case "rouletteConnection":
+                        ((RouletteMessage) msg).setTimeTillNext(RouletteThread.getTimeTillNext());
+                        oos.writeObject(msg);
+                        connectedToRoulette = true;
+                        break;
+                    case "rouletteDisconnection":
+                        connectedToRoulette = false;
                         break;
                     default:
                         System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND");
@@ -327,7 +337,6 @@ public class Client extends Thread {
 
     private void blackJackInit(Message reading) {
 
-
         //TODO: Verificar 54 cartes
         //Es transforma el missatge a carta.
         Card carta = (Card)reading;
@@ -436,6 +445,15 @@ public class Client extends Thread {
                 oos.writeObject(carta);
             }
         }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void sendRouletteShot(RouletteMessage rouletteMessage) {
+        try {
+            if (connectedToRoulette) oos.writeObject(rouletteMessage);
+        } catch (IOException e) {
+            System.out.println("No s'ha pogut enviar la info de la ruleta");
             e.printStackTrace();
         }
     }
