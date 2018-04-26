@@ -170,8 +170,6 @@ public class Client extends Thread {
             } catch (Exception e) {
                 Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
                 usuarisConnectats.remove(this);
-                //Si es surt sense fer logIn, peta el read.
-                e.printStackTrace();
                 break;
             }
         }
@@ -388,27 +386,34 @@ public class Client extends Thread {
                 if(carta.getContext().equals(CONTEXT_BJ_FINISH_USER)){
                     carta.setForIA(true);
                     if(valorIA >= valorUsuari){
-                        System.out.println("UsuariRetrasat");
+                        System.out.println("Usuari ha perdut directament");
                         carta.setDerrota("user-instant");
-                    }else{
-                        if(carta.getValue() == 11){
-                            if(valorIA + 11 <= 21)
+                    }else {
+                        if (carta.getValue() == 11) {
+                            if (valorIA + 11 <= 21) {
                                 carta.setValue(11);
-                            else
+                                carta.setValent11(carta.getValent11() + 1);
+                            } else {
                                 carta.setValue(1);
+                            }
                         }
                         valorIA += carta.getValue();
-                        if(valorIA > 21) {
-                            carta.setDerrota("IA");
-                            System.out.println("La ia s'ha passat.");
-                        }else{
-                            if(valorIA >= valorUsuari){
-                                carta.setDerrota("user");
-                            }else{
-                                carta.setDerrota("false");
+                        if (valorIA > 21) {
+                            if (carta.getValent11() >= 1) {
+                                carta.setValent11(carta.getValent11() - 1);
+                                carta.setValue(carta.getValue() - 10);
+                            } else {
+                                carta.setDerrota("IA");
+                                System.out.println("La ia s'ha passat.");
                             }
-                            carta.setGirada(false);
                         }
+
+                        if (valorIA >= valorUsuari) {
+                            carta.setDerrota("user");
+                        } else {
+                            carta.setDerrota("false");
+                        }
+                        carta.setGirada(true);
                     }
 
                 }else{
@@ -425,16 +430,25 @@ public class Client extends Thread {
                         carta.setDerrota("false");
                     }else {
                         numberOfUserCards++;
-                        if(carta.getValue() == 11){
-                            if(valorUsuari + 11 <= 21)
+                        carta.setGirada(false);
+                        if(carta.getValue() == 11) {
+                            if (valorUsuari + 11 <= 21) {
                                 carta.setValue(11);
-                            else
+                                carta.setValent11(carta.getValent11() + 1);
+                            } else {
                                 carta.setValue(1);
+                            }
                         }
+
                         valorUsuari += carta.getValue();
                         if(valorUsuari > 21) {
-                            carta.setDerrota("user");
-                            System.out.println("El user s'ha pasat de 21 [" + valorUsuari + "]");
+                            if(carta.getValent11() >= 1){
+                                carta.setValue(carta.getValue() - 10);
+                                carta.setValent11(carta.getValent11() - 1);
+                            }else{
+                                carta.setDerrota("user");
+                                System.out.println("El user s'ha pasat de 21 [" + valorUsuari + "]");
+                            }
                         }else{
                             carta.setDerrota("false");
                         }
