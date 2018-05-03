@@ -413,7 +413,7 @@ public class Client extends Thread {
                         } else {
                             carta.setDerrota("false");
                         }
-                        carta.setGirada(true);
+                        carta.setGirada(false);
                     }
 
                 }else{
