@@ -1,6 +1,8 @@
 package Network;
 
 import Controlador.Controller;
+import Controlador.HorseRaceController;
+import Model.HorseRace_Model.HorseRaceModel;
 import Utils.JsonManager;
 import Network.Roulette.RouletteThread;
 import Vista.Tray;
@@ -21,6 +23,7 @@ public class NetworkManager extends Thread{
     /** Llistat d'usuaris connectats al servidor*/
     private ArrayList<Client> usuarisConnectats;
 
+
     /** Inicialitza el newtWorkManager i obre el port determinat al json de configuracio*/
     public NetworkManager(){
         controller = null;
@@ -33,6 +36,7 @@ public class NetworkManager extends Thread{
         }
 
         new RouletteThread(usuarisConnectats);
+        new HorseRaceController(new HorseRaceModel(), usuarisConnectats, this);
     }
 
     /** Inicia la acceptacio de nous usuaris*/
@@ -59,4 +63,5 @@ public class NetworkManager extends Thread{
             }
         }
     }
+
 }

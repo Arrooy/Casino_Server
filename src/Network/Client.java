@@ -1,7 +1,10 @@
 package Network;
 
 import Controlador.Controller;
+import Controlador.HorseRaceController;
 import Model.*;
+import Model.HorseRace_Model.HorseBet;
+import Model.HorseRace_Model.HorseMessage;
 import Model.RouletteMessage;
 import Network.Roulette.RouletteThread;
 import Vista.Tray;
@@ -9,7 +12,6 @@ import Vista.Tray;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.*;
 
@@ -83,17 +85,18 @@ public class Client extends Thread {
 
     private boolean connectedToRoulette;
 
+    private boolean playingHorses;
 
     /** Inicialitza un nou client.*/
     public Client(ArrayList<Client> usuarisConnectats, Socket socket, Controller controller) {
         keepLooping = true;
-
         this.controller = controller;
         this.usuarisConnectats = usuarisConnectats;
         this.socket = socket;
         this.user = null;
-
+        this.playingHorses = false;
         connectedToRoulette = false;
+
 
         //S'intentan guardar les referencies dels streams d'entrada i sortida del socket
         try {
@@ -154,6 +157,33 @@ public class Client extends Thread {
                     case "deposit":
                         deposit((Transaction) msg);
                         break;
+                    case "HORSES-Connect":
+                        this.playingHorses = true;
+                        System.out.println(findUser(msg.getID()).toString());
+                        if(!HorseRaceController.isRacing()){
+                            oos.writeObject(new HorseMessage(HorseRaceController.getCountdown(),"Countdown" ));
+                        }
+                        break;
+                    case "HORSES-Disconnect":
+                        this.playingHorses = false;
+                        System.out.println(findUser(msg.getID()).toString());
+                        HorseRaceController.removeBets(this.getId());
+                        break;
+                    case "HORSES-Bet":
+                        if(!HorseRaceController.isRacing()){
+                          //TODO: Complete bet
+                          /* if(checkHorseBet((HorseMessage)msg)){
+                                HorseRaceController.addHorseBet(((HorseMessage)msg).getHorseBet());
+                                oos.writeObject(new HorseMessage(new HorseBet(true), "HORSES-BetConfirm"));
+
+                            }else{
+                                oos.writeObject(new HorseMessage(new HorseBet(false), "HORSES-BetConfirm"));
+                            }*/
+                        }
+
+                    case "HORSES-Finished":
+                        HorseRaceController.addFinished();
+                        break;
                     case "rouletteConnection":
                         ((RouletteMessage) msg).setTimeTillNext(RouletteThread.getTimeTillNext());
                         oos.writeObject(msg);
@@ -169,6 +199,7 @@ public class Client extends Thread {
                 //TODO: FICAR EXCEPCIONS CONCRETES AMB SOLUCIONS UTILS
             } catch (Exception e) {
                 Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
+                HorseRaceController.removeBets(this.getId());
                 usuarisConnectats.remove(this);
                 break;
             }
@@ -536,4 +567,39 @@ public class Client extends Thread {
             return false;
         }
     }
+
+    public User findUser(double id){
+        double id_user;
+        for(int i = this.usuarisConnectats.size() - 1; i >= 0; i--){
+            id_user = this.usuarisConnectats.get(i).user.getID();
+            if( id_user == id){
+                return this.usuarisConnectats.get(i).user;
+            }
+        }
+        return null;
+    }
+
+
+
+
+    public boolean isPlayingHorses(){
+        return playingHorses;
+    }
+
+
+    public void send(Message message) {
+       try {
+           oos.writeObject(message);
+       }catch(IOException e){
+           System.out.println("Error sending "+ message.getContext() + " to " + this.findUser(getId()).getUsername());
+       }
+    }
+
+   /* public boolean checkHorseBet(HorseMessage horseMessage){
+        if(!horseMessage.getHorseBet().equals(null)){
+
+
+
+        }
+    }*/
 }

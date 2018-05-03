@@ -5,6 +5,16 @@ import java.io.Serializable;
 public class HorseBet implements Serializable {
     private long bet;
     private int horse;
+    private long ID;
+    private boolean betOK;
+
+    public long getID() {
+        return ID;
+    }
+
+    public void setID(long ID) {
+        this.ID = ID;
+    }
 
     public long getBet() {
         return bet;
@@ -22,10 +32,23 @@ public class HorseBet implements Serializable {
         this.horse = horse;
     }
 
-    public HorseBet (long bet, int horse){
+    public HorseBet (long bet, int horse, long ID){
         this.bet = bet;
         this.horse = horse;
-
+        this.ID = ID;
     }
 
+
+    public HorseBet(boolean betOK){
+        this.betOK = betOK;
+    }
+
+
+    public boolean isBetOK() {
+        return betOK;
+    }
+
+    public void setBetOK(boolean betOK) {
+        this.betOK = betOK;
+    }
 }

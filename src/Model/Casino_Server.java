@@ -1,6 +1,8 @@
 package Model;
 
 import Controlador.Controller;
+import Controlador.HorseRaceController;
+import Model.HorseRace_Model.HorseRaceModel;
 import Network.NetworkManager;
 import Vista.CoinHistoryView;
 import Vista.Finestra;
@@ -25,7 +27,7 @@ import java.util.LinkedList;
 
 public class Casino_Server {
 
-    public static final boolean OFF_LINE = false;
+    public static final boolean OFF_LINE = true;
 
     public static final int WELCOME_GIFT = 500;
 
@@ -45,7 +47,8 @@ public class Casino_Server {
             //Es crea el controlador del sistema i es relacionen controlador amb vista i controlador amb el gestor
             Controller controlador = new Controller(vista,networkManager);
 
-            //S'inicia el servidor i es crea l'enllaç gestor amb controlador
+
+            //S'inicia el servidor i es crea l'enllaç gestor amb el controlador del sistema i del joc dels cavalls
             networkManager.initServer(controlador);
 
             //Es crea l'enllaç vista amb controlador

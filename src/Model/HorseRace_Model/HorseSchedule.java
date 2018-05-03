@@ -7,38 +7,38 @@ public class HorseSchedule implements Serializable {
     private int[][] times;
     private int winner;
 
+
+
     private static final int MAX_HORSES = 12;
     private static final int SECTIONS = 5;
+
     private static final int MAX_SECTION_TIME = 200;
     private static final int MIN_SECTION_TIME = 100;
 
 
 
     public HorseSchedule(){
-        this.times = new int[12][5];
-    }
-
-    public int generateRace(){
         Random rand = new Random();
         int[] totalTime = new int[12];
         int bestTime = 1300;
-        int winner = -1;
+        this.winner = -1;
+        this.times = new int[MAX_HORSES][SECTIONS];
 
-        for(int i = 0; i < 12; i++){
-            for(int j = 0; j < 5; j++){
-                times[i][j] = rand.nextInt(100) + 100;
+        for(int i = 0; i < MAX_HORSES; i++){
+            for(int j = 0; j < SECTIONS; j++){
+                this.times[i][j] = rand.nextInt(100) + 100;
                 totalTime[i]+=times[i][j];
             }
             if(totalTime[i] < bestTime){
                 bestTime = totalTime[i];
-                winner = i;
+                this.winner = i;
             }
         }
-        return winner;
     }
 
+
+
     public int getRaceTime(){
-        int slowestHorse = -1;
         int slowestTime = -1;
         int[] totalTime = new int[12];
 
@@ -48,9 +48,18 @@ public class HorseSchedule implements Serializable {
             }
             if(totalTime[i] > slowestTime){
                 slowestTime = totalTime[i];
-                slowestHorse = i;
             }
         }
         return slowestTime;
+    }
+
+
+    public int getTime(int i,int j){
+        return times[i][j];
+    }
+
+
+    public int getWinner(){
+        return winner;
     }
 }

@@ -1,6 +1,7 @@
 package Controlador;
 
 import Model.Database;
+import Model.HorseRace_Model.HorseRaceModel;
 import Network.NetworkManager;
 import Vista.*;
 
@@ -18,6 +19,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
     private Top5OptionsView top5;
     private RankingView ranking;
     private CoinHistoryView coinHistoryView;
+    private HorseRaceModel horseRaceModel;
 
     /** Gestor de la network*/
     private NetworkManager networkManager;
@@ -26,6 +28,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
     public Controller(Finestra vista, NetworkManager networkManager){
         this.vista = vista;
         this.networkManager = networkManager;
+        this.horseRaceModel = new HorseRaceModel();
     }
 
     /** Mostra un error amb una alerta al centre de la finestra grafica*/
