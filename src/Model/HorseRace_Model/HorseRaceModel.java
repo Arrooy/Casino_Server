@@ -1,10 +1,10 @@
 package Model.HorseRace_Model;
 
-import Model.User;
 
 import java.util.ArrayList;
-import java.util.Random;
 
+
+/**Model de la cursa de cavalls*/
 public class HorseRaceModel {
     private HorseSchedule horseSchedule;
     private ArrayList<HorseBet> pendingBets;

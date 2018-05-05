@@ -13,17 +13,19 @@ import Network.NetworkManager;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-
+/**
+ * Controlador per el joc dels cavalls
+ * */
 public class HorseRaceController extends Thread  {
     private  static HorseRaceModel horseRaceModel;
     private  static boolean racing;
     private  static int finished;
-    private  static float countdown;
+    private  static long countdown;
 
     private  NetworkManager networkManager;
     private  static ArrayList<Client> clients;
 
-    private static final int WAITTIME = 600;
+    private static final long WAITTIME = 5 * 1000;
     private static final int PRIZE_MULTIPLIER = 11;
 
     public HorseRaceController(HorseRaceModel horseRaceModel, ArrayList<Client> clients, NetworkManager networkManager){
@@ -32,15 +34,17 @@ public class HorseRaceController extends Thread  {
         this.racing = false;
         this.finished = 0;
         this.clients = clients;
-        this.countdown = 60.0f;
+        this.countdown = WAITTIME;
         this.start();
     }
 
+    /**Afegim una aposta per gestionar mes tard*/
     public static void addHorseBet(HorseBet horseBet) {
         HorseRaceController.horseRaceModel.addBet(horseBet);
     }
 
-    public static void removeBets(long id) {
+    /**Esborrem totes les apostes fetes des d'un usuari a partir del seu id*/
+    public static void removeBets(double id) {
         HorseBet horseBet;
         for(int i = horseRaceModel.getPendingBets().size() - 1; i >= 0 ; i--){
             horseBet = horseRaceModel.getPendingBets().get(i);
@@ -52,30 +56,47 @@ public class HorseRaceController extends Thread  {
 
     @Override
     public void run() {
+
         try {
-            this.racing = false;
-            for(int i = 0; i < WAITTIME ; i++){
-                sleep(100);
-                countdown-=0.1f;
-            }
-            countdown = 60.0f;
-            this.horseRaceModel.setHorseSchedule(new HorseSchedule());
-            this.racing = true;
-            this.finished = 0;
-            sendRace();
-            while(!allFinished()){
-                sleep(200);
-            }
-            for(Client client: clients){
-                if(client.isPlayingHorses()){
-                    if(isBetting(client)){
-                        client.send(HorseRaceController.calculateResult(client.getId(), horseRaceModel.getHorseSchedule().getWinner()));
+            while(true){
+                System.out.println("HORSES - New race");
+                this.racing = false;
+                this.countdown = WAITTIME;
+                for(Client client: clients){
+                    if(client.isPlayingHorses()){
+                        client.send(new HorseMessage(countdown, "Countdown"));
                     }
-                    client.send(new HorseMessage(countdown, "Countdown"));
+                }
+                System.out.println("Horses- Sending countdown");
+                for(int i = 0; i < WAITTIME/100 ; i++){
+                    sleep(100);
+                    countdown-=100;
+                    if (countdown == 0 ){
+                        break;
+                    }
+                }
+                this.horseRaceModel.setHorseSchedule(new HorseSchedule());
+                System.out.println("Horses- New schedule");
+                System.out.println("HORSES- PLAYING: " +  checkPlayers(clients));
+                this.racing = true;
+                this.finished = 0;
+                if(!clients.isEmpty() & checkPlayers(clients) > 0){
+                    sendRace();
+                    System.out.println("Horses- schedule sent");
+                    System.out.println("Waiting for " + checkPlayers(clients) + " to finish.");
+                    while(!allFinished()){
+                        sleep(200);
+                    }
+                    for(Client client: clients){
+                        if(client.isPlayingHorses()){
+                            client.send(HorseRaceController.calculateResult(horseRaceModel.getHorseSchedule().getWinner(), client));
+                        }
+                    }
+                    System.out.println("Horses- result sent");
+                    updateWallets();
+                    System.out.println("Horses- wallets updated");
                 }
             }
-            updateWallets();
-
         } catch (InterruptedException e) {
             System.out.println("Error in HorseRaceController Thread");
         }
@@ -84,6 +105,18 @@ public class HorseRaceController extends Thread  {
 
     }
 
+    /**Retorna la quantitat de jugadors que estan jugant als cavalls*/
+    private int checkPlayers(ArrayList<Client> clients) {
+        int players = 0;
+        for(Client client: clients){
+            if(client.isPlayingHorses()){
+                players++;
+            }
+        }
+        return players;
+    }
+
+    /**Indica si el client ha fet una aposta*/
     private boolean isBetting(Client client){
         for(HorseBet bet: horseRaceModel.getPendingBets()){
             if(bet.getID() == client.getId()){
@@ -93,11 +126,12 @@ public class HorseRaceController extends Thread  {
         return false;
     }
 
-    private static HorseMessage calculateResult(long id, int winner) {
+    /**Retorna el resultat de la carrera i el premi en cas d'aposta*/
+    private static HorseMessage calculateResult(int winner, Client client) {
         HorseResult horseResult = null;
         boolean found = false;
         for(HorseBet bet: horseRaceModel.getPendingBets()){
-            if(bet.getID() == id){
+            if(bet.getID() == client.getId()){
                 found = true;
                 if(bet.getHorse() == winner){
                     horseResult = new HorseResult(winner, bet.getBet() * PRIZE_MULTIPLIER);
@@ -106,19 +140,24 @@ public class HorseRaceController extends Thread  {
                 }
             }
         }
+        if (!found){
+            horseResult = new HorseResult(winner, 0);
+        }
         return new HorseMessage(horseResult, "Result");
     }
 
 
-    public static float getCountdown(){
+    /**Retorna el temps restant per començar la carrera*/
+    public static long getCountdown(){
         if(HorseRaceController.racing){
-            return -1;
+            return 0;
         }else{
             return HorseRaceController.countdown;
         }
     }
 
 
+    /**Enviem la cursa a tot client que estigui jugant*/
     public void sendRace(){
         if(clients.size() > 0) {
             for (Client client : clients) {
@@ -129,10 +168,12 @@ public class HorseRaceController extends Thread  {
         }
     }
 
+    /**Incrementem el comptador de jugador que han acabat de reproduir la carrera*/
     public static synchronized void addFinished(){
         HorseRaceController.finished++;
     }
 
+    /**Indica si tots els jugadors an acabat de reproduir la carrera*/
     public boolean allFinished(){
         int i = 0;
         for(Client client: clients){
@@ -140,14 +181,16 @@ public class HorseRaceController extends Thread  {
                 i++;
             }
         }
-        return i == HorseRaceController.finished;
+        return i <= HorseRaceController.finished;
 
     }
 
+    /**Retorna si s'esta reproduint una cursa*/
     public static boolean isRacing(){
         return HorseRaceController.racing;
     }
 
+    /**Actualitzem les monedes de tot usuari que hagi apostat i guanyat*/
     public void updateWallets(){
         Transaction transaction;
         for(HorseBet h: horseRaceModel.getPendingBets()){

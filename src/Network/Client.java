@@ -171,17 +171,17 @@ public class Client extends Thread {
                         break;
                     case "HORSES-Bet":
                         if(!HorseRaceController.isRacing()){
-                          //TODO: Complete bet
-                          /* if(checkHorseBet((HorseMessage)msg)){
+                            if(Database.getUserWallet(this.user.getUsername()) >= ((HorseMessage)msg).getHorseBet().getBet()){
+                                Database.registerTransaction(new Transaction("HorseBet", this.user.getUsername(), -((HorseMessage)msg).getHorseBet().getBet(), 1));
                                 HorseRaceController.addHorseBet(((HorseMessage)msg).getHorseBet());
                                 oos.writeObject(new HorseMessage(new HorseBet(true), "HORSES-BetConfirm"));
-
                             }else{
                                 oos.writeObject(new HorseMessage(new HorseBet(false), "HORSES-BetConfirm"));
-                            }*/
+                            }
                         }
 
                     case "HORSES-Finished":
+                        System.out.println("finished");
                         HorseRaceController.addFinished();
                         break;
                     case "rouletteConnection":
@@ -595,11 +595,4 @@ public class Client extends Thread {
        }
     }
 
-   /* public boolean checkHorseBet(HorseMessage horseMessage){
-        if(!horseMessage.getHorseBet().equals(null)){
-
-
-
-        }
-    }*/
 }
