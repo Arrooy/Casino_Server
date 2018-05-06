@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.*;
 
 import static Model.Casino_Server.OFF_LINE;
@@ -83,6 +85,9 @@ public class Client extends Thread {
     /** Valor de les cartes de l'usuari*/
     private int valorIA;
 
+    /** Valor de l'aposta del usuari*/
+    private long userBet;
+
     private boolean connectedToRoulette;
 
     private boolean playingHorses;
@@ -111,9 +116,9 @@ public class Client extends Thread {
     public void run() {
         while ((user == null || user.isOnline()) && keepLooping) {
             try {
-                System.out.println("[DEBUG]: Reading next message now");
+                //System.out.println("[DEBUG]: Reading next message now");
                 Message msg = (Message) ois.readObject();
-                System.out.println("[DEBUG]: New Message: " + msg.getContext());
+                //System.out.println("[DEBUG]: New Message: " + msg.getContext());
                 switch (msg.getContext()) {
                     case CONTEXT_LOGIN:
                         logIn(msg);
@@ -201,11 +206,13 @@ public class Client extends Thread {
                 Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
                 HorseRaceController.removeBets(this.getId());
                 usuarisConnectats.remove(this);
+                e.printStackTrace();
                 break;
             }
         }
     }
 
+    //TODO: REPARAR ARROYO.
     private void deposit(Transaction transaction) {
         try {
             long wallet = Database.getUserWallet(transaction.getUsername());
@@ -217,6 +224,7 @@ public class Client extends Thread {
             if (u.areCredentialsOk()) Database.registerTransaction(transaction);
 
             oos.writeObject(u);
+
         } catch (Exception e) {
             user.setCredentialsOk(false);
             try {
@@ -271,6 +279,7 @@ public class Client extends Thread {
             //Si no existeix el nom, s'intenta crear el nou usuari
             try {
                 Database.insertNewUser(request);
+
                 //Es verifica el nou usuari i es reenvia al client amb el mateix ID amb el que s'ha demanat el registre
                 request.setCredentialsOk(true);
                 Database.updateUser(request, true);
@@ -366,29 +375,44 @@ public class Client extends Thread {
 
     private void blackJackInit(Message reading) {
 
-        //TODO: Verificar 54 cartes
         //Es transforma el missatge a carta.
         Card carta = (Card)reading;
 
-        baralla = new Stack<>();
-        baralla.removeAllElements();
+        long userBet = carta.getBet();
 
-        valorUsuari = 0;
-        valorIA = 0;
+        try {
+           long money = Database.getUserWallet(user.getUsername());
 
-        System.out.println("\n\nNew game of BJ!\n**************");
+           if(money < userBet){
+               carta.setBetOk(false);
+           }else{
+               this.userBet = userBet;
+               carta.setWallet(money);
+               carta.setBetOk(true);
+           }
+            System.out.println("User wallet: " + money);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            baralla = new Stack<>();
+            baralla.removeAllElements();
 
-        //Es reinicia el nombre maxim de cartes d'una persona
-        numberOfUserCards = 0;
+            valorUsuari = 0;
+            valorIA = 0;
 
-        //Es copia la baralla
-        baralla = carta.getNomCartes();
+            if(carta.isBetOk())System.out.println("\n\nNew game of BJ!\n**************");
 
-        //Es barreja la baralla
-        Collections.shuffle(baralla);
+            //Es reinicia el nombre maxim de cartes d'una persona
+            numberOfUserCards = 0;
 
-        //S'afegeix la carta al joc
-        blackJack(carta);
+            //Es copia la baralla
+            baralla = carta.getNomCartes();
+
+            //Es barreja la baralla
+            Collections.shuffle(baralla);
+
+            //S'afegeix la carta al joc
+            blackJack(carta);
     }
 
     /**
@@ -419,6 +443,7 @@ public class Client extends Thread {
                     if(valorIA >= valorUsuari){
                         System.out.println("Usuari ha perdut directament");
                         carta.setDerrota("user-instant");
+                        acabaPartidaBlackJack(userBet * -1);
                     }else {
                         if (carta.getValue() == 11) {
                             if (valorIA + 11 <= 21) {
@@ -435,14 +460,15 @@ public class Client extends Thread {
                                 carta.setValue(carta.getValue() - 10);
                             } else {
                                 carta.setDerrota("IA");
-                                System.out.println("La ia s'ha passat.");
+                                acabaPartidaBlackJack(userBet);
                             }
-                        }
-
-                        if (valorIA >= valorUsuari) {
-                            carta.setDerrota("user");
-                        } else {
-                            carta.setDerrota("false");
+                        }else {
+                            if (valorIA >= valorUsuari) {
+                                carta.setDerrota("user");
+                                acabaPartidaBlackJack(userBet * -1);
+                            } else {
+                                carta.setDerrota("false");
+                            }
                         }
                         carta.setGirada(false);
                     }
@@ -478,6 +504,7 @@ public class Client extends Thread {
                                 carta.setValent11(carta.getValent11() - 1);
                             }else{
                                 carta.setDerrota("user");
+                                acabaPartidaBlackJack(userBet * -1);
                                 System.out.println("El user s'ha pasat de 21 [" + valorUsuari + "]");
                             }
                         }else{
@@ -492,6 +519,13 @@ public class Client extends Thread {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void acabaPartidaBlackJack(long money) {
+        Timestamp time = Timestamp.from(Instant.now());
+        Transaction finishGame = new Transaction(null,user.getUsername(),money,3);
+        finishGame.setTime(time);
+        Database.registerTransaction(finishGame);
     }
 
     public void sendRouletteShot(RouletteMessage rouletteMessage) {

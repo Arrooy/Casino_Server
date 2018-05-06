@@ -127,7 +127,6 @@ public class Database {
                 "lastLogin = CURRENT_TIME, " +
                 CNAME_PASSWORD + "='" + user.getPassword() + "'" +
                 "where " + CNAME_USERNAME + "='" + user.getUsername() + "'");
-        System.out.println("\nuser updated\n");
     }
 
     /**
@@ -157,9 +156,7 @@ public class Database {
         try {
             ResultSet rs = conn.createStatement().executeQuery("select password from Users where username = '" + user.getUsername() + "'");
             rs.next();
-            String pass = (String) Seguretat.desencripta(rs.getString("password"));
-
-            user.setCredentialsOk(user.getPassword().equals(pass));
+            user.setCredentialsOk(Seguretat.desencripta( user.getPassword()).equals(Seguretat.desencripta(rs.getString("password"))));
             return user;
         } catch (Exception e) {
             user.setCredentialsOk(false);
@@ -355,4 +352,5 @@ public class Database {
         }
         return null;
     }
+
 }

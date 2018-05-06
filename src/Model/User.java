@@ -125,7 +125,7 @@ public class User extends Message {
     }
 
     public String getPassword() {
-        return (String)Seguretat.desencripta(password);
+        return password;
     }
 
     public void setPassword(String password) {
