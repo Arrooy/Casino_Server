@@ -368,4 +368,42 @@ public class Database {
         return null;
     }
 
+    public static User[] getTop(int type) {
+        User[] top = new User[5];
+
+        try {
+            LinkedList<User> users = new LinkedList<>();
+            ResultSet rs = conn.createStatement().executeQuery("select * from Transactions where type = '" + type + "';");
+
+            while (rs.next()) {
+                boolean found = false;
+
+                for (User u: users) if (rs.getString("username").equals(u.getUsername())) {
+                    u.setWallet(u.getWallet() + rs.getLong("earnings"));
+                    found = true;
+                }
+
+                if (!found) {
+                    User aux = new User();
+                    aux.setUsername(rs.getString("username"));
+                    aux.setWallet(rs.getLong("earnings"));
+                    users.add(aux);
+                }
+            }
+
+            for (int i = 0; i < 5; i++) {
+                User max = new User();
+                max.setWallet(-1);
+                for (User u: users) max = u.getWallet() > max.getWallet() ? u : max;
+
+                top[i] = max;
+                users.remove(max);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return top;
+    }
 }

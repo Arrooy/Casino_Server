@@ -1,20 +1,11 @@
 package Model;
 
 import Controlador.Controller;
-import Controlador.HorseRaceController;
-import Model.HorseRace_Model.HorseRaceModel;
 import Network.NetworkManager;
-import Vista.CoinHistoryView;
 import Vista.Finestra;
-import Vista.MainView;
-import Vista.Tray;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
 
 /**
  * Classe principal del programa pel servidor. S'encarrega d'establir la connexió amb

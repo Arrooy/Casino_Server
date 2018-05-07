@@ -1,4 +1,4 @@
-package Controlador;
+package Network;
 
 import Model.Database;
 import Model.HorseRace_Model.HorseMessage;
@@ -7,8 +7,6 @@ import Model.HorseRace_Model.HorseRaceModel;
 import Model.HorseRace_Model.HorseResult;
 import Model.HorseRace_Model.HorseSchedule;
 import Model.Transaction;
-import Network.Client;
-import Network.NetworkManager;
 
 
 import java.sql.Timestamp;
@@ -59,7 +57,7 @@ public class HorseRaceController extends Thread  {
 
         try {
             while(true){
-                System.out.println("HORSES - New race");
+               // System.out.println("HORSES - New race");
                 this.racing = false;
                 this.countdown = WAITTIME;
                 for(Client client: clients){
@@ -67,7 +65,7 @@ public class HorseRaceController extends Thread  {
                         client.send(new HorseMessage(countdown, "Countdown"));
                     }
                 }
-                System.out.println("Horses- Sending countdown");
+               // System.out.println("Horses- Sending countdown");
                 for(int i = 0; i < WAITTIME/100 ; i++){
                     sleep(100);
                     countdown-=100;
@@ -76,14 +74,14 @@ public class HorseRaceController extends Thread  {
                     }
                 }
                 this.horseRaceModel.setHorseSchedule(new HorseSchedule());
-                System.out.println("Horses- New schedule");
-                System.out.println("HORSES- PLAYING: " +  checkPlayers(clients));
+                //System.out.println("Horses- New schedule");
+                //System.out.println("HORSES- PLAYING: " +  checkPlayers(clients));
                 this.racing = true;
                 this.finished = 0;
                 if(!clients.isEmpty() & checkPlayers(clients) > 0){
                     sendRace();
-                    System.out.println("Horses- schedule sent");
-                    System.out.println("Waiting for " + checkPlayers(clients) + " to finish.");
+                //    System.out.println("Horses- schedule sent");
+                //    System.out.println("Waiting for " + checkPlayers(clients) + " to finish.");
                     while(!allFinished()){
                         sleep(200);
                     }
@@ -92,9 +90,9 @@ public class HorseRaceController extends Thread  {
                             client.send(HorseRaceController.calculateResult(horseRaceModel.getHorseSchedule().getWinner(), client));
                         }
                     }
-                    System.out.println("Horses- result sent");
+                //    System.out.println("Horses- result sent");
                     updateWallets();
-                    System.out.println("Horses- wallets updated");
+                //    System.out.println("Horses- wallets updated");
                 }
             }
         } catch (InterruptedException e) {

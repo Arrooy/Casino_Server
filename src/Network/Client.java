@@ -1,7 +1,6 @@
 package Network;
 
 import Controlador.Controller;
-import Controlador.HorseRaceController;
 import Model.*;
 import Model.HorseRace_Model.HorseBet;
 import Model.HorseRace_Model.HorseMessage;

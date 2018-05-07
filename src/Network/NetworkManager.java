@@ -1,7 +1,6 @@
 package Network;
 
 import Controlador.Controller;
-import Controlador.HorseRaceController;
 import Model.HorseRace_Model.HorseRaceModel;
 import Utils.JsonManager;
 import Network.Roulette.RouletteThread;

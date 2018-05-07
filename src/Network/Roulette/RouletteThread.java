@@ -29,7 +29,18 @@ public class RouletteThread extends Thread {
             rouletteManager.setRandomParams();
             rouletteManager.shootBall();
 
-            while (!rouletteManager.winnerExists()) rouletteManager.update();
+            double errortimer = System.nanoTime();
+            System.out.println("searching winner");
+            while (!rouletteManager.winnerExists()) {
+                rouletteManager.update();
+                if ((System.nanoTime() - errortimer)/1000000 > 100000) {
+                    errortimer = System.nanoTime();
+                    rouletteManager.setRandomParams();
+                    rouletteManager.shootBall();
+                    System.out.println("[ROULETTE WARNING]: mal rollo");
+                }
+            }
+            System.out.println("found winner");
 
             RouletteMessage rm = rouletteManager.genMessage();
 
