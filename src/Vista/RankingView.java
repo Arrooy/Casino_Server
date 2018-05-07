@@ -106,9 +106,33 @@ public class RankingView extends View {
 
     public void updateTable(Object[][] objects){
         //TODO ordenar per dineros
+        ordenarLlista(objects);
         JTable aux = new JTable(objects, columnNames);
         jtRanking.setModel(aux.getModel());
         jtRanking.revalidate();
         updateUI();
     }
+
+    private static void ordenarLlista(Object[][] arr) {
+        int n = arr.length;
+        Object[] temp = new Object[3];
+
+        for(int i=0; i < n; i++){
+            for(int j=1; j < (n-i); j++){
+                if((Long)arr[j-1][1] > (Long)arr[j][1]){
+                    //swap elements
+                    temp[0] = arr[j-1][0];
+                    temp[1] = arr[j-1][1];
+                    temp[2] = arr[j-1][2];
+                    arr[j-1][0] = arr[j][0];
+                    arr[j-1][1] = arr[j][1];
+                    arr[j-1][2] = arr[j][2];
+                    arr[j][0] = temp[0];
+                    arr[j][1] = temp[1];
+                    arr[j][2] = temp[2];
+                }
+            }
+        }
+    }
+
 }
