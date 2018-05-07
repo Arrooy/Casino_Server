@@ -273,7 +273,7 @@ public class Client extends Thread {
         boolean impossibleRegistrar = false;
 
         //En el cas de trobar una persona amb el mateix username que es vol registrar, es nega el registre al client.
-        if (Database.usernamePicked(request.getUsername())) {
+        if (Database.usernamePicked(request.getUsername()) || Database.mailPicked(request.getMail())) {
             impossibleRegistrar  = true;
         } else {
             //Si no existeix el nom, s'intenta crear el nou usuari

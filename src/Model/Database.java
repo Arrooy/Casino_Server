@@ -209,6 +209,21 @@ public class Database {
     }
 
     /**
+     * Mètode per a comprovar si un nom ja està usat per un usuari
+     * @param mail Nom a comprovar
+     * @return Si ja està agafat el nom
+     */
+    public static boolean mailPicked(String mail) {
+        try {
+            ResultSet rs = conn.createStatement().executeQuery("select mail from Users");
+            while (rs.next()) if (mail.equals(rs.getString("mail"))) return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * Mètode que registra una nova transacció a la base de dades.
      * @param transaction Transacció a registrar
      */

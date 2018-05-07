@@ -36,12 +36,12 @@ public class RouletteThread extends Thread {
             System.out.println("[ROULETTE WINNER]: " + rm.getWinner());
             while (Timestamp.from(Instant.now()).getTime() < timeTillNext);
 
-            timeTillNext = Timestamp.from(Instant.now()).getTime() + 1000 * 60 * .5;
+            timeTillNext = Timestamp.from(Instant.now()).getTime() + 1000 * 60 * .3;
             rm.setTimeTillNext(timeTillNext);
             for (Client c: clients) c.sendRouletteShot(rm);
 
             try {
-                sleep((int) (1000 * 60 * .4));
+                sleep((int) (1000 * 60 * .2));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

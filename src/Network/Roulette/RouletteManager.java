@@ -8,6 +8,8 @@ import java.util.LinkedList;
 
 public class RouletteManager {
 
+    public static final int MAXCELLS = 37;
+
     private int width = 600, height = 600;
 
     private LinkedList<GRect> bars;
@@ -20,6 +22,8 @@ public class RouletteManager {
     private boolean winnerE;
     private int winner;
 
+    private int shotOff;
+
     private GraphicsManager gm;
 
     private RouletteThread thread;
@@ -29,14 +33,16 @@ public class RouletteManager {
         this.height = height;
         this.thread = thread;
         this.gm = gm;
+
+        shotOff = 0;
     }
 
     public void init() {
         bars = new LinkedList<>();
         ball = new RouletteBall(width / 2 - 20, height / 2 - 50, width / 2, height / 2, this, 100, 80);
 
-        for (int i = 0; i < 37; i++) {
-            bars.add(new GRect(width / 2 - 100, height / 2 - 1, 20, 2, i * 2*Math.PI/37, width/2, height/2));
+        for (int i = 0; i < MAXCELLS; i++) {
+            bars.add(new GRect(width / 2 - 100, height / 2 - 1, 20, 2, i * 2*Math.PI/MAXCELLS, width/2, height/2));
         }
 
         vel = initVel;
@@ -73,29 +79,30 @@ public class RouletteManager {
 
     public void setRandomParams() {
         final int MAXRVEL = 35;
-        final int MINRVEL = 65;
+        final int MINRVEL = 60;
 
         final int MAXBVEL = 100;
-        final int MINBVEL = 300;
+        final int MINBVEL = 400;
 
         RouletteManager.initVel = (MINRVEL - MAXRVEL) * Math.random() + MAXRVEL;
         ball.setDefaultVelY((MINBVEL - MAXBVEL) * Math.random() + MAXBVEL);
+        shotOff = (int) (MAXCELLS * Math.random());
     }
 
     public RouletteMessage genMessage(){
-        return new RouletteMessage(initVel, RouletteBall.getInitVel(), winner);
+        return new RouletteMessage(initVel, RouletteBall.getInitVel(), getWinner(), shotOff);
     }
 
     public int getWinner() {
-        return winner;
+        return (shotOff + winner) % MAXCELLS;
     }
 
     public void shootBall() {
         winner = 100;
 
         bars = new LinkedList<>();
-        for (int i = 0; i < 37; i++) {
-            bars.add(new GRect(width / 2 - 100, height / 2 - 1, 20, 2, i * 2*Math.PI/37, width/2, height/2));
+        for (int i = 0; i < MAXCELLS; i++) {
+            bars.add(new GRect(width / 2 - 100, height / 2 - 1, 20, 2, i * 2*Math.PI/MAXCELLS, width/2, height/2));
         }
 
         ball = new RouletteBall(width / 2 - 20, height / 2 - 50, width / 2, height / 2, this, 100, 80);

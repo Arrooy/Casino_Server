@@ -11,11 +11,13 @@ public class RouletteMessage extends Message {
     private double ballVel;
     private int winner;
     private double timeTillNext;
+    private int shotOff;
 
-    public RouletteMessage(double rouletteVel, double ballVel, int winner) {
+    public RouletteMessage(double rouletteVel, double ballVel, int winner, int shotOff) {
         this.rouletteVel = rouletteVel;
         this.ballVel = ballVel;
         this.winner = winner;
+        this.shotOff = shotOff;
 
         context = "roulette";
 
@@ -29,6 +31,10 @@ public class RouletteMessage extends Message {
         rouletteVel = 0;
         ballVel = 0;
         winner = 100;
+    }
+
+    public int getShotOff() {
+        return shotOff;
     }
 
     public double getTimeTillNext() {
