@@ -1,5 +1,6 @@
 package Model;
 
+import Utils.JsonManager;
 import Utils.Seguretat;
 
 import java.sql.*;
@@ -36,14 +37,6 @@ public class Database {
 
     private static final String[] COLUMN_NAMES = {CNAME_USERNAME, CNAME_MAIL, CNAME_PASSWORD, CNAME_WALLET, CNAME_COINHISTORY};
 
-    //   ---   INFORMACIÓ PER A ESTABLIR LA CONNEXIÓ AMB LA BASE DE DADES   ---   //
-    private static final String host = "128.199.32.184";
-    private static final String port = "3306";
-    private static final String database = "Casino_Database";
-    private static final String dbUrl = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useServerPrepStmts=true&useSSL=false";
-    private static final String username = "casino";
-    private static final String password = "casino";
-
     private static Connection conn;
     private static long lastID = 0;
 
@@ -56,7 +49,20 @@ public class Database {
      * @throws Exception En cas de fallar la inicialització del driver o la connexió al servidor
      */
     public static void initBaseDades() throws Exception {
-        //TODO: connect with json
+
+        //Es llegeix l'informacio de la DB a partir del Json
+        Object[] infoJson = JsonManager.llegirJson("DireccioDatabase","PortDatabase","NomDatabase"
+                ,"UsuariBasedeDades","PasswordBaseDades");
+
+        //Es guarden les dades del Json
+        String host = (String) infoJson[0];
+        String port = String.valueOf(infoJson[1]);
+        String database = (String) infoJson[2];
+        String username = (String) infoJson[3];
+        String password = (String) infoJson[4];
+        String dbUrl = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useServerPrepStmts=true&useSSL=false";
+
+        //Es realitza la connexio amb la DB
         Class.forName("com.mysql.jdbc.Driver");
         Class.forName("com.mysql.jdbc.Connection");
         conn = DriverManager.getConnection(dbUrl, username, password);

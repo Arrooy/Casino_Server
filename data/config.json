@@ -1,7 +1,8 @@
 {
  "PortClients": 2525,
- "NomDatabase": "DATABASE_NAME",
- "PortDatabase": 2020,
- "UsuariBadeDades": "NOM_USUARI",
- "DireccioDatabase": "127.0.0.1"
+ "NomDatabase": "Casino_Database",
+ "PortDatabase": 3306,
+ "UsuariBasedeDades": "casino",
+ "PasswordBaseDades":"casino",
+ "DireccioDatabase": "128.199.32.184"
 }
