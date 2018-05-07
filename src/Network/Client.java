@@ -246,9 +246,11 @@ public class Client extends Thread {
 
         //Es guarda el user
         user = request;
+        user.setWallet(10000);
 
         //Es verifica l'user
         request.setCredentialsOk(true);
+
         try {
             //Es torna al clinet l'user amb la verificacio
             oos.writeObject(request);
@@ -279,6 +281,7 @@ public class Client extends Thread {
             try {
                 Database.insertNewUser(request);
 
+                user = request;
                 //Es verifica el nou usuari i es reenvia al client amb el mateix ID amb el que s'ha demanat el registre
                 request.setCredentialsOk(true);
                 Database.updateUser(request, true);
@@ -380,9 +383,10 @@ public class Client extends Thread {
         long userBet = carta.getBet();
 
         try {
-           long money = Database.getUserWallet(user.getUsername());
+           long money = user.isGuest() ? user.getWallet() : Database.getUserWallet(user.getUsername());
 
-           if(money < userBet){
+
+           if(money < userBet || userBet < 10){
                carta.setBetOk(false);
            }else{
                this.userBet = userBet;
@@ -459,7 +463,12 @@ public class Client extends Thread {
                                 carta.setValue(carta.getValue() - 10);
                             } else {
                                 carta.setDerrota("IA");
-                                acabaPartidaBlackJack(userBet);
+                                if(valorUsuari != 21){
+                                    acabaPartidaBlackJack(userBet * 2);
+                                }else{
+                                    acabaPartidaBlackJack((long)(userBet * 1.5));
+                                }
+
                             }
                         }else {
                             if (valorIA >= valorUsuari) {
@@ -521,10 +530,15 @@ public class Client extends Thread {
     }
 
     private void acabaPartidaBlackJack(long money) {
-        Timestamp time = Timestamp.from(Instant.now());
-        Transaction finishGame = new Transaction(null,user.getUsername(),money,3);
-        finishGame.setTime(time);
-        Database.registerTransaction(finishGame);
+
+        if(user.isGuest()){
+            user.setWallet(user.getWallet() + money);
+        }else{
+            Timestamp time = Timestamp.from(Instant.now());
+            Transaction finishGame = new Transaction(null,user.getUsername(),money,3);
+            finishGame.setTime(time);
+            Database.registerTransaction(finishGame);
+        }
     }
 
     public void sendRouletteShot(RouletteMessage rouletteMessage) {

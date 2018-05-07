@@ -18,7 +18,7 @@ import java.sql.SQLException;
 
 public class Casino_Server {
 
-    public static final boolean OFF_LINE = true;
+    public static final boolean OFF_LINE = false;
 
     public static final int WELCOME_GIFT = 500;
 

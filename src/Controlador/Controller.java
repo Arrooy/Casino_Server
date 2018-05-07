@@ -6,6 +6,7 @@ import Network.NetworkManager;
 import Vista.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 /** Controlador del servidor*/
@@ -68,18 +69,20 @@ public class Controller implements ActionListener, WindowListener, MouseListener
                 break;
             case "top5":
                 vista.setTop5();
+                top5.enableResize(true);
                 break;
             case "blackJackGraph":
-                top5.setGraphContent(new JLabel("blackJackGraph"));
+                top5.generateGraph("b");
                 break;
             case "horseGraph":
-                top5.setGraphContent(new JLabel("horseGraph"));
+                top5.generateGraph("h");
                 break;
             case "rouletteGraph":
-                top5.setGraphContent(new JLabel("rouletteGraph"));
+                top5.generateGraph("r");
                 break;
             case "returnMainView":
                 vista.setMainView();
+                top5.enableResize(false);
                 break;
             //En el cas de apretar l'opcio de sortir desde la Tray
             case "trayButtonExit" :
@@ -143,12 +146,18 @@ public class Controller implements ActionListener, WindowListener, MouseListener
     public void componentResized(ComponentEvent e) {
         if(coinHistoryView != null)
             coinHistoryView.updateSize(false);
+        if(top5 != null)
+            top5.updateGraph();
+
     }
 
     @Override
     public void componentMoved(ComponentEvent e) {
         if(coinHistoryView != null)
             coinHistoryView.updateSize(true);
+        if(top5 != null)
+            top5.updateGraph();
+
     }
 
     @Override

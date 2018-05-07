@@ -11,6 +11,9 @@ import Model.Transaction;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+
+import static Model.Transaction.TRANSACTION_HORSES;
+
 /**
  * Controlador per el joc dels cavalls
  * */
@@ -195,7 +198,7 @@ public class HorseRaceController extends Thread  {
             if(h.getHorse() == this.horseRaceModel.getHorseSchedule().getWinner()){
                 for(Client client: clients){
                     if(client.getId() == h.getID()){
-                        transaction = new Transaction("HORSES", client.getName(), h.getBet() * PRIZE_MULTIPLIER, 1);
+                        transaction = new Transaction("HORSES", client.getName(), h.getBet() * PRIZE_MULTIPLIER, TRANSACTION_HORSES);
                         transaction.setTime(new Timestamp(System.currentTimeMillis()));
                         Database.registerTransaction(transaction);
                     }

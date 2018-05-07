@@ -62,6 +62,7 @@ public class Card extends Message {
         this.nomCartes = nomCartes;
         this.cardName = cardName;
         ID = Math.random();
+
         reverseName = null;
         this.context = context;
 
