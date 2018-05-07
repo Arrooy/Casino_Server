@@ -463,12 +463,11 @@ public class Client extends Thread {
                                 carta.setValue(carta.getValue() - 10);
                             } else {
                                 carta.setDerrota("IA");
-                                if(valorUsuari != 21){
-                                    acabaPartidaBlackJack(userBet * 2);
+                                if(valorUsuari == 21 && numberOfUserCards == 2) {
+                                    acabaPartidaBlackJack((long) (userBet * 1.5));
                                 }else{
-                                    acabaPartidaBlackJack((long)(userBet * 1.5));
+                                    acabaPartidaBlackJack(userBet * 2);
                                 }
-
                             }
                         }else {
                             if (valorIA >= valorUsuari) {
