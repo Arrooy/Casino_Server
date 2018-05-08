@@ -22,6 +22,8 @@ public class NetworkManager extends Thread{
     /** Llistat d'usuaris connectats al servidor*/
     private ArrayList<Client> usuarisConnectats;
 
+    private HorseRaceController horseRaceController;
+
 
     /** Inicialitza el newtWorkManager i obre el port determinat al json de configuracio*/
     public NetworkManager(){
@@ -35,7 +37,7 @@ public class NetworkManager extends Thread{
         }
 
         new RouletteThread(usuarisConnectats);
-        new HorseRaceController(new HorseRaceModel(), usuarisConnectats, this);
+        this.horseRaceController = new HorseRaceController(new HorseRaceModel(), usuarisConnectats, this);
     }
 
     /** Inicia la acceptacio de nous usuaris*/
@@ -49,7 +51,7 @@ public class NetworkManager extends Thread{
         while(true){
             try {
                 //Esperem i creem un client per a cada nova conexio entrant
-                Client nouClient = new Client(usuarisConnectats,serverSocket.accept(),controller);
+                Client nouClient = new Client(usuarisConnectats,serverSocket.accept(),controller, horseRaceController);
 
                 //Afegeim el client a la llista de clients
                 usuarisConnectats.add(nouClient);

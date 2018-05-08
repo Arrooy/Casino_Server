@@ -25,8 +25,9 @@ public class HorseRaceController extends Thread  {
 
     private  NetworkManager networkManager;
     private  static ArrayList<Client> clients;
+    private static ArrayList<Client> playRequests;
 
-    private static final long WAITTIME = 5 * 1000;
+    private static final long WAITTIME = 10 * 1000;
     private static final int PRIZE_MULTIPLIER = 11;
 
     public HorseRaceController(HorseRaceModel horseRaceModel, ArrayList<Client> clients, NetworkManager networkManager){
@@ -36,6 +37,7 @@ public class HorseRaceController extends Thread  {
         this.finished = 0;
         this.clients = clients;
         this.countdown = WAITTIME;
+        this.playRequests = new ArrayList<>();
         this.start();
     }
 
@@ -55,24 +57,29 @@ public class HorseRaceController extends Thread  {
         }
     }
 
+    public static void addPlayRequest(Client client){
+        playRequests.add(client);
+    }
+
     @Override
     public void run() {
 
         try {
             while(true){
-               // System.out.println("HORSES - New race");
+                System.out.println("HORSES - New race");
+                manageRequests(playRequests);
                 this.racing = false;
                 this.countdown = WAITTIME;
-                for(Client client: clients){
-                    if(client.isPlayingHorses()){
-                        client.send(new HorseMessage(countdown, "Countdown"));
+                for(int i = clients.size() - 1; i >= 0; i--){
+                    if(clients.get(i).isPlayingHorses()){
+                        clients.get(i).send(new HorseMessage(countdown, "Countdown"));
                     }
                 }
-               // System.out.println("Horses- Sending countdown");
+                //System.out.println("Horses- Sending countdown");
                 for(int i = 0; i < WAITTIME/100 ; i++){
                     sleep(100);
                     countdown-=100;
-                    if (countdown == 0 ){
+                    if (countdown <= 0 ){
                         break;
                     }
                 }
@@ -83,19 +90,15 @@ public class HorseRaceController extends Thread  {
                 this.finished = 0;
                 if(!clients.isEmpty() & checkPlayers(clients) > 0){
                     sendRace();
-                //    System.out.println("Horses- schedule sent");
-                //    System.out.println("Waiting for " + checkPlayers(clients) + " to finish.");
+                    //System.out.println("Horses- schedule sent");
+                    System.out.println("Waiting for " + checkPlayers(clients) + " to finish.");
                     while(!allFinished()){
-                        sleep(200);
+                        sleep(100);
                     }
-                    for(Client client: clients){
-                        if(client.isPlayingHorses()){
-                            client.send(HorseRaceController.calculateResult(horseRaceModel.getHorseSchedule().getWinner(), client));
-                        }
-                    }
-                //    System.out.println("Horses- result sent");
+                    sleep(500);
+                    //System.out.println("Horses- result sent");
                     updateWallets();
-                //    System.out.println("Horses- wallets updated");
+                    //System.out.println("Horses- wallets updated");
                 }
             }
         } catch (InterruptedException e) {
@@ -106,11 +109,19 @@ public class HorseRaceController extends Thread  {
 
     }
 
+    private void manageRequests(ArrayList<Client> playRequests) {
+        for(int i = playRequests.size() - 1; i >= 0; i--){
+            playRequests.get(i).setPlayingHorses(true);
+            playRequests.remove(i);
+        }
+
+    }
+
     /**Retorna la quantitat de jugadors que estan jugant als cavalls*/
     private int checkPlayers(ArrayList<Client> clients) {
         int players = 0;
-        for(Client client: clients){
-            if(client.isPlayingHorses()){
+        for(int i = clients.size() - 1; i >= 0; i--){
+            if(clients.get(i).isPlayingHorses()){
                 players++;
             }
         }
@@ -205,6 +216,12 @@ public class HorseRaceController extends Thread  {
                 }
 
             }
+        }
+    }
+
+    public void sendResult(Client client) {
+        if(isRacing()){
+              client.send(HorseRaceController.calculateResult(horseRaceModel.getHorseSchedule().getWinner(), client));
         }
     }
 }
