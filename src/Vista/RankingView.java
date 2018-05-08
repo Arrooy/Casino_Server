@@ -105,7 +105,6 @@ public class RankingView extends View {
     }
 
     public void updateTable(Object[][] objects){
-        //TODO ordenar per dineros
         ordenarLlista(objects);
         JTable aux = new JTable(objects, columnNames);
         jtRanking.setModel(aux.getModel());

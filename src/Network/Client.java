@@ -52,6 +52,8 @@ public class Client extends Thread {
     /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_GET_COINS = "userCoins";
 
+    /** Constant per a contexualitzar els missatges entre client i servidor*/
+    public static final String CONTEXT_WALLET_EVOLUTION = "walletEvolution";
 
     /** Controlador del sistema*/
     private Controller controller;
@@ -202,6 +204,9 @@ public class Client extends Thread {
                     case "rouletteDisconnection":
                         connectedToRoulette = false;
                         break;
+                    case CONTEXT_WALLET_EVOLUTION:
+                        walletEvolutionResponse(msg);
+                        break;
                     default:
                         System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND");
 
@@ -214,6 +219,18 @@ public class Client extends Thread {
                 e.printStackTrace();
                 break;
             }
+        }
+    }
+
+    private void walletEvolutionResponse(Message msg) {
+        WalletEvolutionMessage wallet = (WalletEvolutionMessage)msg;
+
+        wallet.setTransactions(Database.getTransactions(user.getUsername()));
+
+        try {
+            oos.writeObject(wallet);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
