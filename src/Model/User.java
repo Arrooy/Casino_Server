@@ -1,12 +1,10 @@
 package Model;
 
+import Network.Client;
 import Network.Message;
 import Utils.Seguretat;
 
 import java.util.ArrayList;
-
-import static Network.Client.CONTEXT_LOGIN_GUEST;
-
 
 /** Usuari basic del casino*/
 
@@ -47,8 +45,22 @@ public class User extends Message {
      */
     public User() {
         ID = Math.random();
-        this.context = CONTEXT_LOGIN_GUEST;
+        this.context = Client.CONTEXT_LOGIN_GUEST;
         isGuest = true;
+    }
+
+    /**
+     * Crea un usuari a partir d'unaltre
+     * Aquest usuari se li adjudica un Identificador d'unaltre missatge
+     */
+    public User(User user, double id) {
+        this.context = user.getContext();
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.setCredentialsOk(user.areCredentialsOk());
+        this.setGuest(user.isGuest());
+
+        ID = id;
     }
 
     /**
@@ -170,7 +182,7 @@ public class User extends Message {
 
     @Override
     public String toString() {
-        return "Usuari:\n\tUsername: " + username + "\n\tPassword: " + password + "\n\tID: " + ID;
+        return "Usuari:\n\tUsername: " + username + "\n\tPassword: " + password + "\n\tID: " + ID + "\n\tcredentialsOk: " + credentialsOk + "\n\tisGuest: " + isGuest;
     }
 
     public boolean isGuest() {

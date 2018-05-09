@@ -6,6 +6,7 @@ import Model.HorseRace_Model.HorseBet;
 import Model.HorseRace_Model.HorseMessage;
 import Model.RouletteMessage;
 import Network.Roulette.RouletteThread;
+import Utils.Seguretat;
 import Vista.Tray;
 
 import java.io.IOException;
@@ -54,6 +55,9 @@ public class Client extends Thread {
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_WALLET_EVOLUTION = "walletEvolution";
+
+    /** Constant per a contexualitzar els missatges entre client i servidor*/
+    public static final String CONTEXT_CHANGE_PASSWORD = "change password";
 
     /** Controlador del sistema*/
     private Controller controller;
@@ -151,17 +155,8 @@ public class Client extends Thread {
                         user.setWallet(Database.getUserWallet(this.user.getUsername()));
                         oos.writeObject(user);
                         break;
-                    case "change password":
-                        User userPass = (User) msg;
-                        System.out.print(((User) msg).getPassword());
-                        if(checkPassword(((User) msg).getPassword())){
-                            System.out.println("    OK");
-                            Database.updateUser(userPass, true);
-                            //oos.writeObject(new PasswordMessage("PasswordConfirm", null, true));
-                        }else{
-                            System.out.println("    KO");
-                            //oos.writeObject(new PasswordMessage("PasswordConfirm", null, false));
-                        }
+                    case CONTEXT_CHANGE_PASSWORD:
+                        changePassword(msg);
                         break;
                     case "deposit":
                         deposit((Transaction) msg);
@@ -222,6 +217,33 @@ public class Client extends Thread {
         }
     }
 
+    private void changePassword(Message msg) {
+
+        User userPass = (User) msg;
+        userPass.setOnline(true);
+
+        if(checkPassword((String)Seguretat.desencripta(userPass.getPassword()))){
+            try {
+                Database.updateUser(userPass, true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            userPass.setCredentialsOk(true);
+            try {
+                oos.writeObject(userPass);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            userPass.setCredentialsOk(false);
+            try {
+                oos.writeObject(userPass);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void walletEvolutionResponse(Message msg) {
         WalletEvolutionMessage wallet = (WalletEvolutionMessage)msg;
 
@@ -236,25 +258,30 @@ public class Client extends Thread {
 
     //TODO: REPARAR ARROYO.
     private void deposit(Transaction transaction) {
-        try {
-            long wallet = Database.getUserWallet(transaction.getUsername());
-            wallet += transaction.getGain();
 
-            User u = user;
-            u.setCredentialsOk(wallet <= 100000);
-
-            if (u.areCredentialsOk()) Database.registerTransaction(transaction);
-
-            oos.writeObject(u);
-
-        } catch (Exception e) {
-            user.setCredentialsOk(false);
+        if(Seguretat.desencripta(user.getPassword()).equals(Seguretat.desencripta(transaction.getPassword()))){
             try {
-                oos.writeObject(user);
+                System.out.println("PASSWORD OK");
+                long wallet = Database.getUserWallet(transaction.getUsername());
+                wallet += transaction.getGain();
+
+                transaction.setTransactionOk(wallet <= 100000);
+                if (transaction.isTransactionOk()) Database.registerTransaction(transaction);
+
+                oos.writeObject(transaction);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else{
+            System.out.println("Password wrong");
+            transaction.setTransactionOk(false);
+            transaction.setType(5);
+            try {
+                oos.writeObject(transaction);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            e.printStackTrace();
         }
     }
 
