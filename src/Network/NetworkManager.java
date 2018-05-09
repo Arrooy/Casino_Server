@@ -24,6 +24,7 @@ public class NetworkManager extends Thread{
 
     private HorseRaceController horseRaceController;
 
+    private RouletteThread rouletteThread;
 
     /** Inicialitza el newtWorkManager i obre el port determinat al json de configuracio*/
     public NetworkManager(){
@@ -36,7 +37,8 @@ public class NetworkManager extends Thread{
             controller.displayError("Error " + e.getLocalizedMessage(),e.getMessage());
         }
 
-        new RouletteThread(usuarisConnectats);
+        rouletteThread = new RouletteThread(usuarisConnectats);
+        new HorseRaceController(new HorseRaceModel(), usuarisConnectats, this);
         this.horseRaceController = new HorseRaceController(new HorseRaceModel(), usuarisConnectats, this);
     }
 
@@ -44,6 +46,10 @@ public class NetworkManager extends Thread{
     public void initServer(Controller controller) {
         this.controller = controller;
         start();
+    }
+
+    public RouletteThread getRouletteThread() {
+        return rouletteThread;
     }
 
     @Override

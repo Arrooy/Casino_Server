@@ -100,6 +100,10 @@ public class Controller implements ActionListener, WindowListener, MouseListener
         }
     }
 
+    public NetworkManager getNetworkManager() {
+        return networkManager;
+    }
+
     public void viewRankingView(){
         vista.setRankings();
         coinHistoryView.closeView();

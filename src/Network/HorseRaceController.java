@@ -66,7 +66,7 @@ public class HorseRaceController extends Thread  {
 
         try {
             while(true){
-                System.out.println("HORSES - New race");
+                //System.out.println("HORSES - New race");
                 manageRequests(playRequests);
                 this.racing = false;
                 this.countdown = WAITTIME;

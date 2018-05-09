@@ -1,13 +1,11 @@
 package Model;
 
-import Network.Client;
 import Network.Message;
 import Utils.Seguretat;
 
 import java.util.ArrayList;
 
 /** Usuari basic del casino*/
-
 public class User extends Message {
 
     /** Defineix el identificador del missatge. Util per quan s'envia amb el networkManager*/
@@ -45,22 +43,8 @@ public class User extends Message {
      */
     public User() {
         ID = Math.random();
-        this.context = Client.CONTEXT_LOGIN_GUEST;
+        this.context = "loginGuest";
         isGuest = true;
-    }
-
-    /**
-     * Crea un usuari a partir d'unaltre
-     * Aquest usuari se li adjudica un Identificador d'unaltre missatge
-     */
-    public User(User user, double id) {
-        this.context = user.getContext();
-        this.username = user.getUsername();
-        this.password = user.getPassword();
-        this.setCredentialsOk(user.areCredentialsOk());
-        this.setGuest(user.isGuest());
-
-        ID = id;
     }
 
     /**

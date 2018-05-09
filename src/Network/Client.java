@@ -4,7 +4,8 @@ import Controlador.Controller;
 import Model.*;
 import Model.HorseRace_Model.HorseBet;
 import Model.HorseRace_Model.HorseMessage;
-import Model.RouletteMessage;
+import Model.RouletteModel.RouletteMessage;
+import Model.RouletteModel.RouletteBetMessage;
 import Network.Roulette.RouletteThread;
 import Utils.Seguretat;
 import Vista.Tray;
@@ -199,6 +200,9 @@ public class Client extends Thread {
                     case "rouletteDisconnection":
                         connectedToRoulette = false;
                         break;
+                    case "rouletteBet":
+                        rouletteBet(msg);
+                        break;
                     case CONTEXT_WALLET_EVOLUTION:
                         walletEvolutionResponse(msg);
                         break;
@@ -215,6 +219,23 @@ public class Client extends Thread {
                 break;
             }
         }
+    }
+
+    private void rouletteBet(Message msg) {
+        RouletteBetMessage bet = (RouletteBetMessage) msg;
+        bet.setSuccessful(true);
+
+        try {
+            if (Database.getUserWallet(user.getUsername()) < bet.getBet()) bet.setSuccessful(false);
+        } catch (Exception e) {
+            bet.setSuccessful(false);
+            e.printStackTrace();
+        }
+
+        if (bet.isSuccessful() && RouletteThread.getTimeTillNext() - Timestamp.from(Instant.now()).getTime() > 3000)
+            controller.getNetworkManager().getRouletteThread().addBet(user.getUsername(), bet.getBet(), bet.getCellID());
+
+        send(bet);
     }
 
     private void changePassword(Message msg) {

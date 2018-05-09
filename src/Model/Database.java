@@ -374,6 +374,11 @@ public class Database {
         return null;
     }
 
+    /**
+     * Mètode que retorna
+     * @param type
+     * @return
+     */
     public static User[] getTop(int type) {
         User[] top = new User[5];
 

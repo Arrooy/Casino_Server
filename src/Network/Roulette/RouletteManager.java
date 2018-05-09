@@ -1,7 +1,7 @@
 package Network.Roulette;
 
 import Controlador.CustomGraphics.GraphicsManager;
-import Model.RouletteMessage;
+import Model.RouletteModel.RouletteMessage;
 
 import java.awt.*;
 import java.util.LinkedList;

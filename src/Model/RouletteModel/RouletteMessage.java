@@ -1,4 +1,4 @@
-package Model;
+package Model.RouletteModel;
 
 import Network.Message;
 
