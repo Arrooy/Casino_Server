@@ -98,10 +98,12 @@ public class Client extends Thread {
 
     private boolean playingHorses;
 
+    private RouletteThread rouletteThread;
+
     private HorseRaceController horseRaceController;
 
     /** Inicialitza un nou client.*/
-    public Client(ArrayList<Client> usuarisConnectats, Socket socket, Controller controller, HorseRaceController horseRaceController) {
+    public Client(ArrayList<Client> usuarisConnectats, Socket socket, Controller controller, HorseRaceController horseRaceController, RouletteThread rouletteThread) {
         keepLooping = true;
         this.controller = controller;
         this.horseRaceController = horseRaceController;
@@ -110,6 +112,7 @@ public class Client extends Thread {
         this.user = null;
         this.playingHorses = false;
         connectedToRoulette = false;
+        this.rouletteThread = rouletteThread;
 
 
         //S'intentan guardar les referencies dels streams d'entrada i sortida del socket
@@ -198,6 +201,7 @@ public class Client extends Thread {
                         connectedToRoulette = true;
                         break;
                     case "rouletteDisconnection":
+                        rouletteThread.cleanUserBets(this.user.getUsername());
                         connectedToRoulette = false;
                         break;
                     case "rouletteBet":
@@ -210,10 +214,17 @@ public class Client extends Thread {
                         System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND");
 
                 }
-                //TODO: FICAR EXCEPCIONS CONCRETES AMB SOLUCIONS UTILS
+
             } catch (Exception e) {
                 Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
+
                 HorseRaceController.removeBets(this.getId());
+
+                if (connectedToRoulette) {
+                    rouletteThread.cleanUserBets(user.getUsername());
+                    connectedToRoulette = false;
+                }
+
                 usuarisConnectats.remove(this);
                 e.printStackTrace();
                 break;
@@ -226,7 +237,7 @@ public class Client extends Thread {
         bet.setSuccessful(true);
 
         try {
-            if (Database.getUserWallet(user.getUsername()) < bet.getBet()) bet.setSuccessful(false);
+            if (Database.getUserWallet(user.getUsername()) < bet.getBet() + rouletteThread.getUserBet(user.getUsername())) bet.setSuccessful(false);
         } catch (Exception e) {
             bet.setSuccessful(false);
             e.printStackTrace();

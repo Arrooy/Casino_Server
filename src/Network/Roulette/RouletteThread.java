@@ -101,6 +101,16 @@ public class RouletteThread extends Thread {
         }
     }
 
+    public void cleanUserBets(String username) {
+        for (int i = bets.size() - 1; i < bets.size(); i--) if (bets.get(i).username.equals(username)) bets.remove(i);
+    }
+
+    public long getUserBet(String username) {
+        long money = 0;
+        for (Bet bet: bets) if (bet.username.equals(username)) money += bet.bet;
+        return money;
+    }
+
     private long moneyWon(Bet bet) {
         if (bet.cellID < 37) return bet.bet * 36 - bet.bet;
         else return (36 / winnerConversionTable[bet.cellID] - 1) * bet.bet;

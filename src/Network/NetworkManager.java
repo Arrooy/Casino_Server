@@ -57,7 +57,7 @@ public class NetworkManager extends Thread{
         while(true){
             try {
                 //Esperem i creem un client per a cada nova conexio entrant
-                Client nouClient = new Client(usuarisConnectats,serverSocket.accept(),controller, horseRaceController);
+                Client nouClient = new Client(usuarisConnectats,serverSocket.accept(),controller, horseRaceController, rouletteThread);
 
                 //Afegeim el client a la llista de clients
                 usuarisConnectats.add(nouClient);
