@@ -195,7 +195,6 @@ public class Client extends Thread {
                         }
 
                     case "HORSES-Finished":
-                        System.out.println("finished");
                         HorseRaceController.addFinished();
                         this.horseRaceController.sendResult(this);
                         break;

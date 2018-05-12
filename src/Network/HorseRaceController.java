@@ -87,8 +87,8 @@ public class HorseRaceController extends Thread  {
                 if(!clients.isEmpty() & checkPlayers(clients) > 0){
                     this.racing = true;
                     sendRace();
-                    System.out.println("Waiting for " + checkPlayers(clients) + " to finish.");
-                    System.out.println("  Finished: " + HorseRaceController.finished);
+                    System.out.println("HORSES- Waiting for " + checkPlayers(clients) + " to finish.");
+                    System.out.println("HORSES- Finished: " + HorseRaceController.finished);
                     while(!allFinished()){
                         sleep(100);
                     }
