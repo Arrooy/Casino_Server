@@ -213,8 +213,13 @@ public class Client extends Thread {
                     case CONTEXT_WALLET_EVOLUTION:
                         walletEvolutionResponse(msg);
                         break;
+                    case "walletRequest":
+                        ((User) msg).setWallet(Database.getUserWallet(this.user.getUsername()));
+                        ((User) msg).setOnline(true);
+                        send(msg);
+                        break;
                     default:
-                        System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND");
+                        System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND (" + msg.getContext() + ")");
 
                 }
 
@@ -238,10 +243,13 @@ public class Client extends Thread {
 
     private void rouletteBet(Message msg) {
         RouletteBetMessage bet = (RouletteBetMessage) msg;
-        bet.setSuccessful(true);
+        bet.setSuccessful(false);
 
         try {
-            if (Database.getUserWallet(user.getUsername()) < bet.getBet() + rouletteThread.getUserBet(user.getUsername())) bet.setSuccessful(false);
+            if (Database.getUserWallet(user.getUsername()) - rouletteThread.getUserBet(user.getUsername()) > bet.getBet()) {
+                System.out.println(Database.getUserWallet(user.getUsername()) - rouletteThread.getUserBet(user.getUsername()));
+                bet.setSuccessful(true);
+            }
         } catch (Exception e) {
             bet.setSuccessful(false);
             e.printStackTrace();
@@ -711,9 +719,6 @@ public class Client extends Thread {
         return null;
     }
 
-
-
-
     public boolean isPlayingHorses(){
         return playingHorses;
     }
@@ -729,5 +734,13 @@ public class Client extends Thread {
 
     public void setPlayingHorses(boolean b) {
         this.playingHorses = b;
+    }
+
+    public void sendRouletteList(String[][] info) {
+        try {
+            oos.writeObject(new BetList(info, BetList.ROULETTE));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

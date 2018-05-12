@@ -69,7 +69,7 @@ public class RouletteThread extends Thread {
 
             while (Timestamp.from(Instant.now()).getTime() < timeTillNext);
 
-            timeTillNext = Timestamp.from(Instant.now()).getTime() + 1000 * 60 * .5;
+            timeTillNext = Timestamp.from(Instant.now()).getTime() + 1000 * 60 * 1;
             rm.setTimeTillNext(timeTillNext);
             for (Client c: clients) c.sendRouletteShot(rm);
 
@@ -80,14 +80,19 @@ public class RouletteThread extends Thread {
                 if (!found) names.add(bet.username);
             }
 
+            int winner = converTable[rm.getWinner()];
             for (String n: names) {
                 Transaction t = new Transaction("", n, 0, Transaction.TRANSACTION_ROULETTE);
 
                 for (Bet bet: bets) if (bet.username.equals(n)) {
-                    if (isWinner(bet.cellID, rm.getWinner())) t.setGain(t.getGain() + moneyWon(bet));
+                    if (isWinner(bet.cellID, winner)) t.setGain(t.getGain() + moneyWon(bet));
                     else t.setGain(t.getGain() - bet.bet);
-                }
 
+                    System.out.println("Is winner: " + isWinner(bet.cellID, winner) + " - Cell: " +
+                            /*(bet.cellID < 37 ? winnerConversionTable[bet.cellID] : bet.cellID)  + " : " +*/ bet.cellID
+                            + " - Winner: " + winner);
+                }
+                System.out.println("[ROULETTE BET]: " + t.getGain());
                 Database.registerTransaction(t);
             }
 
@@ -101,11 +106,11 @@ public class RouletteThread extends Thread {
         }
     }
 
-    public void cleanUserBets(String username) {
-        for (int i = bets.size() - 1; i < bets.size(); i--) if (bets.get(i).username.equals(username)) bets.remove(i);
+    public synchronized void cleanUserBets(String username) {
+        for (int i = bets.size() - 1; i > 0; i--) if (bets.get(i).username.equals(username)) bets.remove(i);
     }
 
-    public long getUserBet(String username) {
+    public synchronized long getUserBet(String username) {
         long money = 0;
         for (Bet bet: bets) if (bet.username.equals(username)) money += bet.bet;
         return money;
@@ -117,35 +122,44 @@ public class RouletteThread extends Thread {
     }
 
     private boolean isWinner(int bet, int win) {
-        if (bet < 37 && winnerConversionTable[bet] == win) return true;
+        if (bet < 37 && bet == win) return true;
 
-        switch (bet - 37) {
-            case 0:
-                if (win % 3 == 0) return true;
+        switch (bet) {
+            case 39:
+                if (win % 3 == 0 && win != 0) return true;
                 break;
-            case 1:
+            case 38:
                 if ((win + 1) % 3 == 0) return true;
                 break;
-            case 2:
+            case 37:
                 if ((win + 2) % 3 == 0) return true;
                 break;
-            case 3:
+            case 40:
                 if (win > 0 && win < 19) return true;
                 break;
-            case 4:
+            case 41:
                 if (win % 2 == 0) return true;
                 break;
-            case 7:
+            case 44:
                 if (win % 2 == 1) return true;
                 break;
-            case 5:
+            case 42:
                 if (isRedCell(win)) return true;
                 break;
-            case 6:
+            case 43:
                 if (!isRedCell(win)) return true;
                 break;
-            case 8:
+            case 45:
                 if (win >= 19) return true;
+                break;
+            case 46:
+                if (win <= 12 && win != 0) return true;
+                break;
+            case 47:
+                if (win > 12 && win < 25) return true;
+                break;
+            case 48:
+                if (win >= 25) return true;
                 break;
         }
 
@@ -156,8 +170,17 @@ public class RouletteThread extends Thread {
         return timeTillNext;
     }
 
-    public void addBet(String username, long bet, int cellID) {
+    public synchronized void addBet(String username, long bet, int cellID) {
         bets.add(new Bet(username, bet, cellID));
+
+        String[][] info = new String[3][bets.size()];
+        for (int i = 0; i < bets.size(); i++) {
+            info[0][i] = bets.get(i).username;
+            info[1][i] = bets.get(i).cellID + "";
+            info[2][i] = bets.get(i).bet + "";
+        }
+
+        for (Client c: clients) c.sendRouletteList(info);
     }
 
     public void cleanBetList() {
