@@ -42,27 +42,8 @@ public class CoinHistoryController implements GraphicsController {
     private Controller generalController;
 
     public CoinHistoryController(int width, int height, LinkedList<Transaction> gains, String username, Controller c) {
-        this.width = width;
-        this.height = height;
-        this.gains = gains;
-        this.username = username;
         this.generalController = c;
-
-        wallet = new long[gains.size()];
-        for (int i = 0; i < gains.size(); i++) {
-            wallet[i] = i == 0 ? gains.get(i).getGain() : wallet[i - 1] + gains.get(i).getGain();
-            if (maxValue < wallet[i]) maxValue = wallet[i];
-        }
-
-        delay = DURATION / wallet.length;
-        ended = false;
-
-
-        bx = 30;
-        by = (int) (height * .88);
-        bw = 200;
-        bh = (int) (height * .08);
-        pressed = false;
+        initGraf(width, height, gains, username);
     }
 
     @Override
@@ -76,6 +57,28 @@ public class CoinHistoryController implements GraphicsController {
 
         bgc = new Color(23, 24, 24);
         linesC = new Color(191, 191, 156);
+    }
+
+    public void initGraf(int width, int height, LinkedList<Transaction> gains, String username) {
+        this.width = width;
+        this.height = height;
+        this.gains = gains;
+        this.username = username;
+
+        wallet = new long[gains.size()];
+        for (int i = 0; i < gains.size(); i++) {
+            wallet[i] = i == 0 ? gains.get(i).getGain() : wallet[i - 1] + gains.get(i).getGain();
+            if (maxValue < wallet[i]) maxValue = wallet[i];
+        }
+
+        delay = DURATION / wallet.length;
+        ended = false;
+
+        bx = 30;
+        by = (int) (height * .88);
+        bw = 200;
+        bh = (int) (height * .08);
+        pressed = false;
     }
 
     @Override
@@ -107,6 +110,12 @@ public class CoinHistoryController implements GraphicsController {
 
     @Override
     public void render(Graphics g) {
+
+        //TODO: en funcio del tamany de la finestra mostrar una quantitat limitada de transaccions
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
         g.setColor(bgc);
         g.fillRect(0, 0, width, height);
 
@@ -229,20 +238,18 @@ public class CoinHistoryController implements GraphicsController {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        pressed = e.getX() > bx && e.getX() < (bx + bw) && e.getY() > by && e.getY() < (by + bh);
+        //pressed = e.getX() > bx && e.getX() < (bx + bw) && e.getY() > by && e.getY() < (by + bh);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        pressed = e.getX() > bx && e.getX() < (bx + bw) && e.getY() > by && e.getY() < (by + bh);
+        //pressed = e.getX() > bx && e.getX() < (bx + bw) && e.getY() > by && e.getY() < (by + bh);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        pressed = e.getX() > bx && e.getX() < (bx + bw) && e.getY() > by && e.getY() < (by + bh);
-        System.out.println("arriba");
-        if (pressed) generalController.viewRankingView();
-        System.out.println("aqui tambe tete");
+       // pressed = e.getX() > bx && e.getX() < (bx + bw) && e.getY() > by && e.getY() < (by + bh);
+        if (e.getX() > bx && e.getX() < (bx + bw) && e.getY() > by && e.getY() < (by + bh)) generalController.viewRankingView();
     }
 
     @Override

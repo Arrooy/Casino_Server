@@ -30,26 +30,6 @@ public class CoinHistoryView extends View {
 
     private Controller cg;
 
-    //Llista de prova
-    private LinkedList<Long> testArray() {
-        LinkedList<Long> prova = new LinkedList<>();
-        prova.add(200L);
-        prova.add(2000L);
-        prova.add(3000L);
-        prova.add(-1500L);
-        prova.add(5000L);
-        prova.add(-500L);
-        prova.add(-2000L);
-        prova.add(-5000L);
-        prova.add(2000L);
-        prova.add(-3000L);
-        prova.add(10000L);
-        prova.add(-5000L);
-        prova.add(1000L);
-        prova.add(3000L);
-        return prova;
-    }
-
     /**
      * Mètode que inicia una coin history donat un nom d'usuari del que
      * obtindrà la informació necessària de la base de dades.
@@ -60,14 +40,19 @@ public class CoinHistoryView extends View {
     public void createCoinHistory(String username, int width, int height) {
         LinkedList<Transaction> info = Database.getTransactions(username);
 
-        chc = new CoinHistoryController(width, height, info, username, cg);
+        if (chc == null) {
+            chc = new CoinHistoryController(width, height, info, username, cg);
+        } else {
+            chc.initGraf(width, height, info, username);
+        }
+
         gp = new GraphicsManager(this, chc);
     }
 
     public void closeView() {
         gp.exit();
-        gp = null;
-        chc = null;
+        //gp = null;
+        //chc = null;
         updateUI();
     }
 

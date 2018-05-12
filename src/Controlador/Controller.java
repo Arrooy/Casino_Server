@@ -108,12 +108,11 @@ public class Controller implements ActionListener, WindowListener, MouseListener
         vista.setRankings();
         coinHistoryView.closeView();
         ranking.updateTable(Database.getInfoRank());
+        System.gc();
     }
 
     @Override
-    public void windowOpened(WindowEvent e) {
-
-    }
+    public void windowOpened(WindowEvent e) {}
 
     @Override
     public void windowClosing(WindowEvent e) {
