@@ -126,6 +126,7 @@ public class Client extends Thread {
 
     @Override
     public void run() {
+        HorseBet horseBet;
         while ((user == null || user.isOnline()) && keepLooping) {
             try {
                 //System.out.println("[DEBUG]: Reading next message now");
@@ -169,18 +170,19 @@ public class Client extends Thread {
                         if(!HorseRaceController.isRacing()){
                             this.playingHorses =  true;
                             oos.writeObject(new HorseMessage(HorseRaceController.getCountdown(),"Countdown" ));
+                            System.out.println(HorseRaceController.getCountdown());
                         }else{
                             HorseRaceController.addPlayRequest(this);
                         }
+
                         break;
                     case "HORSES-Disconnect":
-                        this.playingHorses = false;
-                        System.out.println(findUser(msg.getID()).toString());
-                        HorseRaceController.removeBets(this.getId());
+                        setPlayingHorses(false);
+                        HorseRaceController.removeBets(this.getName());
                         break;
                     case "HORSES-Bet":
-                        System.out.println("Bet: " + ((HorseMessage)msg).getHorseBet().getBet());
-                        if(!HorseRaceController.isRacing()){
+                        horseBet = ((HorseMessage)msg).getHorseBet();
+                        if(!HorseRaceController.isRacing() && horseBet.getName().equals(this.getName())){
                             if(Database.getUserWallet(this.user.getUsername()) >= ((HorseMessage)msg).getHorseBet().getBet()){
                                 Database.registerTransaction(new Transaction("HorseBet", this.user.getUsername(), -((HorseMessage)msg).getHorseBet().getBet(), 1));
                                 HorseRaceController.addHorseBet(((HorseMessage)msg).getHorseBet());
@@ -188,6 +190,8 @@ public class Client extends Thread {
                             }else{
                                 oos.writeObject(new HorseMessage(new HorseBet(false), "HORSES-BetConfirm"));
                             }
+                        }else{
+                            oos.writeObject(new HorseMessage(new HorseBet(false), "HORSES-BetConfirm"));
                         }
 
                     case "HORSES-Finished":
@@ -218,13 +222,14 @@ public class Client extends Thread {
             } catch (Exception e) {
                 Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
 
-                HorseRaceController.removeBets(this.getId());
+                HorseRaceController.removeBets(this.getName());
 
                 if (connectedToRoulette) {
                     rouletteThread.cleanUserBets(user.getUsername());
                     connectedToRoulette = false;
                 }
 
+                HorseRaceController.removeBets(this.getName());
                 usuarisConnectats.remove(this);
                 e.printStackTrace();
                 break;
@@ -719,11 +724,11 @@ public class Client extends Thread {
        try {
            oos.writeObject(message);
        }catch(IOException e){
-           System.out.println("Error sending "+ message.getContext() + " to " + this.findUser(getId()).getUsername());
+           System.out.println("Error sending message");
        }
     }
 
     public void setPlayingHorses(boolean b) {
-        this.playingHorses = true;
+        this.playingHorses = b;
     }
 }

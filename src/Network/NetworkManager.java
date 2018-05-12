@@ -38,7 +38,6 @@ public class NetworkManager extends Thread{
         }
 
         rouletteThread = new RouletteThread(usuarisConnectats);
-        new HorseRaceController(new HorseRaceModel(), usuarisConnectats, this);
         this.horseRaceController = new HorseRaceController(new HorseRaceModel(), usuarisConnectats, this);
     }
 
