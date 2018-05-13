@@ -285,25 +285,26 @@ public class Database {
         try{
             int levelMax = 0;
             //Es demana a la DB l'evolucio del nivell de l'usuari amb el temps
-            ResultSet rs = conn.createStatement().executeQuery("select level from Levels where username='" + username + "';");
+            ResultSet rs = conn.createStatement().executeQuery("select * from Transactions where username='" + username + "';");
 
             //S'agafa el nivell maxim d'aquesta evolucio
             while(rs.next()){
-                if (rs.getInt("level") > levelMax) {
-                    levelMax = rs.getInt("level");
+                if (rs.getLong("earnings") > 0 && rs.getInt("type") != 0) {
+                    levelMax ++;
                 }
             }
-
+            System.out.println("level max " + levelMax  +" " + levelMax/10);
+            levelMax /= 10;
             //Es retorna un color o unaltre, segons el nivell
-            if(levelMax == 1)
+            if(levelMax == 0)
                 return "back-red.png";
-            else if(levelMax == 2)
+            else if(levelMax == 1)
                 return "back-orange.png";
-            else if(levelMax == 4)
+            else if(levelMax == 2)
                 return "back-blue.png";
-            else if(levelMax == 5)
+            else if(levelMax == 3)
                 return "back-green.png";
-            else if(levelMax == 6)
+            else if(levelMax == 4)
                 return "back-purple.png";
             else return "back-black.png";
 

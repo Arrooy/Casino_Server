@@ -300,7 +300,6 @@ public class Client extends Thread {
         }
     }
 
-    //TODO: REPARAR ARROYO.
     private void deposit(Transaction transaction) {
 
         if(Seguretat.desencripta(user.getPassword()).equals(Seguretat.desencripta(transaction.getPassword()))){
