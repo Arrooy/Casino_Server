@@ -124,9 +124,11 @@ public class RouletteThread extends Thread {
     private boolean isWinner(int bet, int win) {
         if (bet < 37 && bet == win) return true;
 
+        if (win == 0) return false;
+
         switch (bet) {
             case 39:
-                if (win % 3 == 0 && win != 0) return true;
+                if (win % 3 == 0) return true;
                 break;
             case 38:
                 if ((win + 1) % 3 == 0) return true;

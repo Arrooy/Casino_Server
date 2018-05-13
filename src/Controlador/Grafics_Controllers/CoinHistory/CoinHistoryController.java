@@ -65,6 +65,8 @@ public class CoinHistoryController implements GraphicsController {
         this.gains = gains;
         this.username = username;
 
+        maxValue = 0;
+
         wallet = new long[gains.size()];
         for (int i = 0; i < gains.size(); i++) {
             wallet[i] = i == 0 ? gains.get(i).getGain() : wallet[i - 1] + gains.get(i).getGain();
