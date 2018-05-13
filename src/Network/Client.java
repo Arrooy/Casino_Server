@@ -254,10 +254,9 @@ public class Client extends Thread {
             e.printStackTrace();
         }
 
-        if (bet.isSuccessful() && RouletteThread.getTimeTillNext() - Timestamp.from(Instant.now()).getTime() > 3000) {
+        if (bet.isSuccessful() && RouletteThread.getTimeTillNext() - Timestamp.from(Instant.now()).getTime() > 3000)
             controller.getNetworkManager().getRouletteThread().addBet(user.getUsername(), bet.getBet(), bet.getCellID());
-            bet.setSuccessful(false);
-        }
+        else bet.setSuccessful(false);
 
         send(bet);
     }
