@@ -2,6 +2,7 @@ package Controlador;
 
 import Model.Database;
 import Model.HorseRace_Model.HorseRaceModel;
+import Model.Transaction;
 import Network.NetworkManager;
 import Vista.*;
 
@@ -73,13 +74,13 @@ public class Controller implements ActionListener, WindowListener, MouseListener
                 top5.enableResize(true);
                 break;
             case "blackJackGraph":
-                top5.generateGraph("b");
+                generateGraph("b");
                 break;
             case "horseGraph":
-                top5.generateGraph("h");
+                generateGraph("h");
                 break;
             case "rouletteGraph":
-                top5.generateGraph("r");
+                generateGraph("r");
                 break;
             case "returnMainView":
                 vista.setMainView();
@@ -91,6 +92,31 @@ public class Controller implements ActionListener, WindowListener, MouseListener
                 exitProgram(0);
                 break;
         }
+    }
+
+
+    private void updateGraph() {
+        if(top5.isResize()) generateGraph(top5.getLastGraphSelected());
+    }
+
+    private void generateGraph(String obj) {
+        Graphics g =  top5.getGraphicsOfView();
+
+        top5.setLastGraphSelected(obj);
+
+        switch (obj){
+            case "b":
+                top5.createGraph(g,Database.getTop(Transaction.TRANSACTION_BLACKJACK),new Color(92, 131, 47),"BlackJack");
+                break;
+            case "h":
+                top5.createGraph(g,Database.getTop(Transaction.TRANSACTION_HORSES),Color.blue,"Horses");
+                break;
+            case "r":
+                top5.createGraph(g,Database.getTop(Transaction.TRANSACTION_ROULETTE),Color.red,"Roulette");
+                break;
+        }
+
+        g.dispose();
     }
 
     public NetworkManager getNetworkManager() {
@@ -144,7 +170,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
         if(coinHistoryView != null)
             coinHistoryView.updateSize(false);
         if(top5 != null)
-            top5.updateGraph();
+            updateGraph();
 
     }
 
@@ -153,7 +179,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
         if(coinHistoryView != null)
             coinHistoryView.updateSize(true);
         if(top5 != null)
-            top5.updateGraph();
+            updateGraph();
 
     }
 

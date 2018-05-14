@@ -101,25 +101,6 @@ public class Top5OptionsView extends View {
         jbRoulette.addActionListener(c);
     }
 
-    public void generateGraph(String obj) {
-        Graphics g =  jpGraphicContainer.getGraphics();
-        lastGraphSelected = obj;
-
-        switch (obj){
-            case "b":
-                createGraph(g,Database.getTop(Transaction.TRANSACTION_BLACKJACK),new Color(92, 131, 47),"BlackJack");
-                break;
-            case "h":
-                createGraph(g,Database.getTop(Transaction.TRANSACTION_HORSES),Color.blue,"Horses");
-                break;
-            case "r":
-                createGraph(g,Database.getTop(Transaction.TRANSACTION_ROULETTE),Color.red,"Roulette");
-                break;
-        }
-
-        g.dispose();
-    }
-
     //Donat un array d'usuaris, retorna el valor de la cartera més alta.
     private int maxWallet(User [] users){
         int max = 0;
@@ -129,7 +110,7 @@ public class Top5OptionsView extends View {
         return max;
     }
 
-    private void createGraph(Graphics g,User[] user,Color color,String title) {
+    public void createGraph(Graphics g,User[] user,Color color,String title) {
 
         g.setColor(new Color(54, 57,66));
 
@@ -177,11 +158,24 @@ public class Top5OptionsView extends View {
         return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
     }
 
-    public void updateGraph() {
-        if(resize) generateGraph(lastGraphSelected);
+
+    public void setLastGraphSelected(String lastGraph){
+        lastGraphSelected = lastGraph;
+    }
+
+    public boolean isResize() {
+        return resize;
     }
 
     public void enableResize(boolean resize){
         this.resize = resize;
+    }
+
+    public Graphics getGraphicsOfView() {
+        return jpGraphicContainer.getGraphics();
+    }
+
+    public String getLastGraphSelected() {
+        return lastGraphSelected;
     }
 }
