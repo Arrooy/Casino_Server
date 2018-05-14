@@ -50,7 +50,7 @@ public class CoinHistoryView extends View {
     }
 
     public void closeView() {
-        gp.exit();
+        if(gp != null)  gp.exit();
         //gp = null;
         //chc = null;
         updateUI();

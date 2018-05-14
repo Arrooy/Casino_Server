@@ -304,7 +304,7 @@ public class Client extends Thread {
 
         if(Seguretat.desencripta(user.getPassword()).equals(Seguretat.desencripta(transaction.getPassword()))){
             try {
-                System.out.println("PASSWORD OK");
+
                 long wallet = Database.getUserWallet(transaction.getUsername());
                 wallet += transaction.getGain();
 

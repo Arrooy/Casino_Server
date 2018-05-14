@@ -50,10 +50,11 @@ public class Casino_Server {
 
         } catch (Exception e) {
 
-            if (e instanceof SQLException || e instanceof ClassNotFoundException)
+            if (e instanceof SQLException || e instanceof ClassNotFoundException) {
                 JOptionPane.showMessageDialog(new JFrame(), "No s'ha pogut iniciar el servidor degut a un problema de connexió amb la base de dades",
-                    "Error connexió Database", JOptionPane.ERROR_MESSAGE);
-            else e.printStackTrace();
+                        "Error connexió Database", JOptionPane.ERROR_MESSAGE);
+                System.exit(1);
+            }else e.printStackTrace();
 
         }
     }

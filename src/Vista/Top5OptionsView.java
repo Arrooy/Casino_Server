@@ -126,7 +126,6 @@ public class Top5OptionsView extends View {
         for(User u : users){
             if(u.getWallet() > max) max = (int)u.getWallet();
         }
-        System.out.println("MAX IS " + max);
         return max;
     }
 
@@ -165,8 +164,6 @@ public class Top5OptionsView extends View {
             g.drawString(name,x + metrics.stringWidth(max + "") + 20 + 40 - metrics.stringWidth(name)/2,height - 3);
             x += (width - metrics.stringWidth(max + "") + 20) / 5;
         }
-
-
 
         g.setFont(new Font(g.getFont().getFontName(),Font.BOLD,width / 25));
         metrics = g.getFontMetrics();

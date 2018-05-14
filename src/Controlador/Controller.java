@@ -41,6 +41,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
     public void exitProgram(int status){
         Tray.exit();
         vista.dispose();
+        coinHistoryView.closeView();
         System.exit(status);
     }
 
@@ -88,14 +89,6 @@ public class Controller implements ActionListener, WindowListener, MouseListener
             case "trayButtonExit" :
                 //Es surt del programa sense indicar cap error
                 exitProgram(0);
-                break;
-            case "viewCoinBalance":
-                if (ranking.getUsername() != null) {
-
-                    vista.setCoinHistoryView(ranking.getUsername());
-                    coinHistoryView.updateSize(false);
-                }
-                else ;//TODO: Avis de necessitar tenir algo seleccionat
                 break;
         }
     }
@@ -181,7 +174,10 @@ public class Controller implements ActionListener, WindowListener, MouseListener
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        if(e.getSource() instanceof JTable && e.getClickCount() >= 2){
+            vista.setCoinHistoryView(ranking.getUsername());
+            coinHistoryView.updateSize(false);
+        }
     }
 
     @Override

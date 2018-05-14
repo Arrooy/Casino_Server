@@ -18,9 +18,7 @@ public class RankingView extends View {
     private static final String[] columnNames = {"User Name",
                                                 "Wallet",
                                                 "Last Connection"};
-    private Object[][] rankingData;
     private JButton jbBack;
-    private JButton jbViewGraghic;
 
     public RankingView(){
         this.setLayout(new BorderLayout());
@@ -45,7 +43,7 @@ public class RankingView extends View {
         Object[][] data = {};
 
         //Creació de la taula
-        rankingData = data;
+        Object[][] rankingData = data;
         jtRanking = new JTable(rankingData, columnNames);
         jtRanking.setColumnSelectionAllowed(false);
         jtRanking.setFocusable(false);
@@ -61,13 +59,6 @@ public class RankingView extends View {
         JScrollPane jspRank = new JScrollPane(jtRanking);
         jspRank.setBorder(BorderFactory.createEmptyBorder());
         jpgblTaula.add(jspRank, c);
-
-        //Botó per visualitzar la gràfica
-        jbViewGraghic = new JButton("View selected graphic");
-        jbViewGraghic.setFocusable(false);
-        c.gridy = 1;
-        c.insets = new Insets(0, 0, 0, 0);
-        jpgblTaula.add(jbViewGraghic, c);
 
         add(jpgblTaula, BorderLayout.CENTER);
 
@@ -90,13 +81,10 @@ public class RankingView extends View {
 
     @Override
     public void addController(Controller c) {
-        //TODO doble clik obre grafica
-        //jtRanking.addMouseListener(c);
+        jtRanking.addMouseListener(c);
+
         jbBack.setActionCommand("returnMainView");
         jbBack.addActionListener(c);
-
-        jbViewGraghic.setActionCommand("viewCoinBalance");
-        jbViewGraghic.addActionListener(c);
     }
 
     public String getUsername(){
