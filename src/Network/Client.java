@@ -179,6 +179,7 @@ public class Client extends Thread {
                     case "HORSES-Disconnect":
                         setPlayingHorses(false);
                         HorseRaceController.removeBets(this.getName());
+                        HorseRaceController.removeRequests(this);
                         break;
                     case "HORSES-Bet":
                         horseBet = ((HorseMessage)msg).getHorseBet();
@@ -195,6 +196,7 @@ public class Client extends Thread {
                         }
 
                     case "HORSES-Finished":
+                        System.out.println("Finished ");
                         HorseRaceController.addFinished();
                         this.horseRaceController.sendResult(this);
                         break;

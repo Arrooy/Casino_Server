@@ -63,6 +63,12 @@ public class HorseRaceController extends Thread  {
         playRequests.add(client);
     }
 
+    public static void removeRequests(Client client) {
+        if (playRequests.contains(client)){
+            playRequests.remove(client);
+        }
+    }
+
     @Override
     public void run() {
 
@@ -206,7 +212,7 @@ public class HorseRaceController extends Thread  {
             if(h.getHorse() == this.horseRaceModel.getHorseSchedule().getWinner()){
                 for(Client client: clients){
                     if(client.getName() == h.getName()){
-                        transaction = new Transaction("HORSES", client.getName(), h.getBet() * PRIZE_MULTIPLIER, TRANSACTION_HORSES);
+                        transaction = new Transaction("HORSES", client.getName(), h.getBet() * PRIZE_MULTIPLIER, Transaction.TRANSACTION_HORSES);
                         transaction.setTime(new Timestamp(System.currentTimeMillis()));
                         Database.registerTransaction(transaction);
                     }
