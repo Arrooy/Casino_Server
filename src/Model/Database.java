@@ -293,8 +293,7 @@ public class Database {
                     levelMax ++;
                 }
             }
-            System.out.println("level max " + levelMax  +" " + levelMax/10);
-            levelMax /= 10;
+            levelMax /= 5;
             //Es retorna un color o unaltre, segons el nivell
             if(levelMax == 0)
                 return "back-red.png";
@@ -311,8 +310,9 @@ public class Database {
         }catch (SQLException e){
             e.printStackTrace();
         }
+
         //Si no s'ha trobar l'usuari o ha sorgir algun error, es retorna el color del nivell 1
-        return "back-red.png";
+        return "back-purple.png";
     }
 
     /**

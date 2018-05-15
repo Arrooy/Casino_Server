@@ -34,6 +34,7 @@ public class NetworkManager extends Thread{
         try {
             serverSocket = new ServerSocket((int)JsonManager.llegirJson("PortClients")[0]);
         } catch (IOException e) {
+            //TODO POT SORTIR NULLPOINTER EXCEPTION
             controller.displayError("Error " + e.getLocalizedMessage(),e.getMessage());
         }
 

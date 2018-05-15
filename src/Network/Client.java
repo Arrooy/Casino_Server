@@ -127,119 +127,130 @@ public class Client extends Thread {
     @Override
     public void run() {
         HorseBet horseBet;
-        while ((user == null || user.isOnline()) && keepLooping) {
-            try {
-                //System.out.println("[DEBUG]: Reading next message now");
+        try {
+            while ((user == null || user.isOnline()) && keepLooping) {
                 Message msg = (Message) ois.readObject();
-                //System.out.println("[DEBUG]: New Message: " + msg.getContext());
+
                 switch (msg.getContext()) {
                     case CONTEXT_LOGIN:
                         logIn(msg);
                         break;
+
                     case CONTEXT_SIGNUP:
                         signUp(msg);
                         break;
+
                     case CONTEXT_BLACK_JACK_INIT:
                         blackJackInit(msg);
                         break;
+
                     case CONTEXT_BLACK_JACK:
                     case CONTEXT_BJ_FINISH_USER:
                         blackJack(msg);
                         break;
+
                     case CONTEXT_LOGOUT:
                         logOut(msg);
                         break;
+
                     case CONTEXT_LOGIN_GUEST:
                         logInGuest(msg);
                         break;
+
                     case CONTEXT_TRANSACTION:
                         Database.registerTransaction((Transaction) msg);
                         break;
+
                     case CONTEXT_GET_COINS:
                         User user = (User) msg;
                         user.setWallet(Database.getUserWallet(this.user.getUsername()));
-                        oos.writeObject(user);
+                        send(user);
                         break;
+
                     case CONTEXT_CHANGE_PASSWORD:
                         changePassword(msg);
                         break;
+
                     case "deposit":
                         deposit((Transaction) msg);
                         break;
+
                     case "HORSES-Connect":
                         if(!HorseRaceController.isRacing()){
                             this.playingHorses =  true;
-                            oos.writeObject(new HorseMessage(HorseRaceController.getCountdown(),"Countdown" ));
+                            send(new HorseMessage(HorseRaceController.getCountdown(),"Countdown" ));
                             System.out.println(HorseRaceController.getCountdown());
                         }else{
                             HorseRaceController.addPlayRequest(this);
                         }
-
                         break;
+
                     case "HORSES-Disconnect":
                         setPlayingHorses(false);
                         HorseRaceController.removeBets(this.getName());
                         HorseRaceController.removeRequests(this);
                         break;
+
                     case "HORSES-Bet":
                         horseBet = ((HorseMessage)msg).getHorseBet();
                         if(!HorseRaceController.isRacing() && horseBet.getName().equals(this.getName())){
                             if(Database.getUserWallet(this.user.getUsername()) >= ((HorseMessage)msg).getHorseBet().getBet()){
                                 Database.registerTransaction(new Transaction("HorseBet", this.user.getUsername(), -((HorseMessage)msg).getHorseBet().getBet(), 1));
                                 HorseRaceController.addHorseBet(((HorseMessage)msg).getHorseBet());
-                                oos.writeObject(new HorseMessage(new HorseBet(true), "HORSES-BetConfirm"));
+                                send(new HorseMessage(new HorseBet(true), "HORSES-BetConfirm"));
                             }else{
-                                oos.writeObject(new HorseMessage(new HorseBet(false), "HORSES-BetConfirm"));
+                                send(new HorseMessage(new HorseBet(false), "HORSES-BetConfirm"));
                             }
                         }else{
-                            oos.writeObject(new HorseMessage(new HorseBet(false), "HORSES-BetConfirm"));
+                            send(new HorseMessage(new HorseBet(false), "HORSES-BetConfirm"));
                         }
+                        break;
 
                     case "HORSES-Finished":
                         System.out.println("Finished ");
                         HorseRaceController.addFinished();
                         this.horseRaceController.sendResult(this);
                         break;
+
                     case "rouletteConnection":
                         ((RouletteMessage) msg).setTimeTillNext(RouletteThread.getTimeTillNext());
-                        oos.writeObject(msg);
+                        send(msg);
                         connectedToRoulette = true;
                         break;
+
                     case "rouletteDisconnection":
                         rouletteThread.cleanUserBets(this.user.getUsername());
                         connectedToRoulette = false;
                         break;
+
                     case "rouletteBet":
                         rouletteBet(msg);
                         break;
+
                     case CONTEXT_WALLET_EVOLUTION:
                         walletEvolutionResponse(msg);
                         break;
+
                     case "walletRequest":
                         ((User) msg).setWallet(Database.getUserWallet(this.user.getUsername()));
                         ((User) msg).setOnline(true);
                         send(msg);
                         break;
-                    default:
-                        System.out.println("ERROR BUCLE !!!!!!!!!! \nCONTEXT NOT FOUND (" + msg.getContext() + ")");
-
                 }
 
-            } catch (Exception e) {
-                Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
-
-                HorseRaceController.removeBets(this.getName());
-
-                if (connectedToRoulette) {
-                    rouletteThread.cleanUserBets(user.getUsername());
-                    connectedToRoulette = false;
-                }
-
-                HorseRaceController.removeBets(this.getName());
-                usuarisConnectats.remove(this);
-                e.printStackTrace();
-                break;
             }
+        } catch (Exception e) {
+            //Usuari s'ha desconectat sense avisar al servidor
+            Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
+            HorseRaceController.removeBets(this.getName());
+
+            if (connectedToRoulette) {
+                rouletteThread.cleanUserBets(user.getUsername());
+                connectedToRoulette = false;
+            }
+
+            HorseRaceController.removeBets(this.getName());
+            usuarisConnectats.remove(this);
         }
     }
 
@@ -263,70 +274,72 @@ public class Client extends Thread {
         send(bet);
     }
 
+    //Gestiona la solicitud del client per a canviar la password de l'usuari
     private void changePassword(Message msg) {
 
         User userPass = (User) msg;
+        //Es modifica l'usuari per a indicar que esta connectat, de lo contrari, el client pensara que el servidor
+        //vol la desconexio per part del client
         userPass.setOnline(true);
 
-        if(checkPassword((String)Seguretat.desencripta(userPass.getPassword()))){
-            try {
-                Database.updateUser(userPass, true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            userPass.setCredentialsOk(true);
-            try {
-                oos.writeObject(userPass);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }else{
-            userPass.setCredentialsOk(false);
-            try {
-                oos.writeObject(userPass);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void walletEvolutionResponse(Message msg) {
-        WalletEvolutionMessage wallet = (WalletEvolutionMessage)msg;
-
-        wallet.setTransactions(Database.getTransactions(user.getUsername()));
-
         try {
-            oos.writeObject(wallet);
-        } catch (IOException e) {
+            //En el cas de ser una password valida, aquesta es modifica
+            if (checkPassword((String) Seguretat.desencripta(userPass.getPassword()))) {
+
+                Database.updateUser(userPass, true);
+                //S'indica el correcte canvi de la password
+                userPass.setCredentialsOk(true);
+
+            } else {
+                //S'inidica que la password no té el format adient
+                userPass.setCredentialsOk(false);
+            }
+
+            //Es respon a la solicitud del client
+            send(userPass);
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
 
+    //Respon a la solicitud de l'evolucio monetaria de l'usuari
+    private void walletEvolutionResponse(Message msg) {
+
+        WalletEvolutionMessage wallet = (WalletEvolutionMessage)msg;
+
+        //S'agafa el valor de la BBDD i es guarda a la cartera del client
+        wallet.setTransactions(Database.getTransactions(user.getUsername()));
+
+        //Es retorna al client la seva cartera
+        send(wallet);
+    }
+
+    //Gestiona la solicitud d'ingres de diners
     private void deposit(Transaction transaction) {
 
         if(Seguretat.desencripta(user.getPassword()).equals(Seguretat.desencripta(transaction.getPassword()))){
             try {
-
                 long wallet = Database.getUserWallet(transaction.getUsername());
                 wallet += transaction.getGain();
 
+                //Transaction ok indica si es possible fer l'ingres segons si s'ha passat el limit maxim
                 transaction.setTransactionOk(wallet <= 100000);
+
+                //Si la transaccio es correcte, es guarda a la base de dades el nou ingres
                 if (transaction.isTransactionOk()) Database.registerTransaction(transaction);
 
-                oos.writeObject(transaction);
+                //Es retorna la solicitud al client
+                send(transaction);
 
             } catch (Exception e) {
-                e.printStackTrace();
+                //BBDD error
             }
+
         }else{
-            System.out.println("Password wrong");
             transaction.setTransactionOk(false);
+            //Al indicar type 5, el client interpreta que l'error esta en la password
             transaction.setType(5);
-            try {
-                oos.writeObject(transaction);
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            send(transaction);
         }
     }
 
@@ -346,12 +359,8 @@ public class Client extends Thread {
         //Es verifica l'user
         request.setCredentialsOk(true);
 
-        try {
-            //Es torna al clinet l'user amb la verificacio
-            oos.writeObject(request);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //Es torna al clinet l'user amb la verificacio
+        send(request);
     }
 
 
@@ -380,7 +389,7 @@ public class Client extends Thread {
                 //Es verifica el nou usuari i es reenvia al client amb el mateix ID amb el que s'ha demanat el registre
                 request.setCredentialsOk(true);
                 Database.updateUser(request, true);
-                oos.writeObject(request);
+                send(request);
             } catch (Exception e) {
                 impossibleRegistrar  = true;
                 e.printStackTrace();
@@ -390,9 +399,9 @@ public class Client extends Thread {
         if (impossibleRegistrar ) {
             try {
                 request.setCredentialsOk(false);
-                oos.writeObject(request);
+                send(request);
             } catch (Exception e) {
-                System.out.println("No s'ha pogut retornar la peticio de signup");
+
             }
         }
     }
@@ -406,22 +415,18 @@ public class Client extends Thread {
         try {
             //Es tradueix el missatge a un user on es troben les creedencials
             User auxUser = (User) reading;
-            if(!OFF_LINE) {
-                //Es verifica l'existencia del usuari a la base de dades
-                if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
-                    //Si tot es correcte, auxUser s'haura omplert amb creedentialsOk = true;
 
-                    user = auxUser;
-                    oos.writeObject(user);
-                    Database.updateUser(user, true);
-                } else {
-                    //Sino, es retornara el mateix missatge del client, que ja internament esta indicat que creedentiasOk = false;
-                    oos.writeObject(auxUser);
-                }
-            }else{
+            //Es verifica l'existencia del usuari a la base de dades
+            if (Database.checkUserLogIn(auxUser).areCredentialsOk()) {
+
+                //Si tot es correcte, auxUser s'haura omplert amb creedentialsOk = true;
                 user = auxUser;
-                user.setCredentialsOk(true);
-                oos.writeObject(user);
+                send(user);
+                Database.updateUser(user, true);
+
+            } else {
+                //Sino, es retornara el mateix missatge del client, que ja internament esta indicat que creedentiasOk = false;
+                send(auxUser);
             }
         }catch (Exception e) {
             e.printStackTrace();
@@ -455,7 +460,7 @@ public class Client extends Thread {
             request.setContext(CONTEXT_LOGOUT);
 
             //Es retorna el missatge
-            oos.writeObject(request);
+            send(request);
 
             //Es tanca el socket i s'elimina l'usuari de la llista d'usuaris
             socket.close();
@@ -480,7 +485,6 @@ public class Client extends Thread {
         try {
            long money = user.isGuest() ? user.getWallet() : Database.getUserWallet(user.getUsername());
 
-
            if(money < userBet || userBet < 10){
                carta.setBetOk(false);
            }else{
@@ -488,29 +492,27 @@ public class Client extends Thread {
                carta.setWallet(money);
                carta.setBetOk(true);
            }
-            System.out.println("User wallet: " + money);
         } catch (Exception e) {
             e.printStackTrace();
         }
-            baralla = new Stack<>();
-            baralla.removeAllElements();
 
-            valorUsuari = 0;
-            valorIA = 0;
+        baralla = new Stack<>();
+        baralla.removeAllElements();
 
-            if(carta.isBetOk())System.out.println("\n\nNew game of BJ!\n**************");
+        valorUsuari = 0;
+        valorIA = 0;
 
-            //Es reinicia el nombre maxim de cartes d'una persona
-            numberOfUserCards = 0;
+        //Es reinicia el nombre maxim de cartes d'una persona
+        numberOfUserCards = 0;
 
-            //Es copia la baralla
-            baralla = carta.getNomCartes();
+        //Es copia la baralla
+        baralla = carta.getNomCartes();
 
-            //Es barreja la baralla
-            Collections.shuffle(baralla);
+        //Es barreja la baralla
+        Collections.shuffle(baralla);
 
-            //S'afegeix la carta al joc
-            blackJack(carta);
+        //S'afegeix la carta al joc
+        blackJack(carta);
     }
 
     /**
@@ -539,7 +541,6 @@ public class Client extends Thread {
                 if(carta.getContext().equals(CONTEXT_BJ_FINISH_USER)){
                     carta.setForIA(true);
                     if(valorIA >= valorUsuari){
-                        System.out.println("Usuari ha perdut directament");
                         carta.setDerrota("user-instant");
                         acabaPartidaBlackJack(userBet * -1);
                     }else {
@@ -607,22 +608,20 @@ public class Client extends Thread {
                             }else{
                                 carta.setDerrota("user");
                                 acabaPartidaBlackJack(userBet * -1);
-                                System.out.println("El user s'ha pasat de 21 [" + valorUsuari + "]");
                             }
                         }else{
                             carta.setDerrota("false");
                         }
                     }
                 }
-
-                System.out.println("Sending context: " + carta.getContext());
-                oos.writeObject(carta);
+                send(carta);
             }
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
+    //Acaba la partida del BJ i registra si sha perdut o guanyat
     private void acabaPartidaBlackJack(long money) {
 
         if(user.isGuest()){
@@ -636,12 +635,7 @@ public class Client extends Thread {
     }
 
     public void sendRouletteShot(RouletteMessage rouletteMessage) {
-        try {
-            if (connectedToRoulette) oos.writeObject(rouletteMessage);
-        } catch (IOException e) {
-            System.out.println("No s'ha pogut enviar la info de la ruleta");
-            e.printStackTrace();
-        }
+        if (connectedToRoulette) send(rouletteMessage);
     }
 
 
@@ -738,10 +732,6 @@ public class Client extends Thread {
     }
 
     public void sendRouletteList(String[][] info) {
-        try {
-            oos.writeObject(new BetList(info, BetList.ROULETTE));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        send(new BetList(info, BetList.ROULETTE));
     }
 }
