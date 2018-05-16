@@ -1,6 +1,7 @@
 package Network;
 
 import Controlador.Controller;
+import Controlador.HorseRaceThread;
 import Model.*;
 import Model.HorseRace_Model.HorseBet;
 import Model.HorseRace_Model.HorseMessage;
@@ -100,13 +101,13 @@ public class Client extends Thread {
 
     private RouletteThread rouletteThread;
 
-    private HorseRaceController horseRaceController;
+    private HorseRaceThread horseRaceThread;
 
     /** Inicialitza un nou client.*/
-    public Client(ArrayList<Client> usuarisConnectats, Socket socket, Controller controller, HorseRaceController horseRaceController, RouletteThread rouletteThread) {
+    public Client(ArrayList<Client> usuarisConnectats, Socket socket, Controller controller, HorseRaceThread horseRaceThread, RouletteThread rouletteThread) {
         keepLooping = true;
         this.controller = controller;
-        this.horseRaceController = horseRaceController;
+        this.horseRaceThread = horseRaceThread;
         this.usuarisConnectats = usuarisConnectats;
         this.socket = socket;
         this.user = null;
@@ -176,40 +177,39 @@ public class Client extends Thread {
                         break;
 
                     case "HORSES-Connect":
-                        if(!HorseRaceController.isRacing()){
+                        if(!HorseRaceThread.isRacing()){
                             this.playingHorses =  true;
-                            send(new HorseMessage(HorseRaceController.getCountdown(),"Countdown" ));
-                            System.out.println(HorseRaceController.getCountdown());
+                            send(new HorseMessage(HorseRaceThread.getCountdown(),"Countdown" ));
+                            System.out.println(HorseRaceThread.getCountdown());
                         }else{
-                            HorseRaceController.addPlayRequest(this);
+                            HorseRaceThread.addPlayRequest(this);
                         }
                         break;
 
                     case "HORSES-Disconnect":
                         setPlayingHorses(false);
-                        HorseRaceController.removeBets(this.getName());
-                        HorseRaceController.removeRequests(this);
+                        HorseRaceThread.removeBets(this.getName());
+                        HorseRaceThread.removeRequests(this);
                         break;
 
                     case "HORSES-Bet":
                         horseBet = ((HorseMessage)msg).getHorseBet();
-                        if(!HorseRaceController.isRacing() && horseBet.getName().equals(this.getName())){
+                        if(!HorseRaceThread.isRacing() && horseBet.getName().equals(this.getName())){
                             if(Database.getUserWallet(this.user.getUsername()) >= ((HorseMessage)msg).getHorseBet().getBet()){
                                 Database.registerTransaction(new Transaction("HorseBet", this.user.getUsername(), -((HorseMessage)msg).getHorseBet().getBet(), 1));
-                                HorseRaceController.addHorseBet(((HorseMessage)msg).getHorseBet());
+                                HorseRaceThread.addHorseBet(((HorseMessage)msg).getHorseBet());
                                 send(new HorseMessage(new HorseBet(true), "HORSES-BetConfirm"));
                             }else{
                                 send(new HorseMessage(new HorseBet(false), "HORSES-BetConfirm"));
                             }
-                        }else{
-                            send(new HorseMessage(new HorseBet(false), "HORSES-BetConfirm"));
                         }
+
                         break;
 
                     case "HORSES-Finished":
                         System.out.println("Finished ");
-                        HorseRaceController.addFinished();
-                        this.horseRaceController.sendResult(this);
+                        HorseRaceThread.addFinished();
+                        this.horseRaceThread.sendResult(this);
                         break;
 
                     case "rouletteConnection":
@@ -242,14 +242,14 @@ public class Client extends Thread {
         } catch (Exception e) {
             //Usuari s'ha desconectat sense avisar al servidor
             Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
-            HorseRaceController.removeBets(this.getName());
+            HorseRaceThread.removeBets(this.getName());
 
             if (connectedToRoulette) {
                 rouletteThread.cleanUserBets(user.getUsername());
                 connectedToRoulette = false;
             }
 
-            HorseRaceController.removeBets(this.getName());
+            HorseRaceThread.removeBets(this.getName());
             usuarisConnectats.remove(this);
         }
     }
@@ -733,5 +733,13 @@ public class Client extends Thread {
 
     public void sendRouletteList(String[][] info) {
         send(new BetList(info, BetList.ROULETTE));
+    }
+
+    /**
+     *
+     * @param betList Llista d'apostes de la carrera que s'esta corrent
+     */
+    public void sendHorseBetList(String[][] betList) {
+        send(new BetList(betList, BetList.HORSES));
     }
 }

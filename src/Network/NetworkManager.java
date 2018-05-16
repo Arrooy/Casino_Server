@@ -1,6 +1,7 @@
 package Network;
 
 import Controlador.Controller;
+import Controlador.HorseRaceThread;
 import Model.HorseRace_Model.HorseRaceModel;
 import Utils.JsonManager;
 import Network.Roulette.RouletteThread;
@@ -22,7 +23,7 @@ public class NetworkManager extends Thread{
     /** Llistat d'usuaris connectats al servidor*/
     private ArrayList<Client> usuarisConnectats;
 
-    private HorseRaceController horseRaceController;
+    private HorseRaceThread horseRaceThread;
 
     private RouletteThread rouletteThread;
 
@@ -39,7 +40,7 @@ public class NetworkManager extends Thread{
         }
 
         rouletteThread = new RouletteThread(usuarisConnectats);
-        this.horseRaceController = new HorseRaceController(new HorseRaceModel(), usuarisConnectats, this);
+        this.horseRaceThread = new HorseRaceThread(new HorseRaceModel(), usuarisConnectats, this);
     }
 
     /** Inicia la acceptacio de nous usuaris*/
@@ -57,7 +58,7 @@ public class NetworkManager extends Thread{
         while(true){
             try {
                 //Esperem i creem un client per a cada nova conexio entrant
-                Client nouClient = new Client(usuarisConnectats,serverSocket.accept(),controller, horseRaceController, rouletteThread);
+                Client nouClient = new Client(usuarisConnectats,serverSocket.accept(),controller, horseRaceThread, rouletteThread);
 
                 //Afegeim el client a la llista de clients
                 usuarisConnectats.add(nouClient);
