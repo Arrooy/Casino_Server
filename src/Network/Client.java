@@ -194,8 +194,8 @@ public class Client extends Thread {
 
                     case "HORSES-Bet":
                         horseBet = ((HorseMessage)msg).getHorseBet();
-                        if(!HorseRaceThread.isRacing() && horseBet.getName().equals(this.getName())){
-                            if(Database.getUserWallet(this.user.getUsername()) >= ((HorseMessage)msg).getHorseBet().getBet()){
+                        if(horseBet.getName().equals(this.user.getUsername())){
+                            if(Database.getUserWallet(horseBet.getName()) >= ((HorseMessage)msg).getHorseBet().getBet()){
                                 Database.registerTransaction(new Transaction("HorseBet", this.user.getUsername(), -((HorseMessage)msg).getHorseBet().getBet(), 1));
                                 HorseRaceThread.addHorseBet(((HorseMessage)msg).getHorseBet());
                                 send(new HorseMessage(new HorseBet(true), "HORSES-BetConfirm"));
@@ -203,7 +203,6 @@ public class Client extends Thread {
                                 send(new HorseMessage(new HorseBet(false), "HORSES-BetConfirm"));
                             }
                         }
-
                         break;
 
                     case "HORSES-Finished":
