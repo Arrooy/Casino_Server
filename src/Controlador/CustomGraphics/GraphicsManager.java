@@ -86,7 +86,7 @@ public class GraphicsManager implements Runnable {
             try {
                 Thread.sleep(sleepDurationMillis);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+
             }
         }
 
@@ -95,8 +95,10 @@ public class GraphicsManager implements Runnable {
     private void updateAndRender(long deltaMillis) {
         controlador_extern.update(deltaMillis / 1000f);
         prepareGameImage();
-        controlador_extern.render(image.getGraphics());
-        renderGameImage(JPanelObjectiu.getGraphics());
+        if(image != null)
+            controlador_extern.render(image.getGraphics());
+        if(JPanelObjectiu != null)
+            renderGameImage(JPanelObjectiu.getGraphics());
     }
 
     private void prepareGameImage() {
@@ -116,21 +118,11 @@ public class GraphicsManager implements Runnable {
 
     public void exit() {
         running = false;
-        Graphics g = image.getGraphics();
-        g.clearRect(0, 0, width, height);
-        System.out.println("borra");
+        thread.interrupt();
     }
 
     private void renderGameImage(Graphics g) {
         if (image != null) {
-            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
-            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
-                    RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-//            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING,
-   //                 RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
             g.drawImage(image, 0, 0, null);
         }
         g.dispose();

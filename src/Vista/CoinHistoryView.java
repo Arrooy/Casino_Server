@@ -59,12 +59,9 @@ public class CoinHistoryView extends View {
     public void updateSize(boolean full) {
         if (gp != null) {
             chc.updateSize(getWidth(), getHeight());
-            System.out.println("dins si");
             gp.updateSize(this.getWidth(), this.getHeight(), full);
-            //gp.getCurrentDrawing().updateSize(getWidth(), getHeight());
             updateUI();
         }
-        System.out.println("fora");
     }
 
     @Override

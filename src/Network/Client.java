@@ -544,15 +544,7 @@ public class Client extends Thread {
                         carta.setDerrota("user-instant");
                         acabaPartidaBlackJack(userBet * -1);
                     }else {
-                        if (carta.getValue() == 11) {
-                            if (valorIA + 11 <= 21) {
-                                carta.setValue(11);
-                                carta.setValent11(carta.getValent11() + 1);
-                            } else {
-                                carta.setValue(1);
-                            }
-                        }
-                        valorIA += carta.getValue();
+                        BJIaAddValor(carta);
                         if (valorIA > 21) {
                             if (carta.getValent11() >= 1) {
                                 carta.setValent11(carta.getValent11() - 1);
@@ -579,13 +571,7 @@ public class Client extends Thread {
                 }else{
                     //Si una de les 4 cartes inicials es per a la IA, s'envia aquesta girada
                     if (carta.isForIA()){
-                        if(carta.getValue() == 11){
-                            if(valorIA + 11 <= 21)
-                                carta.setValue(11);
-                            else
-                                carta.setValue(1);
-                        }
-                        valorIA += carta.getValue();
+                        BJIaAddValor(carta);
                         carta.setGirada(true);
                         carta.setDerrota("false");
                     }else {
@@ -619,6 +605,18 @@ public class Client extends Thread {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void BJIaAddValor(Card carta) {
+        if (carta.getValue() == 11) {
+            if (valorIA + 11 <= 21) {
+                carta.setValue(11);
+                carta.setValent11(carta.getValent11() + 1);
+            } else {
+                carta.setValue(1);
+            }
+        }
+        valorIA += carta.getValue();
     }
 
     //Acaba la partida del BJ i registra si sha perdut o guanyat

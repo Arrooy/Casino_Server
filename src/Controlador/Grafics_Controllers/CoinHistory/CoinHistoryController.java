@@ -23,6 +23,8 @@ public class CoinHistoryController implements GraphicsController {
     private LinkedList<Transaction> gains;
 
     private LinkedList<PointGain> pointGains;
+    private LinkedList<PointGain> originalPointGains;
+
     private String username;
     private int dist;
 
@@ -49,6 +51,11 @@ public class CoinHistoryController implements GraphicsController {
     @Override
     public void init() {
         pointGains = new LinkedList<>();
+        originalPointGains = new LinkedList<>();
+
+        for(int i = 0; i < wallet.length; i++) {
+            originalPointGains.add(new PointGain(gains.get(i), wallet[i]));
+        }
 
         dist = width / (wallet.length + 1);
 
@@ -85,7 +92,21 @@ public class CoinHistoryController implements GraphicsController {
 
     @Override
     public void update(float delta) {
-        dist = width / (wallet.length + 1);
+
+        if(pointGains.size() * PointGain.FINAL_R * 4 > width){
+
+            LinkedList<PointGain> aux = new LinkedList<>();
+            for(PointGain p : originalPointGains) aux.add(new PointGain(p));
+
+            while (aux.size() * PointGain.FINAL_R * 4 > width) {
+                aux = simplificaPoints(aux);
+            }
+            pointGains = aux;
+        }else{
+            pointGains = originalPointGains;
+        }
+
+        dist = width / (pointGains.size() + 1);//(wallet.length + 1);
 
         bx = 30;
         by = (int) (height * .88);
@@ -110,6 +131,29 @@ public class CoinHistoryController implements GraphicsController {
                 (int) ((double)height*0.85 - (double)height * 0.6 * ((double)pointGains.get(i).getValue()/(double)maxValue)));
     }
 
+    private LinkedList<PointGain> simplificaPoints(LinkedList<PointGain> original) {
+        int size = original.size();
+        int sizeDivided = size / 2;
+        long walletaux = 0;
+
+        LinkedList<PointGain> aux = new LinkedList<>();
+
+        for(int i = 0; i < sizeDivided; i++){
+
+            Transaction p0 = original.get(i * 2).getTransaction();
+            Transaction p1 = original.get(i * 2 + 1).getTransaction();
+
+            walletaux += p0.getGain() + p1.getGain();
+
+            aux.add(new PointGain(new Transaction(p0.getGain() + p1.getGain(),p0.getTime(),p0.getType()), walletaux));
+        }
+
+        if(size % 2 != 0) aux.getLast().addPoint(original.getLast().getTransaction().getGain());
+
+
+        return aux;
+    }
+
     @Override
     public void render(Graphics g) {
 
@@ -126,27 +170,26 @@ public class CoinHistoryController implements GraphicsController {
         g.setColor(linesC);
         g.drawLine(0, base, width, base);
 
-        for(int i = 0; i < pointGains.size() - 1; i++) {
+        for(int i = 1; i < pointGains.size() - 1; i++) {
             PointGain p = pointGains.get(i);
 
-            if (i != 0) {
-                int x1 = pointGains.get(i - 1).getX();
-                int y1 = pointGains.get(i - 1).getY();
-                int x2 = p.getX();
-                int y2 = p.getY();
+            int x1 = pointGains.get(i - 1).getX();
+            int y1 = pointGains.get(i - 1).getY();
+            int x2 = p.getX();
+            int y2 = p.getY();
 
-                final int[] xa = {x1, x1, x2, x2};
-                final int[] ya = {base, y1, y2, base};
+            final int[] xa = {x1, x1, x2, x2};
+            final int[] ya = {base, y1, y2, base};
 
-                g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 10));
-                g.fillPolygon(new Polygon(xa, ya, 4));
+            g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 10));
+            g.fillPolygon(new Polygon(xa, ya, 4));
 
-                g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 30));
-                g.drawPolygon(new Polygon(xa, ya, 4));
+            g.setColor(new Color(linesC.getRed(), linesC.getGreen(), linesC.getBlue(), 30));
+            g.drawPolygon(new Polygon(xa, ya, 4));
 
-                g.setColor(linesC);
-                g.drawLine(x1, y1, x2, y2);
-            }
+            g.setColor(linesC);
+            g.drawLine(x1, y1, x2, y2);
+
         }
 
         int x1 = 0, x2 = 0, y1 = 0, y2 = 0, x0 = 0, y0 = 0;
@@ -210,7 +253,6 @@ public class CoinHistoryController implements GraphicsController {
     public void updateSize(int width, int height) {
         this.width = width;
         this.height = height;
-        System.out.println(width + " x " + height);
     }
 
     private void renderButton(Graphics g){

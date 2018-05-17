@@ -12,18 +12,23 @@ import java.time.Instant;
 //TODO: IMPORTANT - que conio passa quan executes dos cops
 public class PointGain {
 
-    private final float INITIAL_R = 1;
-    private final float FINAL_R = 5;
+    private final float INITIAL_R = 1.0f;
+    public static final float FINAL_R = 5.0f;
 
     private long value;
 
     private Transaction transaction;
+
     private boolean drawInfo;
 
 
     private double r;
 
     private int x, y;
+
+    public PointGain(PointGain p) {
+        this(p.getTransaction(),p.getValue());
+    }
 
     public PointGain(Transaction gain, long value) {
         this.transaction = gain;
@@ -32,10 +37,6 @@ public class PointGain {
         r = INITIAL_R;
 
         this.value = value;
-    }
-
-    public long getValue() {
-        return value;
     }
 
     public void update(float delta){
@@ -50,8 +51,8 @@ public class PointGain {
             r = FINAL_R;
             setDrawInfo(false);
         }
-        System.out.print("Update mouse: " + drawInfo + " - ");
-        System.out.printf("%.2f\n", Math.sqrt(Math.pow(mx - x, 2) + Math.pow(my - y, 2)));
+       // System.out.print("Update mouse: " + drawInfo + " - ");
+        //System.out.printf("%.2f\n", Math.sqrt(Math.pow(mx - x, 2) + Math.pow(my - y, 2)));
     }
 
     public synchronized void setDrawInfo(boolean b) {drawInfo = b;}
@@ -71,9 +72,7 @@ public class PointGain {
     public void renderInfo(Graphics g, boolean ended, Color color) {
         if (drawInfo && ended) {
             pintaInfo(g, color);
-           // System.out.println("si");
         }
-        System.out.println(drawInfo + " - " + ended);
     }
 
     private void pintaInfo(Graphics g, Color color) {
@@ -144,5 +143,18 @@ public class PointGain {
 
     public int getY() {
         return y;
+    }
+
+    public long getValue() {
+        return value;
+    }
+
+    public void addPoint(long newValue){
+        value += newValue;
+        transaction.setGain(transaction.getGain() + newValue);
+    }
+
+    public Transaction getTransaction() {
+        return transaction;
     }
 }
