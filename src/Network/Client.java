@@ -241,7 +241,8 @@ public class Client extends Thread {
         } catch (Exception e) {
             //Usuari s'ha desconectat sense avisar al servidor
             Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
-            HorseRaceThread.removeBets(this.user.getUsername());
+            if(this.user != null)
+                HorseRaceThread.removeBets(this.user.getUsername());
             this.playingHorses = false;
 
             if (connectedToRoulette) {
@@ -378,7 +379,7 @@ public class Client extends Thread {
         boolean impossibleRegistrar = false;
 
         //En el cas de trobar una persona amb el mateix username que es vol registrar, es nega el registre al client.
-        if (Database.usernamePicked(request.getUsername()) || Database.mailPicked(request.getMail())) {
+        if (Database.usernamePicked(request) || Database.mailNotOk(request)) {
             impossibleRegistrar  = true;
         } else {
             //Si no existeix el nom, s'intenta crear el nou usuari

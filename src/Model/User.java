@@ -36,6 +36,9 @@ public class User extends Message {
     /** Evolucio dels diners del usuari*/
     private ArrayList<Long> coinHistory;
 
+    /** Rao per la qual no es pot fer signUp al servidor*/
+    private String signUpErrorReason;
+
 
     /**
      * Crea un usuari guest
@@ -176,4 +179,13 @@ public class User extends Message {
     public void setGuest(boolean guest) {
         isGuest = guest;
     }
+
+    public String getSignUpErrorReason() {
+        return signUpErrorReason;
+    }
+
+    public void setSignUpErrorReason(String signUpErrorReason) {
+        this.signUpErrorReason = signUpErrorReason;
+    }
+
 }

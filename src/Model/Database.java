@@ -201,13 +201,17 @@ public class Database {
 
     /**
      * Mètode per a comprovar si un nom ja està usat per un usuari
-     * @param username Nom a comprovar
+     * @param user usuari amb el nom a comprovar
      * @return Si ja està agafat el nom
      */
-    public static boolean usernamePicked(String username) {
+    public static boolean usernamePicked(User user) {
+        String username = user.getUsername();
         try {
             ResultSet rs = conn.createStatement().executeQuery("select username from Users");
-            while (rs.next()) if (username.equals(rs.getString("username"))) return true;
+            while (rs.next()) if (username.equals(rs.getString("username"))){
+                user.setSignUpErrorReason("Username has to be unique");
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -215,18 +219,33 @@ public class Database {
     }
 
     /**
-     * Mètode per a comprovar si un nom ja està usat per un usuari
-     * @param mail Nom a comprovar
-     * @return Si ja està agafat el nom
+     * Mètode per a comprovar si un nom ja està usat per un usuari i verificar que el mail es correcte
+     * @param user usuari que conte el mail a verificar
+     * @return Si ja està agafat el nom i el mail es es correcte
      */
-    public static boolean mailPicked(String mail) {
+    public static boolean mailNotOk(User user) {
+        String mail = user.getMail();
         try {
             ResultSet rs = conn.createStatement().executeQuery("select mail from Users");
-            while (rs.next()) if (mail.equals(rs.getString("mail"))) return true;
+            while (rs.next()){
+                //El mail ja existeix en la DB
+                if (mail.equals(rs.getString("mail"))){
+                    user.setSignUpErrorReason("Email has to be unique");
+                    return true;
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+
+        if(mail.contains("@") && mail.contains(".") && mail.length() > 5){
+            //Tot correcte
+            return false;
+        }else{
+            //El format del mail no es correcte
+            user.setSignUpErrorReason("Please use a valid email");
+            return true;
+        }
     }
 
     /**
