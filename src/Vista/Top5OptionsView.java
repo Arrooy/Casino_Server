@@ -111,6 +111,8 @@ public class Top5OptionsView extends View {
     }
 
     public void createGraph(Graphics g,User[] user,Color color,String title) {
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         g.setColor(new Color(54, 57,66));
 

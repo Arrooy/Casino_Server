@@ -388,7 +388,6 @@ public class Database {
             ResultSet rs = conn.createStatement().executeQuery("select * from Transactions where type = '" + type + "';");
             while (rs.next()) {
                 boolean found = false;
-                //System.out.println("NAME:" + rs.getString("username"));
 
                 for (User u: users) if (rs.getString("username").equals(u.getUsername())) {
                     u.setWallet(u.getWallet() + rs.getLong("earnings"));
