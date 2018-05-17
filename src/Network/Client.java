@@ -194,14 +194,14 @@ public class Client extends Thread {
 
                     case "HORSES-Bet":
                         horseBet = ((HorseMessage)msg).getHorseBet();
-                        if(horseBet.getName().equals(this.user.getUsername())){
-                            if(Database.getUserWallet(horseBet.getName()) >= ((HorseMessage)msg).getHorseBet().getBet()){
-                                Database.registerTransaction(new Transaction("HorseBet", this.user.getUsername(), -((HorseMessage)msg).getHorseBet().getBet(), 1));
-                                HorseRaceThread.addHorseBet(((HorseMessage)msg).getHorseBet());
-                                send(new HorseMessage(new HorseBet(true), "HORSES-BetConfirm"));
-                            }else{
-                                send(new HorseMessage(new HorseBet(false), "HORSES-BetConfirm"));
-                            }
+                        if(Database.getUserWallet(horseBet.getName()) >= ((HorseMessage)msg).getHorseBet().getBet()){
+                            Database.registerTransaction(new Transaction("HORSES", this.user.getUsername(), -((HorseMessage)msg).getHorseBet().getBet(), Transaction.TRANSACTION_HORSES));
+                            send(new HorseMessage(new HorseBet(true), "BetConfirm"));
+                            HorseRaceThread.addHorseBet(((HorseMessage)msg).getHorseBet());
+                            System.out.println("Bet accepted");
+                        }else{
+                            send(new HorseMessage(new HorseBet(false), "BetConfirm"));
+                            System.out.println("Bet denied");
                         }
                         break;
 
@@ -241,7 +241,8 @@ public class Client extends Thread {
         } catch (Exception e) {
             //Usuari s'ha desconectat sense avisar al servidor
             Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
-            HorseRaceThread.removeBets(this.getName());
+            HorseRaceThread.removeBets(this.user.getUsername());
+            this.playingHorses = false;
 
             if (connectedToRoulette) {
                 rouletteThread.cleanUserBets(user.getUsername());
