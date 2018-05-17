@@ -79,6 +79,13 @@ public class Database {
      * @return ID d'una nova transacció
      */
     private static long getLastID() {
+        try {
+            ResultSet rs = conn.createStatement().executeQuery("select id from Transactions");
+            while (rs.next()) lastID = rs.getLong("id");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         lastID++;
         return lastID;
     }

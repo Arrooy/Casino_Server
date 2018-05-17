@@ -36,10 +36,9 @@ public class CoinHistoryView extends View {
      * @param username Nom del usuari a generar la taula
      * @param width Amplada inicial de la pantalla
      * @param height Alçada inicial de la pantalla
+     * @param info Informació de les transaccions
      */
-    public void createCoinHistory(String username, int width, int height) {
-        LinkedList<Transaction> info = Database.getTransactions(username);
-
+    public void createCoinHistory(String username, int width, int height, LinkedList<Transaction> info) {
         if (chc == null) {
             chc = new CoinHistoryController(width, height, info, username, cg);
         } else {

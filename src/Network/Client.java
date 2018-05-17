@@ -215,11 +215,13 @@ public class Client extends Thread {
                     case "rouletteConnection":
                         ((RouletteMessage) msg).setTimeTillNext(RouletteThread.getTimeTillNext());
                         send(msg);
+                        System.out.println("[Connected to roulette]");
                         connectedToRoulette = true;
                         break;
 
                     case "rouletteDisconnection":
                         rouletteThread.cleanUserBets(this.user.getUsername());
+                        System.out.println("[Disonnected to roulette]");
                         connectedToRoulette = false;
                         break;
 
@@ -634,10 +636,13 @@ public class Client extends Thread {
         }
     }
 
+    /**
+     * En cas d'estar connectat a la ruleta s'envia al client una tirada
+     * @param rouletteMessage Miistge que conté la informació de la tirada
+     */
     public void sendRouletteShot(RouletteMessage rouletteMessage) {
         if (connectedToRoulette) send(rouletteMessage);
     }
-
 
     /**
      * Calucla el valor d'una carta del blackJack
@@ -731,8 +736,12 @@ public class Client extends Thread {
         this.playingHorses = b;
     }
 
+    /**
+     * Mètode que envia a tots els usuaris connectats la llista d'apostes realitzades
+     * @param info Informació de totes les apostes actives
+     */
     public void sendRouletteList(String[][] info) {
-        send(new BetList(info, BetList.ROULETTE));
+        if (connectedToRoulette) send(new BetList(info, BetList.ROULETTE));
     }
 
     /**

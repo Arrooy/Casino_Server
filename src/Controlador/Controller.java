@@ -201,7 +201,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
     @Override
     public void mousePressed(MouseEvent e) {
         if(e.getSource() instanceof JTable && e.getClickCount() >= 2){
-            vista.setCoinHistoryView(ranking.getUsername());
+            vista.setCoinHistoryView(ranking.getUsername(), Database.getTransactions(ranking.getUsername()));
             coinHistoryView.updateSize(false);
         }
     }

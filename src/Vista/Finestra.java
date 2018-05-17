@@ -1,11 +1,13 @@
 package Vista;
 
 import Controlador.Controller;
+import Model.Transaction;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.LinkedList;
 
 public class Finestra extends JFrame {
 
@@ -86,8 +88,8 @@ public class Finestra extends JFrame {
         return JOptionPane.showConfirmDialog(this,message,"Are you sure?",JOptionPane.YES_NO_OPTION) == 0;
     }
 
-    public void setCoinHistoryView(String username) {
-        coinHistoryView.createCoinHistory(username, getWidth(), getHeight());
+    public void setCoinHistoryView(String username, LinkedList<Transaction> transactions) {
+        coinHistoryView.createCoinHistory(username, getWidth(), getHeight(), transactions);
         layout.show(getContentPane(), "coinHistory");
     }
 

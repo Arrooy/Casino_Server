@@ -149,9 +149,9 @@ public class RouletteThread extends Thread {
                     if (isWinner(bet.cellID, winner)) t.setGain(t.getGain() + moneyWon(bet));
                     else t.setGain(t.getGain() - bet.bet);
 
-                    //System.out.println("Is winner: " + isWinner(bet.cellID, winner) + " - Cell: " +
-                     ///*(bet.cellID < 37 ? winnerConversionTable[bet.cellID] : bet.cellID)  + " : " +*/ bet.cellID
-                     //       + " - Winner: " + winner);
+                    System.out.println("Is winner: " + isWinner(bet.cellID, winner) + " - Cell: " +
+                     /*(bet.cellID < 37 ? winnerConversionTable[bet.cellID] : bet.cellID)  + " : " +*/ bet.cellID
+                            + " - Winner: " + winner);
                 }
                 //System.out.println("[ROULETTE BET]: " + t.getGain());
                 Database.registerTransaction(t);
