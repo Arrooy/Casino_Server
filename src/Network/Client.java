@@ -195,7 +195,7 @@ public class Client extends Thread {
                     case "HORSES-Bet":
                         horseBet = ((HorseMessage)msg).getHorseBet();
                         if(Database.getUserWallet(horseBet.getName()) >= ((HorseMessage)msg).getHorseBet().getBet()){
-                            Database.registerTransaction(new Transaction("HORSES", this.user.getUsername(), -((HorseMessage)msg).getHorseBet().getBet(), Transaction.TRANSACTION_HORSES));
+                            Database.registerTransaction(new Transaction("HORSES Bet", this.user.getUsername(), -((HorseMessage)msg).getHorseBet().getBet(), Transaction.TRANSACTION_HORSES));
                             send(new HorseMessage(new HorseBet(true), "BetConfirm"));
                             HorseRaceThread.addHorseBet(((HorseMessage)msg).getHorseBet());
                         }else{

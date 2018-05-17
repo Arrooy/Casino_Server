@@ -233,7 +233,7 @@ public class HorseRaceThread extends Thread  {
             if(h.getHorse() == this.horseRaceModel.getHorseSchedule().getWinner()){
                 for(Client client: clients){
                     if(client.getName() == h.getName()){
-                        transaction = new Transaction("HORSES", client.getName(), h.getBet() * PRIZE_MULTIPLIER, Transaction.TRANSACTION_HORSES);
+                        transaction = new Transaction("HORSES PRIZE", client.getName(), h.getBet() * PRIZE_MULTIPLIER, Transaction.TRANSACTION_HORSES);
                         transaction.setTime(new Timestamp(System.currentTimeMillis()));
                         Database.registerTransaction(transaction);
                     }
