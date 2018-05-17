@@ -198,10 +198,8 @@ public class Client extends Thread {
                             Database.registerTransaction(new Transaction("HORSES", this.user.getUsername(), -((HorseMessage)msg).getHorseBet().getBet(), Transaction.TRANSACTION_HORSES));
                             send(new HorseMessage(new HorseBet(true), "BetConfirm"));
                             HorseRaceThread.addHorseBet(((HorseMessage)msg).getHorseBet());
-                            System.out.println("Bet accepted");
                         }else{
                             send(new HorseMessage(new HorseBet(false), "BetConfirm"));
-                            System.out.println("Bet denied");
                         }
                         break;
 

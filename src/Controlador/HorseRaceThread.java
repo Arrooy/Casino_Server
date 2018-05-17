@@ -46,12 +46,18 @@ public class HorseRaceThread extends Thread  {
     /**Afegim una aposta per gestionar mes tard*/
     public static synchronized void addHorseBet(HorseBet horseBet) {
         HorseRaceThread.horseRaceModel.addBet(horseBet);
+        sendBetList();
+
+    }
+
+    public static synchronized void sendBetList(){
         String[][] betList = new String[3][horseRaceModel.getPendingBets().size()];
         for (int i = horseRaceModel.getPendingBets().size() - 1; i >= 0; i--) {
             betList[0][i] = horseRaceModel.getPendingBets().get(i).getName();
             betList[1][i] = horseRaceModel.getPendingBets().get(i).getHorse() + "";
             betList[2][i] = horseRaceModel.getPendingBets().get(i).getBet() + "";
         }
+
         for (Client c: clients) {
             if(c.isPlayingHorses()){
                 c.sendHorseBetList(betList);
@@ -112,6 +118,8 @@ public class HorseRaceThread extends Thread  {
                         sleep(100);
                     }
                     updateWallets();
+                    horseRaceModel.getPendingBets().clear();
+                    sendBetList();
                 }
             }
         } catch (InterruptedException e) {
@@ -236,9 +244,7 @@ public class HorseRaceThread extends Thread  {
     }
 
     public void sendResult(Client client) {
-        if(isRacing()){
-              client.send(HorseRaceThread.calculateResult(horseRaceModel.getHorseSchedule().getWinner(), client));
-        }
+        client.send(HorseRaceThread.calculateResult(horseRaceModel.getHorseSchedule().getWinner(), client));
     }
 }
 
