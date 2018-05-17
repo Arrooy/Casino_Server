@@ -202,6 +202,9 @@ public class Client extends Thread {
                             send(new HorseMessage(new HorseBet(false), "BetConfirm"));
                         }
                         break;
+                    case "HORSES-WalletRequest":
+                        send(new HorseMessage(Database.getUserWallet(this.user.getUsername())));
+                        break;
 
                     case "HORSES-Finished":
                         System.out.println("Finished ");
