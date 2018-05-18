@@ -124,6 +124,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
     }
 
     public void viewRankingView(){
+        vista.setResizable(true);
         vista.setRankings();
         coinHistoryView.closeView();
         ranking.updateTable(Database.getInfoRank());

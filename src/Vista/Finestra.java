@@ -89,6 +89,8 @@ public class Finestra extends JFrame {
     }
 
     public void setCoinHistoryView(String username, LinkedList<Transaction> transactions) {
+        setPreferredSize(getSize());
+        setResizable(false);
         coinHistoryView.createCoinHistory(username, getWidth(), getHeight(), transactions);
         layout.show(getContentPane(), "coinHistory");
     }

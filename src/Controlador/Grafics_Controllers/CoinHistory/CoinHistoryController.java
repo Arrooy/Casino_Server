@@ -6,7 +6,6 @@ import Model.Transaction;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 
 /**
@@ -43,6 +42,8 @@ public class CoinHistoryController implements GraphicsController {
 
     private Controller generalController;
 
+    private int totalSize, realSize, division;
+
     public CoinHistoryController(int width, int height, LinkedList<Transaction> gains, String username, Controller c) {
         this.generalController = c;
         initGraf(width, height, gains, username);
@@ -69,8 +70,25 @@ public class CoinHistoryController implements GraphicsController {
     public void initGraf(int width, int height, LinkedList<Transaction> gains, String username) {
         this.width = width;
         this.height = height;
-        this.gains = gains;
         this.username = username;
+
+        division = 1;
+        totalSize = gains.size();
+
+        while (gains.size() * PointGain.FINAL_R * 4 > width){
+            LinkedList<Transaction> aux = new LinkedList<>();
+
+            for(Transaction p : gains) aux.add(new Transaction(p.getGain(), p.getTime(), p.getType()));
+            while (aux.size() * PointGain.FINAL_R * 4 > width) aux = simplificaPoints(aux);
+
+            gains = aux;
+        }
+
+
+        realSize = gains.size();
+        this.gains = gains;
+
+        division = totalSize / realSize;
 
         maxValue = 0;
 
@@ -92,21 +110,7 @@ public class CoinHistoryController implements GraphicsController {
 
     @Override
     public void update(float delta) {
-
-        if(pointGains.size() * PointGain.FINAL_R * 4 > width){
-
-            LinkedList<PointGain> aux = new LinkedList<>();
-            for(PointGain p : originalPointGains) aux.add(new PointGain(p));
-
-            while (aux.size() * PointGain.FINAL_R * 4 > width) {
-                aux = simplificaPoints(aux);
-            }
-            pointGains = aux;
-        }else{
-            pointGains = originalPointGains;
-        }
-
-        dist = width / (pointGains.size() + 1);//(wallet.length + 1);
+        dist = width / (realSize + 1);//(wallet.length + 1);
 
         bx = 30;
         by = (int) (height * .88);
@@ -131,39 +135,33 @@ public class CoinHistoryController implements GraphicsController {
                 (int) ((double)height*0.85 - (double)height * 0.6 * ((double)pointGains.get(i).getValue()/(double)maxValue)));
     }
 
-    private LinkedList<PointGain> simplificaPoints(LinkedList<PointGain> original) {
+    private LinkedList<Transaction> simplificaPoints(LinkedList<Transaction> original) {
         int size = original.size();
         int sizeDivided = size / 2;
-        long walletaux = 0;
 
-        LinkedList<PointGain> aux = new LinkedList<>();
+        LinkedList<Transaction> aux = new LinkedList<>();
 
         for(int i = 0; i < sizeDivided; i++){
+            Transaction p0 = original.get(i * 2);
+            Transaction p1 = original.get(i * 2 + 1);
 
-            Transaction p0 = original.get(i * 2).getTransaction();
-            Transaction p1 = original.get(i * 2 + 1).getTransaction();
-
-            walletaux += p0.getGain() + p1.getGain();
-
-            aux.add(new PointGain(new Transaction(p0.getGain() + p1.getGain(),p0.getTime(),p0.getType()), walletaux));
+            aux.add(new Transaction(p0.getGain() + p1.getGain(), p0.getTime(), p0.getType()));
         }
 
-        if(size % 2 != 0) aux.getLast().addPoint(original.getLast().getTransaction().getGain());
-
+        if(size % 2 != 0) aux.getLast().setGain(aux.getLast().getGain() + original.getLast().getGain());
 
         return aux;
     }
 
     @Override
     public void render(Graphics g) {
-
-        //TODO: en funcio del tamany de la finestra mostrar una quantitat limitada de transaccions
-
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         g.setColor(bgc);
         g.fillRect(0, 0, width, height);
+
+        renderAxis(g);
 
         int base = (int) (height*0.85);
 
@@ -245,9 +243,52 @@ public class CoinHistoryController implements GraphicsController {
 
         renderButton(g);
 
-        g.setFont(new Font("Helvetica Neue", Font.BOLD, (int) (height*0.10))); //TODO: resize
+        g.setFont(new Font("Helvetica Neue", Font.BOLD, (int) (height*0.10)));
         g.setColor(linesC);
         g.drawString(username, 30, (int) (height * 0.13));
+    }
+
+    private void renderAxis(Graphics g) {//.25 -> .85
+        int dist = 100;
+        double numOfDivisions = height * 0.6 / dist;
+        double inc = (long) (maxValue / numOfDivisions);
+
+        for (int i = 0; i <= numOfDivisions; i++) {
+            String val = "" + (int) (inc * i);
+            int y = (int) (height*0.85 - i * dist);
+
+            if (Math.abs(y - height*0.25) > 20) {
+                g.setColor(new Color(191, 191, 156, 54));
+                g.drawLine(0, y, width, y);
+
+                g.setColor(new Color(191, 191, 156, 180));
+                g.drawString(val, width/(4*realSize), y - 3);
+            }
+        }
+
+        g.setColor(new Color(191, 191, 156, 40));
+        g.drawLine(0, (int) (height*0.25), width, (int) (height*0.25));
+        g.setColor(new Color(191, 191, 156, 180));
+        g.drawString(maxValue + "", width/(4*realSize),  (int) (height*0.25) - 3);
+
+        numOfDivisions = width / (Math.min(realSize, width / 100));
+       // inc = totalSize / numOfDivisions;
+
+        int preescaler = 1;
+        if (pointGains.size() > 10) {
+            if (g.getFontMetrics().getStringBounds("0000", g).getBounds().width > pointGains.get(1).getX() - pointGains.get(0).getX()) {
+                preescaler = 2;
+            }
+        }
+
+        for (int i = 0; i < pointGains.size() / preescaler; i++) {
+            String val = "" + i * preescaler * division;
+            int x = pointGains.get(i * preescaler).getX();
+
+            g.drawString(val, x, (int) (height * .85 +15));
+        }
+
+
     }
 
     public void updateSize(int width, int height) {
