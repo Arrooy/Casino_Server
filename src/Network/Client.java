@@ -183,22 +183,25 @@ public class Client extends Thread {
                         }else{
                             HorseRaceThread.addPlayRequest(this);
                         }
+                        horseRaceThread.sendList();
                         break;
 
                     case "HORSES-Disconnect":
                         setPlayingHorses(false);
                         HorseRaceThread.removeBets(this.getName());
                         HorseRaceThread.removeRequests(this);
+                        horseRaceThread.sendList();
                         break;
 
                     case "HORSES-Bet":
                         horseBet = ((HorseMessage)msg).getHorseBet();
                         if(Database.getUserWallet(horseBet.getName()) >= ((HorseMessage)msg).getHorseBet().getBet()){
                             Database.registerTransaction(new Transaction("HORSES Bet", this.user.getUsername(), -((HorseMessage)msg).getHorseBet().getBet(), Transaction.TRANSACTION_HORSES));
-                            send(new HorseMessage(new HorseBet(true), "BetConfirm"));
-                            HorseRaceThread.addHorseBet(((HorseMessage)msg).getHorseBet());
+                            send(new HorseMessage(new HorseBet(true, horseBet.getBet()), "BetConfirm"));
+                            HorseRaceThread.addHorseBet(horseBet);
+                            horseRaceThread.sendList();
                         }else{
-                            send(new HorseMessage(new HorseBet(false), "BetConfirm"));
+                            send(new HorseMessage(new HorseBet(false,  horseBet.getBet()), "BetConfirm"));
                         }
                         break;
                     case "HORSES-WalletRequest":

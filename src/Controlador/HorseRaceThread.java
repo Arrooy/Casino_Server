@@ -46,23 +46,44 @@ public class HorseRaceThread extends Thread  {
     /**Afegim una aposta per gestionar mes tard*/
     public static synchronized void addHorseBet(HorseBet horseBet) {
         HorseRaceThread.horseRaceModel.addBet(horseBet);
-        sendBetList();
     }
 
     /**
-     * Envia la llista d'apostes a tots els usuaris que estan jugant
+     * Envia la llista d'apostes a tots els usuaris que estan jugant amb les seves apostes en cas de que hagin apostat
      */
-    public static synchronized void sendBetList(){
-        String[][] betList = new String[3][horseRaceModel.getPendingBets().size()];
-        for (int i = horseRaceModel.getPendingBets().size() - 1; i >= 0; i--) {
-            betList[0][i] = horseRaceModel.getPendingBets().get(i).getName();
-            betList[1][i] = "Horse " + (12 - horseRaceModel.getPendingBets().get(i).getHorse());
-            betList[2][i] = horseRaceModel.getPendingBets().get(i).getBet() + "";
+    public static synchronized void sendList(){
+        String[][] list = new String[3][playRequests.size() + checkPlayers() ];
+        Client client;
+        int betPos;
+        int j = 0;
+        for (int i = playRequests.size()- 1; i >= 0; i--) {
+            list[0][i] = playRequests.get(i).getUser().getUsername();
+            list[1][i] = "";
+            list[2][i] = "";
+            j = i + 1;
+            System.out.println("Requested: " + playRequests.get(i).getUser().getUsername());
         }
+        for(int k = clients.size() - 1; k >= 0; k--) {
+            client = clients.get(k);
+            if(client.isPlayingHorses()) {
+                list[0][j] = client.getUser().getUsername();
+                betPos = isBetting(client);
+                System.out.println("Playing: " + client.getUser().getUsername());
 
+
+                if(betPos >= 0) {
+                    list[1][j] = "Horse " + (12 - horseRaceModel.getPendingBets().get(betPos).getHorse());
+                    list[2][j] = horseRaceModel.getPendingBets().get(betPos).getBet() + "";
+                }else {
+                    list[1][j] = "";
+                    list[2][j] = "";
+                }
+                j++;
+            }
+        }
         for (Client c: clients) {
             if(c.isPlayingHorses()){
-                c.sendHorseBetList(betList);
+                c.sendHorseBetList(list);
             }
         }
     }
@@ -104,6 +125,7 @@ public class HorseRaceThread extends Thread  {
         try {
             while(true){
                 manageRequests(playRequests);
+                sendList();
                 this.racing = false;
                 this.countdown = WAITTIME;
                 this.startTime = System.currentTimeMillis();
@@ -119,14 +141,14 @@ public class HorseRaceThread extends Thread  {
                 }
                 this.horseRaceModel.setHorseSchedule(new HorseSchedule());
                 this.finished = 0;
-                if(!clients.isEmpty() & checkPlayers(clients) > 0){
+                if(!clients.isEmpty() & checkPlayers() > 0){
                     this.racing = true;
                     sendRace();
                     while(!allFinished()){
                         sleep(100);
                     }
                     updateWallets();
-                    sendBetList();
+                    sendList();
                 }
             }
         } catch (InterruptedException e) {
@@ -152,7 +174,7 @@ public class HorseRaceThread extends Thread  {
     }
 
     /**Retorna la quantitat de jugadors que estan jugant als cavalls*/
-    private int checkPlayers(ArrayList<Client> clients) {
+    private static int checkPlayers() {
         int players = 0;
         for(int i = clients.size() - 1; i >= 0; i--){
             if(clients.get(i).isPlayingHorses()){
@@ -162,6 +184,20 @@ public class HorseRaceThread extends Thread  {
         return players;
     }
 
+    /**
+     * Metode que retorna -1 en cas de que el client no hag fet cap aposta, retorna la posico en l'array
+     * d'apostes pendents en cas de que hagi apostat
+     * @param client client a comprovar
+     * @return int indicant la posicio del client en l'array d'apostes pendents
+     */
+    public static int isBetting(Client client){
+        for(int i = horseRaceModel.getPendingBets().size() - 1; i >= 0 ; i--){
+            if(horseRaceModel.getPendingBets().get(i).getName().equals(client.getUser().getUsername())){
+                 return i;
+            }
+        }
+        return -1;
+    }
 
 
     /**Retorna el resultat de la carrera i el premi en cas d'aposta*/

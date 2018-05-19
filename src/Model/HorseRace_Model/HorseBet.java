@@ -40,8 +40,9 @@ public class HorseBet implements Serializable {
     }
 
 
-    public HorseBet(boolean betOK){
+    public HorseBet(boolean betOK, long bet){
         this.betOK = betOK;
+        this.bet = bet;
     }
 
     /**
