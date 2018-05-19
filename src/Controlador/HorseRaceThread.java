@@ -28,7 +28,7 @@ public class HorseRaceThread extends Thread  {
     private  static ArrayList<Client> clients;
     private static ArrayList<Client> playRequests;
 
-    private static final long WAITTIME = 10 * 1000;
+    private static final long WAITTIME = 60 * 1000;
     private static final int PRIZE_MULTIPLIER = 11;
 
     public HorseRaceThread(HorseRaceModel horseRaceModel, ArrayList<Client> clients, NetworkManager networkManager){
@@ -47,14 +47,13 @@ public class HorseRaceThread extends Thread  {
     public static synchronized void addHorseBet(HorseBet horseBet) {
         HorseRaceThread.horseRaceModel.addBet(horseBet);
         sendBetList();
-
     }
 
     public static synchronized void sendBetList(){
         String[][] betList = new String[3][horseRaceModel.getPendingBets().size()];
         for (int i = horseRaceModel.getPendingBets().size() - 1; i >= 0; i--) {
             betList[0][i] = horseRaceModel.getPendingBets().get(i).getName();
-            betList[1][i] = horseRaceModel.getPendingBets().get(i).getHorse() + "";
+            betList[1][i] = "Horse " + (12 - horseRaceModel.getPendingBets().get(i).getHorse());
             betList[2][i] = horseRaceModel.getPendingBets().get(i).getBet() + "";
         }
 
@@ -112,13 +111,10 @@ public class HorseRaceThread extends Thread  {
                 if(!clients.isEmpty() & checkPlayers(clients) > 0){
                     this.racing = true;
                     sendRace();
-                    System.out.println("HORSES- Waiting for " + checkPlayers(clients) + " to finish.");
-                    System.out.println("HORSES- Finished: " + HorseRaceThread.finished);
                     while(!allFinished()){
                         sleep(100);
                     }
                     updateWallets();
-                    horseRaceModel.getPendingBets().clear();
                     sendBetList();
                 }
             }
@@ -163,20 +159,14 @@ public class HorseRaceThread extends Thread  {
 
     /**Retorna el resultat de la carrera i el premi en cas d'aposta*/
     private static HorseMessage calculateResult(int winner, Client client) {
-        HorseResult horseResult = null;
-        boolean found = false;
-        for(HorseBet bet: horseRaceModel.getPendingBets()){
-            if(bet.getName() == client.getName()){
-                found = true;
-                if(bet.getHorse() == winner){
+        HorseResult horseResult =  new HorseResult(winner, 0);
+        HorseBet bet;
+        for(int i = horseRaceModel.getPendingBets().size() - 1; i >= 0; i--){
+            bet = horseRaceModel.getPendingBets().get(i);
+                if(bet.getHorse() == winner && bet.getName().equals(client.getUser().getUsername())){
                     horseResult = new HorseResult(winner, bet.getBet() * PRIZE_MULTIPLIER);
-                }else{
-                    horseResult = new HorseResult(winner, 0);
+                    break;
                 }
-            }
-        }
-        if (!found){
-            horseResult = new HorseResult(winner, 0);
         }
         return new HorseMessage(horseResult, "Result");
     }
@@ -229,18 +219,16 @@ public class HorseRaceThread extends Thread  {
     /**Actualitzem les monedes de tot usuari que hagi apostat i guanyat*/
     public void updateWallets(){
         Transaction transaction;
-        for(HorseBet h: horseRaceModel.getPendingBets()){
-            if(h.getHorse() == this.horseRaceModel.getHorseSchedule().getWinner()){
-                for(Client client: clients){
-                    if(client.getName() == h.getName()){
-                        transaction = new Transaction("HORSES PRIZE", client.getName(), h.getBet() * PRIZE_MULTIPLIER, Transaction.TRANSACTION_HORSES);
-                        transaction.setTime(new Timestamp(System.currentTimeMillis()));
-                        Database.registerTransaction(transaction);
-                    }
-                }
-
+        HorseBet h;
+        for(int i = horseRaceModel.getPendingBets().size() - 1; i >= 0; i--){
+            h = horseRaceModel.getPendingBets().get(i);
+            if(h.getHorse() == this.horseRaceModel.getHorseSchedule().getWinner()) {
+                    transaction = new Transaction(null, h.getName(), h.getBet() * PRIZE_MULTIPLIER, Transaction.TRANSACTION_HORSES);
+                    transaction.setTime(new Timestamp(System.currentTimeMillis()));
+                    Database.registerTransaction(transaction);
             }
         }
+        horseRaceModel.getPendingBets().clear();
     }
 
     public void sendResult(Client client) {

@@ -180,7 +180,6 @@ public class Client extends Thread {
                         if(!HorseRaceThread.isRacing()){
                             this.playingHorses =  true;
                             send(new HorseMessage(HorseRaceThread.getCountdown(),"Countdown" ));
-                            System.out.println(HorseRaceThread.getCountdown());
                         }else{
                             HorseRaceThread.addPlayRequest(this);
                         }
@@ -207,7 +206,6 @@ public class Client extends Thread {
                         break;
 
                     case "HORSES-Finished":
-                        System.out.println("Finished ");
                         HorseRaceThread.addFinished();
                         this.horseRaceThread.sendResult(this);
                         break;
@@ -252,8 +250,6 @@ public class Client extends Thread {
                 rouletteThread.cleanUserBets(user.getUsername());
                 connectedToRoulette = false;
             }
-
-            HorseRaceThread.removeBets(this.getName());
             usuarisConnectats.remove(this);
         }
     }
@@ -750,5 +746,9 @@ public class Client extends Thread {
      */
     public void sendHorseBetList(String[][] betList) {
         send(new BetList(betList, BetList.HORSES));
+    }
+
+    public User getUser() {
+        return this.user;
     }
 }
