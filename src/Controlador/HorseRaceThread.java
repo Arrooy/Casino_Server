@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 
 /**
- * Controlador per el joc dels cavalls
+ * Thread per el joc dels cavalls encarregat de gestionar els jugadors i la logica del joc
  * */
 public class HorseRaceThread extends Thread  {
     private  static HorseRaceModel horseRaceModel;
@@ -49,6 +49,9 @@ public class HorseRaceThread extends Thread  {
         sendBetList();
     }
 
+    /**
+     * Envia la llista d'apostes a tots els usuaris que estan jugant
+     */
     public static synchronized void sendBetList(){
         String[][] betList = new String[3][horseRaceModel.getPendingBets().size()];
         for (int i = horseRaceModel.getPendingBets().size() - 1; i >= 0; i--) {
@@ -77,10 +80,18 @@ public class HorseRaceThread extends Thread  {
         }
     }
 
+    /**
+     * S'afageix un client a la llista de clients que volen jugar
+     * @param client Client que vol jugar
+     */
     public static synchronized void addPlayRequest(Client client){
         playRequests.add(client);
     }
 
+    /**
+     * S'elimina un client de la llista de clients que volen jugar
+     * @param client Client que ja no vol jugar
+     */
     public static synchronized void removeRequests(Client client) {
         if (playRequests.contains(client)){
             playRequests.remove(client);
@@ -126,6 +137,10 @@ public class HorseRaceThread extends Thread  {
 
     }
 
+    /**
+     * Busquem tots els clients de la llista de solicituds de joc i els afegim al joc
+     * @param playRequests llista de solicituds de joc
+     */
     private synchronized void manageRequests(ArrayList<Client> playRequests) {
         if(!playRequests.isEmpty()) {
             for (int i = playRequests.size() - 1; i >= 0; i--) {
@@ -147,15 +162,7 @@ public class HorseRaceThread extends Thread  {
         return players;
     }
 
-    /**Indica si el client ha fet una aposta*/
-    private boolean isBetting(Client client){
-        for(HorseBet bet: horseRaceModel.getPendingBets()){
-            if(bet.getName() == client.getName()){
-                return true;
-            }
-        }
-        return false;
-    }
+
 
     /**Retorna el resultat de la carrera i el premi en cas d'aposta*/
     private static HorseMessage calculateResult(int winner, Client client) {
@@ -231,6 +238,10 @@ public class HorseRaceThread extends Thread  {
         horseRaceModel.getPendingBets().clear();
     }
 
+    /**
+     * Envia el resultat de la carrera a un client
+     * @param client Client al que s'el vol enviar la carrera
+     */
     public void sendResult(Client client) {
         client.send(HorseRaceThread.calculateResult(horseRaceModel.getHorseSchedule().getWinner(), client));
     }

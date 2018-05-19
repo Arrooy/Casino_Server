@@ -274,7 +274,11 @@ public class Client extends Thread {
         send(bet);
     }
 
-    //Gestiona la solicitud del client per a canviar la password de l'usuari
+    /**
+     * Gestiona la solicitud del client per a canviar la password de l'usuari.
+     * @param msg missatge que conté la nova contrasenya
+     */
+
     private void changePassword(Message msg) {
 
         User userPass = (User) msg;
@@ -607,6 +611,7 @@ public class Client extends Thread {
         }
     }
 
+
     private void BJIaAddValor(Card carta) {
         if (carta.getValue() == 11) {
             if (valorIA + 11 <= 21) {
@@ -619,7 +624,11 @@ public class Client extends Thread {
         valorIA += carta.getValue();
     }
 
-    //Acaba la partida del BJ i registra si sha perdut o guanyat
+    /**
+     *  Acaba la partida del BJ i registra si sha perdut o guanyat
+     * @param money diners a afegir
+     */
+
     private void acabaPartidaBlackJack(long money) {
 
         if(user.isGuest()){
@@ -704,22 +713,19 @@ public class Client extends Thread {
         }
     }
 
-    public User findUser(double id){
-        double id_user;
-        for(int i = this.usuarisConnectats.size() - 1; i >= 0; i--){
-            id_user = this.usuarisConnectats.get(i).user.getID();
-            if( id_user == id){
-                return this.usuarisConnectats.get(i).user;
-            }
-        }
-        return null;
-    }
-
+    /**
+     * Indica si el client esta jugant als cavalls
+     * @return boolea que indica si el client esta jugant als cavalls
+     */
     public boolean isPlayingHorses(){
         return playingHorses;
     }
 
 
+    /**
+     * Envia un objecte de la classe missatge
+     * @param message missatge que es vol enviar
+     */
     public void send(Message message) {
        try {
            oos.writeObject(message);
@@ -741,13 +747,17 @@ public class Client extends Thread {
     }
 
     /**
-     *
+     *Retorna llista d'apostes pel joc dels cavalls
      * @param betList Llista d'apostes de la carrera que s'esta corrent
      */
     public void sendHorseBetList(String[][] betList) {
         send(new BetList(betList, BetList.HORSES));
     }
 
+    /**
+     * Retorna l'usuari associat al client
+     * @return Usuari
+     */
     public User getUser() {
         return this.user;
     }
