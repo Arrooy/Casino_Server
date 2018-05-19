@@ -61,16 +61,12 @@ public class HorseRaceThread extends Thread  {
             list[1][i] = "";
             list[2][i] = "";
             j = i + 1;
-            System.out.println("Requested: " + playRequests.get(i).getUser().getUsername());
         }
         for(int k = clients.size() - 1; k >= 0; k--) {
             client = clients.get(k);
             if(client.isPlayingHorses()) {
                 list[0][j] = client.getUser().getUsername();
                 betPos = isBetting(client);
-                System.out.println("Playing: " + client.getUser().getUsername());
-
-
                 if(betPos >= 0) {
                     list[1][j] = "Horse " + (12 - horseRaceModel.getPendingBets().get(betPos).getHorse());
                     list[2][j] = horseRaceModel.getPendingBets().get(betPos).getBet() + "";
