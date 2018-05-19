@@ -28,7 +28,7 @@ public class HorseRaceThread extends Thread  {
     private  static ArrayList<Client> clients;
     private static ArrayList<Client> playRequests;
 
-    private static final long WAITTIME = 60 * 1000;
+    private static final long WAITTIME = 15 * 1000;
     private static final int PRIZE_MULTIPLIER = 11;
 
     public HorseRaceThread(HorseRaceModel horseRaceModel, ArrayList<Client> clients, NetworkManager networkManager){
