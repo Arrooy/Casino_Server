@@ -8,47 +8,52 @@ import Model.User;
 import javax.swing.*;
 import java.awt.*;
 
+/**Classe que crea la vista que mostra les grafiques del top5 de cada joc*/
 public class Top5OptionsView extends View {
-
+    /**Boto per tornar al menu*/
     private JButton jbMenu;
 
+    /**Boto per mostrar la grafica dels cavalls*/
     private JButton jbHorseRace;
+
+    /**Boto per mostrar la grafica del BJ*/
     private JButton jbBlackJack;
+
+    /**Boto per mostrar la grafica de la ruleta*/
     private JButton jbRoulette;
 
+    /**Panell que conte la grafica associada a cada joc*/
     private JPanel jpGraphicContainer;
 
+    /**String que indica quina grafica s'ha seleccionat la ultima*/
     private String lastGraphSelected;
+
+    /**Boolean que indica si es vol fer o no resize de la pantalla*/
     private boolean resize;
 
+    /**Constructor del panell que defineix on i com es col·loquen els elements*/
     public Top5OptionsView(){
+        //Es defineix el Layout
         this.setLayout(new BorderLayout());
 
         lastGraphSelected = "b";
         resize = false;
-        //Panell per col·locar el botó Menu a la part baixa a l'esquerra
+
+        //Panell per col·locar el boto Menu a la part baixa a l'esquerra
         JPanel jpgblBack = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-        //Marges
+
+        //Marges boto per tornar al menu
         c.insets = new Insets(20,20,20,0);
         c.fill = GridBagConstraints.BOTH;
         jbMenu = new JButton("MENU");
         jbMenu.setFocusable(false);
         jpgblBack.add(jbMenu, c);
-        //Flow Layout per a que el botó quedi a l'esquerra
+
+        //Flow Layout per a que el boto quedi a l'esquerra
         JPanel jpBack = new JPanel(new FlowLayout(FlowLayout.LEADING));
         jpBack.add(jpgblBack);
         this.add(jpBack, BorderLayout.SOUTH);
-
-        /*//Panell que té el títol de la pantalla a dalt a la dreta al mig
-        JPanel jpTitle = new JPanel();
-        JPanel jpgblTitle = new JPanel(new GridBagLayout());
-        JLabel jlTitle = new JLabel("TOP 5");
-        jlTitle.setFont(new Font("ArialBlack", Font.BOLD, 24));
-        //Marges
-        c.insets = new Insets(20,0,0,0);
-        jpgblTitle.add(jlTitle, c);
-        jpTitle.add(jpgblTitle);*/
 
         this.add(Box.createVerticalStrut(50), BorderLayout.NORTH);
 
@@ -61,31 +66,42 @@ public class Top5OptionsView extends View {
         jbRoulette = new JButton("ROULETTE");
         jbRoulette.setFocusable(false);
 
-        //Marges
+        //Marges botons
         c.insets = new Insets(0,50,20,50);
 
         //S'afegeixen els botons dels jocs
+
+        //Posicio boto BJ
         c.gridy = 0;
         c.gridx = 0;
         jpgblBotons.add(jbBlackJack, c);
 
+        //Posicio boto cavalls
         c.gridy = 1;
         jpgblBotons.add(jbHorseRace, c);
 
+        //Posicio boto ruleta
         c.gridy = 2;
         c.insets = new Insets(0,50,0,50);
         jpgblBotons.add(jbRoulette, c);
 
+        //Els botons es col·loquen a l'esquerra de la pantalla
         this.add(jpgblBotons, BorderLayout.LINE_START);
 
         jpGraphicContainer = new JPanel(new GridBagLayout());
         c.gridy = 0;
         c.insets = new Insets(0,0,0,0);
+
+        //Les grafiques es col·loquen al centre-dreta de la pantalla
         this.add(jpGraphicContainer, BorderLayout.CENTER);
 
         this.add(Box.createHorizontalStrut(100), BorderLayout.LINE_END);
     }
 
+    /**
+     * Metode override que relaciona cada element amb el seu Listener, i per tant es relaciona la vista amb el controlador
+     * @param c Controlador
+     * */
     @Override
     public void addController(Controller c){
 
@@ -101,7 +117,9 @@ public class Top5OptionsView extends View {
         jbRoulette.addActionListener(c);
     }
 
-    //Donat un array d'usuaris, retorna el valor de la cartera més alta.
+    /**Donat un array d'usuaris, retorna el valor de la cartera més alta.
+     * @param users Array dels usuaris existents en la base de dades
+     * @return enter amb el valor de la cartera més alta*/
     private int maxWallet(User [] users){
         int max = 0;
         for(User u : users){
