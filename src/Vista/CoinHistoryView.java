@@ -46,13 +46,18 @@ public class CoinHistoryView extends View {
         gp = new GraphicsManager(this, chc);
     }
 
+    /**
+     * Mètode per a tancar la vista i retornar al rànking
+     */
     public void closeView() {
         if(gp != null)  gp.exit();
-        //gp = null;
-        //chc = null;
         updateUI();
     }
 
+    /**
+     * Mètode per a actualitzar les variables de les dimensions de la finestra
+     * @param full Pantalla completa?
+     */
     public void updateSize(boolean full) {
         if (gp != null) {
             chc.updateSize(getWidth(), getHeight());
@@ -61,6 +66,10 @@ public class CoinHistoryView extends View {
         }
     }
 
+    /**
+     * Mètode per a afegir el controlador a la finestra
+     * @param c Controlador del joc
+     */
     @Override
     public void addController(Controller c) {
         addComponentListener(c);
