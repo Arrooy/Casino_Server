@@ -96,6 +96,7 @@ public class Client extends Thread {
     /** Valor de l'aposta del usuari*/
     private long userBet;
 
+    //TODO COMMENT
     private boolean connectedToRoulette;
 
     private boolean playingHorses;
@@ -126,6 +127,7 @@ public class Client extends Thread {
         }
     }
 
+    /** El servidor dedicat llegeix solicituds del client i les repon segons el seu context*/
     @Override
     public void run() {
         HorseBet horseBet;
@@ -743,7 +745,7 @@ public class Client extends Thread {
      * @param info Informació de totes les apostes actives
      */
     public void sendRouletteList(String[][] info) {
-        if (connectedToRoulette) send(new BetList(info, BetList.ROULETTE));
+        if (connectedToRoulette) send(new BetList(info, 0));
     }
 
     /**
@@ -751,7 +753,7 @@ public class Client extends Thread {
      * @param betList Llista d'apostes de la carrera que s'esta corrent
      */
     public void sendHorseBetList(String[][] betList) {
-        send(new BetList(betList, BetList.HORSES));
+        send(new BetList(betList,1));
     }
 
     /**

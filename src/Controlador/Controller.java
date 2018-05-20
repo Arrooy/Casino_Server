@@ -59,22 +59,6 @@ public class Controller implements ActionListener, WindowListener, MouseListener
         System.exit(status);
     }
 
-    public void setMainView(MainView mainView) {
-        this.mainView = mainView;
-    }
-
-    public void setLogInView(Top5OptionsView top5) {
-        this.top5 = top5;
-    }
-
-    public void setRankingView(RankingView ranking) {
-        this.ranking = ranking;
-    }
-
-    public void setCoinHistoryView(CoinHistoryView coinHistoryView) {
-        this.coinHistoryView = coinHistoryView;
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()){
@@ -177,14 +161,84 @@ public class Controller implements ActionListener, WindowListener, MouseListener
         System.gc();
     }
 
-    @Override
-    public void windowOpened(WindowEvent e) {}
+    public void setMainView(MainView mainView) {
+        this.mainView = mainView;
+    }
+    public void setLogInView(Top5OptionsView top5) {
+        this.top5 = top5;
+    }
+    public void setRankingView(RankingView ranking) {
+        this.ranking = ranking;
+    }
+    public void setCoinHistoryView(CoinHistoryView coinHistoryView) {
+        this.coinHistoryView = coinHistoryView;
+    }
 
     @Override
     public void windowClosing(WindowEvent e) {
         //Es pregunta si es vol sortir de veritat del programa
         if(vista.displayQuestion("Want to exit?"))
             exitProgram(0);
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        if(coinHistoryView != null)
+            coinHistoryView.updateSize(false);
+        if(top5 != null)
+            updateGraph();
+
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+        if(coinHistoryView != null)
+            coinHistoryView.updateSize(true);
+        if(top5 != null)
+            updateGraph();
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if(e.getSource() instanceof JTable && e.getClickCount() >= 2){
+            vista.setCoinHistoryView(ranking.getUsername(), Database.getTransactions(ranking.getUsername()));
+            coinHistoryView.updateSize(false);
+        }
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+
     }
 
     @Override
@@ -209,62 +263,6 @@ public class Controller implements ActionListener, WindowListener, MouseListener
 
     @Override
     public void windowDeactivated(WindowEvent e) {
-
-    }
-
-    @Override
-    public void componentResized(ComponentEvent e) {
-        if(coinHistoryView != null)
-            coinHistoryView.updateSize(false);
-        if(top5 != null)
-            updateGraph();
-
-    }
-
-    @Override
-    public void componentMoved(ComponentEvent e) {
-        if(coinHistoryView != null)
-            coinHistoryView.updateSize(true);
-        if(top5 != null)
-            updateGraph();
-
-    }
-
-    @Override
-    public void componentShown(ComponentEvent e) {
-
-    }
-
-    @Override
-    public void componentHidden(ComponentEvent e) {
-
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        if(e.getSource() instanceof JTable && e.getClickCount() >= 2){
-            vista.setCoinHistoryView(ranking.getUsername(), Database.getTransactions(ranking.getUsername()));
-            coinHistoryView.updateSize(false);
-        }
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
 
     }
 }

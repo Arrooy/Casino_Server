@@ -187,5 +187,4 @@ public class User extends Message {
     public void setSignUpErrorReason(String signUpErrorReason) {
         this.signUpErrorReason = signUpErrorReason;
     }
-
 }
