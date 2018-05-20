@@ -21,18 +21,29 @@ import java.util.LinkedList;
  */
 public class Finestra extends JFrame {
 
-    //TODO: comentar
+    /** Cardlayout que conte tots els JPanels de la finestra*/
     private CardLayout layout;
+
+    /** Panell amb la vista que apareix al obrir el server*/
     private MainView mainView;
+
+    /** Panell que conte les grafiques del Top5*/
     private Top5OptionsView top5;
+
+    /** Panell que conte la JTable del ranking*/
     private RankingView ranking;
+
+    /** Panell on es representa la funcio del coinHistory*/
     private CoinHistoryView coinHistoryView;
 
     /** Crea un nou JFrame amb un tray icon i una imatge d'icona. Tambe es crea el cardLayout i es configura la finestra*/
     public Finestra() {
 
+
+        //Inicialitza la tray
         Tray.init();
 
+        //Es carrega i es configura l'icono del programa
         try{
             setIconImage(ImageIO.read(new File("./data/ico.png")));
         }catch (Exception e){
@@ -42,11 +53,13 @@ public class Finestra extends JFrame {
         layout = new CardLayout();
         getContentPane().setLayout(layout);
 
+        //Es crean les vistes
         mainView = new MainView();
         top5 = new Top5OptionsView();
         ranking = new RankingView();
         coinHistoryView = new CoinHistoryView();
 
+        //S'afegeixen al cardLayout
         add("main", mainView);
         add("top5", top5);
         add("ranking", ranking);
