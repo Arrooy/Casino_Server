@@ -20,7 +20,7 @@ public class Casino_Server {
 
     public static final boolean OFF_LINE = false;
 
-    public static final int WELCOME_GIFT = 500;
+    public static final int WELCOME_GIFT = 10000;
 
     public static void main(String[] args) {
 

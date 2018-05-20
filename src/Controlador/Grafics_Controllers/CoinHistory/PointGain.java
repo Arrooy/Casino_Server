@@ -5,7 +5,6 @@ import Model.Transaction;
 
 import java.awt.*;
 
-//TODO: IMPORTANT - que conio passa quan executes dos cops
 public class PointGain {
 
     private final float INITIAL_R = 1.0f;
