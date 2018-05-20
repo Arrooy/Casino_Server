@@ -167,8 +167,7 @@ public class Top5OptionsView extends View {
         g.drawString(title,width/2 - metrics.stringWidth(title)/2,metrics.getAscent() + 5);
     }
 
-    //TODO: comentar
-
+    //Escala un valor que actua en un interval desde istart fins istop, a un nou interval de ostart fins ostop
     private float map(float value, float istart, float istop, float ostart, float ostop) {
         return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
     }

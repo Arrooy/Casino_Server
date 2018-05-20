@@ -22,13 +22,13 @@ import java.util.LinkedList;
 public class Finestra extends JFrame {
 
     //TODO: comentar
-
     private CardLayout layout;
     private MainView mainView;
     private Top5OptionsView top5;
     private RankingView ranking;
     private CoinHistoryView coinHistoryView;
 
+    /** Crea un nou JFrame amb un tray icon i una imatge d'icona. Tambe es crea el cardLayout i es configura la finestra*/
     public Finestra() {
 
         Tray.init();
@@ -38,7 +38,6 @@ public class Finestra extends JFrame {
         }catch (Exception e){
             e.printStackTrace();
         }
-
 
         layout = new CardLayout();
         getContentPane().setLayout(layout);
@@ -58,10 +57,14 @@ public class Finestra extends JFrame {
 
         //Es centra la finestra en el centre de la pantalla
         setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - getSize().width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2 - getSize().height / 2);
-        setTitle("Casino_Servidor");
+        setTitle("Casino Servidor");
 
     }
 
+    /**
+     * Afegeix el controlador de la finestra
+     * @param c controlador que gestiona la finestra
+     */
     public void addController(Controller c) {
         Tray.addController(c);
 
@@ -79,35 +82,37 @@ public class Finestra extends JFrame {
 
     }
 
-    public void setMainView() {
-        layout.show(getContentPane(), "main");
-    }
-
-    public void setTop5() {
-        layout.show(getContentPane(), "top5");
-    }
-
-    public void setRankings() { layout.show(getContentPane(), "ranking"); }
-
-    /** Obra una finestra indicant un error*/
+    /** Obra una finestra per indicar un error*/
     public void displayError(String title,String errorText) {
         JOptionPane.showMessageDialog(this,title,errorText,JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * Mostra un dialeg al usuari, preguntant de manera binaria (si/no) un message
+     * @param message missatge que es vol preguntar a l'usuari
+     * @return retorna true en cas afirmatiu, no en cas negatiu
+     */
     public boolean displayQuestion(String message) {
-        //Retorna true si
-        //Retorn false no
         return JOptionPane.showConfirmDialog(this,message,"Are you sure?",JOptionPane.YES_NO_OPTION) == 0;
     }
 
+    /** Mostra la vista del CoinHistoryView*/
     public void setCoinHistoryView(String username, LinkedList<Transaction> transactions) {
         setPreferredSize(getSize());
         setResizable(false);
         coinHistoryView.createCoinHistory(username, getWidth(), getHeight(), transactions);
         layout.show(getContentPane(), "coinHistory");
     }
-
-    public void closeCoinHistory() {
-        coinHistoryView.closeView();
+    /** Mostra la main view*/
+    public void setMainView() {
+        layout.show(getContentPane(), "main");
     }
+
+    /** Mostra el panell del top5*/
+    public void setTop5() {
+        layout.show(getContentPane(), "top5");
+    }
+
+    /** Mostra els rankings*/
+    public void setRankings() { layout.show(getContentPane(), "ranking"); }
 }
