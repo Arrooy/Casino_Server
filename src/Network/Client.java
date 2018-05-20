@@ -315,6 +315,9 @@ public class Client extends Thread {
             if (checkPassword((String) Seguretat.desencripta(userPass.getPassword()))) {
 
                 Database.updateUser(userPass, true);
+
+                user.setPassword((String)Seguretat.desencripta(userPass.getPassword()));
+
                 //S'indica el correcte canvi de la password
                 userPass.setCredentialsOk(true);
 
