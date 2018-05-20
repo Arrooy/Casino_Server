@@ -2,7 +2,7 @@ package Utils;
 
 import org.jasypt.util.text.BasicTextEncryptor;
 
-//TODO: comentar
+/** S'encarrega de la encriptacio de text*/
 public class Seguretat {
 
     /** Password de la encriptacio. Permet encriptar i desencriptar text pla*/

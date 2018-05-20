@@ -7,8 +7,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-//TODO: comentar
-public class JsonManager {
+/**
+ * JsonManager gestiona tota interaccio amb arxius json.
+ * Pot escriure i llegir fitxers json.
+ * Tambe permet escriure, borrar i llegir camps especifics d'un json determinat.
+ * Al utilitzar les funcions escriure i llegir, si al nom del camp que volem llegir li afegim al inici un #,
+ * el escriptor/lector ho interpretara com que en aquell camp hi ha o ha d'haver-hi text encriptat.
+ */public class JsonManager {
 
     private final static String CONFIG_FILENAME = "config.json";
 
