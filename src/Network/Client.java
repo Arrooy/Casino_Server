@@ -246,6 +246,7 @@ public class Client extends Thread {
         } catch (Exception e) {
             //Usuari s'ha desconectat sense avisar al servidor
             Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
+            e.printStackTrace();
             if(this.user != null)
                 HorseRaceThread.removeBets(this.user.getUsername());
             this.playingHorses = false;
