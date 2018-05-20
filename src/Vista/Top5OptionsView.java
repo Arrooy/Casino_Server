@@ -147,18 +147,18 @@ public class Top5OptionsView extends View {
         }
 
         for(int j = 0; j < 5; j++){
-            String name = noms[j] == null ? "noGainData" : noms[j];
+            String name = noms[j] == null ? "N/A" : noms[j];
             if(name.length() > 12) {
                 name = name.substring(0,9);
                 name += "...";
             }
             g.setColor(color);
             int ypos = (int)map((int)wallets[j],0,max,height,0);
-            g.fillRect(x + metrics.stringWidth(max + "") + 20 ,ypos,80,height - ypos - metrics.getAscent());
+            g.fillRect(x + metrics.stringWidth(max + "") + 20 ,ypos,40,height - ypos - metrics.getAscent());
 
             g.setColor(Color.white);
-            g.drawRect(x + metrics.stringWidth(max + "") + 20 ,ypos,80,height - ypos - metrics.getAscent());
-            g.drawString(name,x + metrics.stringWidth(max + "") + 20 + 40 - metrics.stringWidth(name)/2,height - 3);
+            g.drawRect(x + metrics.stringWidth(max + "") + 20 ,ypos,40,height - ypos - metrics.getAscent());
+            g.drawString(name,x + metrics.stringWidth(max + "") + 20 + 20 - metrics.stringWidth(name)/2,height - 3);
             x += (width - metrics.stringWidth(max + "") + 20) / 5;
         }
 
