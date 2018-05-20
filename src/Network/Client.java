@@ -7,6 +7,7 @@ import Model.HorseRace_Model.HorseBet;
 import Model.HorseRace_Model.HorseMessage;
 import Model.RouletteModel.RouletteMessage;
 import Model.RouletteModel.RouletteBetMessage;
+import Network.Roulette.RouletteManager;
 import Network.Roulette.RouletteThread;
 import Utils.Seguretat;
 import Vista.Tray;
@@ -29,37 +30,37 @@ import static Model.Casino_Server.OFF_LINE;
 public class Client extends Thread {
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
-    public static final String CONTEXT_LOGIN = "login";
+    private static final String CONTEXT_LOGIN = "login";
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
-    public static final String CONTEXT_LOGIN_GUEST = "loginGuest";
+    private static final String CONTEXT_LOGIN_GUEST = "loginGuest";
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
-    public static final String CONTEXT_LOGOUT = "logout";
+    private static final String CONTEXT_LOGOUT = "logout";
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
-    public static final String CONTEXT_SIGNUP = "signup";
+    private static final String CONTEXT_SIGNUP = "signup";
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
-    public static final String CONTEXT_BLACK_JACK = "blackjack";
+    private static final String CONTEXT_BLACK_JACK = "blackjack";
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
-    public static final String CONTEXT_BLACK_JACK_INIT = "blackjackinit";
+    private static final String CONTEXT_BLACK_JACK_INIT = "blackjackinit";
     /**
      * Constant per a contexualitzar els missatges entre client i servidor*/
-    public static final String CONTEXT_BJ_FINISH_USER = "blackjackFinish";
+    private static final String CONTEXT_BJ_FINISH_USER = "blackjackFinish";
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
-    public static final String CONTEXT_TRANSACTION = "transaction";
+    private static final String CONTEXT_TRANSACTION = "transaction";
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
-    public static final String CONTEXT_GET_COINS = "userCoins";
+    private static final String CONTEXT_GET_COINS = "userCoins";
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
     public static final String CONTEXT_WALLET_EVOLUTION = "walletEvolution";
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
-    public static final String CONTEXT_CHANGE_PASSWORD = "change password";
+    private static final String CONTEXT_CHANGE_PASSWORD = "change password";
 
     /** Controlador del sistema*/
     private Controller controller;
@@ -216,14 +217,12 @@ public class Client extends Thread {
                     case "rouletteConnection":
                         ((RouletteMessage) msg).setTimeTillNext(RouletteThread.getTimeTillNext());
                         send(msg);
-                        System.out.println("[Connected to roulette]");
                         connectedToRoulette = true;
+                        rouletteThread.addBet(null, -1, -1, false);
                         break;
-
                     case "rouletteDisconnection":
-                        rouletteThread.cleanUserBets(this.user.getUsername());
-                        System.out.println("[Disonnected to roulette]");
                         connectedToRoulette = false;
+                        rouletteThread.cleanUserBets(this.user.getUsername());
                         break;
 
                     case "rouletteBet":
@@ -271,7 +270,7 @@ public class Client extends Thread {
         }
 
         if (bet.isSuccessful() && RouletteThread.getTimeTillNext() - Timestamp.from(Instant.now()).getTime() > 3000)
-            controller.getNetworkManager().getRouletteThread().addBet(user.getUsername(), bet.getBet(), bet.getCellID());
+            controller.getNetworkManager().getRouletteThread().addBet(user.getUsername(), bet.getBet(), bet.getCellID(), true);
         else bet.setSuccessful(false);
 
         send(bet);
@@ -407,9 +406,7 @@ public class Client extends Thread {
             try {
                 request.setCredentialsOk(false);
                 send(request);
-            } catch (Exception e) {
-
-            }
+            } catch (Exception e) {}
         }
     }
 
@@ -763,5 +760,10 @@ public class Client extends Thread {
      */
     public User getUser() {
         return this.user;
+    }
+
+    /** Getter de Connected to Roulette */
+    public boolean isConnectedToRoulette() {
+        return connectedToRoulette;
     }
 }

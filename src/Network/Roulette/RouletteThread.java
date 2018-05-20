@@ -119,8 +119,6 @@ public class RouletteThread extends Thread {
             //Es genera el missatge a enviar als usuaris
             RouletteMessage rm = rouletteManager.genMessage();
 
-            //System.out.println("[ROULETTE WINNER]: " + converTable[rm.getWinner()]);
-
             //S'espera a que el servidor es sincronitzi amb els temps establerts
             while (Timestamp.from(Instant.now()).getTime() < timeTillNext);
 
@@ -148,17 +146,13 @@ public class RouletteThread extends Thread {
                 for (Bet bet: bets) if (bet.username.equals(n)) {
                     if (isWinner(bet.cellID, winner)) t.setGain(t.getGain() + moneyWon(bet));
                     else t.setGain(t.getGain() - bet.bet);
-
-                    System.out.println("Is winner: " + isWinner(bet.cellID, winner) + " - Cell: " +
-                     /*(bet.cellID < 37 ? winnerConversionTable[bet.cellID] : bet.cellID)  + " : " +*/ bet.cellID
-                            + " - Winner: " + winner);
                 }
-                //System.out.println("[ROULETTE BET]: " + t.getGain());
                 Database.registerTransaction(t);
             }
 
             //Es nateja la llista d'apostes
             cleanBetList();
+            addBet(null, -1, -1, false);
 
             //S'espera fins a instants abans de realitzar la següent tirada
             try {
@@ -174,7 +168,9 @@ public class RouletteThread extends Thread {
      * @param username Nom del usuari a borrar
      */
     public synchronized void cleanUserBets(String username) {
-        for (int i = bets.size() - 1; i > 0; i--) if (bets.get(i).username.equals(username)) bets.remove(i);
+        System.out.println(username);
+        for (int i = bets.size() - 1; i >= 0; i--) if (bets.get(i).username.equals(username)) bets.remove(i);
+        addBet(null, -1, -1, false);
     }
 
     /**
@@ -265,17 +261,31 @@ public class RouletteThread extends Thread {
      * @param bet Quantitat apostada
      * @param cellID Cel·la en la que s'ha apostat
      */
-    public synchronized void addBet(String username, long bet, int cellID) {
-        bets.add(new Bet(username, bet, cellID));
+    public synchronized void addBet(String username, long bet, int cellID, boolean toadd) {
+        if (toadd) bets.add(new Bet(username, bet, cellID));
+        LinkedList<String> nonBet = new LinkedList<>();
 
-        String[][] info = new String[3][bets.size()];
-        for (int i = 0; i < bets.size(); i++) {
-            info[0][i] = bets.get(i).username;
-            info[1][i] = bets.get(i).cellID + "";
-            info[2][i] = bets.get(i).bet + "";
+        for (Client c: clients) if (c.isConnectedToRoulette()) {
+            boolean bool = false;
+            for (Bet b: bets) if (b.username.equals(c.getUser().getUsername())) bool = true;
+            if (!bool) nonBet.add(c.getUser().getUsername());
         }
 
-        for (Client c: clients) c.sendRouletteList(info);
+        int i;
+        String[][] betInfo = new String[3][bets.size() + nonBet.size()];
+        for (i = 0; i < bets.size(); i++) {
+            betInfo[0][i] = bets.get(i).username;
+            betInfo[1][i] = bets.get(i).cellID + "";
+            betInfo[2][i] = bets.get(i).bet + "";
+        }
+
+        for (; i < bets.size() + nonBet.size(); i++) {
+            betInfo[0][i] = nonBet.get(i - bets.size());
+            betInfo[1][i] = "-----";
+            betInfo[2][i] = "-----";
+        }
+
+        for (Client c: clients) c.sendRouletteList(betInfo);
     }
 
     /**

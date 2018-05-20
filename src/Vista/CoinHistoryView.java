@@ -1,7 +1,6 @@
 package Vista;
 
 import Controlador.Controller;
-import Controlador.CustomGraphics.GraphicsManager;
 import Controlador.Grafics_Controllers.CoinHistory.CoinHistoryController;
 import Model.Transaction;
 
