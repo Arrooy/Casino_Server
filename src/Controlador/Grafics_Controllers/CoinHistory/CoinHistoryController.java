@@ -337,7 +337,7 @@ public class CoinHistoryController implements GraphicsController {
             g.drawLine(x1, y1, x2, y2);
             if (pointGains.size() > 0) {
                 pointGains.get(pointGains.size() - 1).render(g, linesC);
-                pointGains.get(pointGains.size() - 1).renderInfo(g, ended, linesC);
+                pointGains.get(pointGains.size() - 1).renderInfo(g, ended, linesC, width);
             }
 
             final int[] xb = {x1, x1, x2, x2};
@@ -356,7 +356,7 @@ public class CoinHistoryController implements GraphicsController {
         //Es pinten els panells d'informació
         for (int i = 0; i < pointGains.size() - 1; i++) {
             PointGain p = pointGains.get(i);
-            p.renderInfo(g, ended, linesC);
+            p.renderInfo(g, ended, linesC, width);
         }
 
         renderButton(g);
