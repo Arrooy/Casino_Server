@@ -168,6 +168,7 @@ public class Top5OptionsView extends View {
         g.drawString(title,width/2 - metrics.stringWidth(title)/2,metrics.getAscent() + 5);
     }
 
+    //TODO: comentar
 
     private float map(float value, float istart, float istop, float ostart, float ostop) {
         return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
