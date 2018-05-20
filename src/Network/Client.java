@@ -134,7 +134,6 @@ public class Client extends Thread {
         try {
             while ((user == null || user.isOnline()) && keepLooping) {
                 Message msg = (Message) ois.readObject();
-
                 switch (msg.getContext()) {
                     case CONTEXT_LOGIN:
                         logIn(msg);

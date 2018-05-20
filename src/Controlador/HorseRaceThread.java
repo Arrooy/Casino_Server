@@ -84,9 +84,10 @@ public class HorseRaceThread extends Thread  {
                 j++;
             }
         }
-        for (Client c: clients) {
-            if(c.isPlayingHorses()){
-                c.sendHorseBetList(list);
+        for (int i = clients.size() - 1; i >= 0; i--) {
+            client = clients.get(i);
+            if(client.isPlayingHorses()){
+                client.sendHorseBetList(list);
             }
         }
     }
