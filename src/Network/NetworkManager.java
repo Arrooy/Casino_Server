@@ -11,9 +11,15 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
-//TODO: Comentar
+/**
+ * Classe que gestiona la comunicació amb els clients.
+ * Concretament es dedica a esperar nous usuaris i redirigir-los a servidors
+ * dedicats que atendràn de manera directa les peticions de cadascun.
+ *
+ * A més a més s'encarrega d'iniciar els fils d'execució dels dos jocs paral·lels
+ * independents a la resta, que consisteixen en els cavalls i la ruleta.
+ */
 public class NetworkManager extends Thread{
-
 
     /** Controlador del sistema*/
     private Controller controller;
@@ -24,8 +30,10 @@ public class NetworkManager extends Thread{
     /** Llistat d'usuaris connectats al servidor*/
     private ArrayList<Client> usuarisConnectats;
 
+    /** Fil d'execució del joc dels cavalls */
     private HorseRaceThread horseRaceThread;
 
+    /** Fil d'execució del joc de la ruleta */
     private RouletteThread rouletteThread;
 
     /** Inicialitza el newtWorkManager i obre el port determinat al json de configuracio*/
@@ -36,8 +44,7 @@ public class NetworkManager extends Thread{
         try {
             serverSocket = new ServerSocket((int)JsonManager.llegirJson("PortClients")[0]);
         } catch (IOException e) {
-            //TODO POT SORTIR NULLPOINTER EXCEPTION
-            controller.displayError("Error " + e.getLocalizedMessage(),e.getMessage());
+            if (controller != null) controller.displayError("Error " + e.getLocalizedMessage(),e.getMessage());
         }
 
         rouletteThread = new RouletteThread(usuarisConnectats);
@@ -50,10 +57,16 @@ public class NetworkManager extends Thread{
         start();
     }
 
+    /** Getter del Thread de la ruleta */
     public RouletteThread getRouletteThread() {
         return rouletteThread;
     }
 
+    /**
+     * Fil d'execució que es manté esperant mentre dura l'execució del programa, la connexió de nous
+     * usuaris. Un cop són detectats, s'afegeixen a un llistat de clients i s'els obre un servidor
+     * dedicat que escolti les seves peticions.
+     */
     @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run() {
