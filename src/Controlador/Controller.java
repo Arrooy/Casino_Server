@@ -123,7 +123,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
                 user = Database.getTop(Transaction.TRANSACTION_HORSES);
                 break;
             default:
-                    user = Database.getTop(Transaction.TRANSACTION_BLACKJACK);
+                    user = Database.getTop(Transaction.TRANSACTION_ROULETTE);
         }
 
         String[] noms = new String[user.length];
