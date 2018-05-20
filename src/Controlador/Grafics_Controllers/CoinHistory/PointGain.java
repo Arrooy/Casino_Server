@@ -144,11 +144,6 @@ public class PointGain {
         return value;
     }
 
-    public void addPoint(long newValue){
-        value += newValue;
-        transaction.setGain(transaction.getGain() + newValue);
-    }
-
     public Transaction getTransaction() {
         return transaction;
     }

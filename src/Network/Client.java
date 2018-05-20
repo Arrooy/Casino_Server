@@ -259,6 +259,16 @@ public class Client extends Thread {
         }
     }
 
+    /**
+     * Mètode que s'executa quan un usuari desitja realitzar una aposta.
+     * El que realitza el mètode consisteix en comprovar si és o no possible l'aposta
+     * en funció dels diners apostats i els diners que poseeix, i finalment retorna el
+     * missatge indicant la decisió final.
+     *
+     * En cas de ser una aposta satisfactoria, s'afegeix l'aposta al llistat d'apostes
+     * i es notifica a tots els jugadors de la ruleta.
+     * @param msg Missatge rebut
+     */
     private void rouletteBet(Message msg) {
         RouletteBetMessage bet = (RouletteBetMessage) msg;
         bet.setSuccessful(false);
@@ -283,7 +293,6 @@ public class Client extends Thread {
      * Gestiona la solicitud del client per a canviar la password de l'usuari.
      * @param msg missatge que conté la nova contrasenya
      */
-
     private void changePassword(Message msg) {
 
         User userPass = (User) msg;
@@ -311,7 +320,9 @@ public class Client extends Thread {
         }
     }
 
-    //Respon a la solicitud de l'evolucio monetaria de l'usuari
+    /**
+     * Respon a la solicitud de l'evolucio monetaria de l'usuari
+     */
     private void walletEvolutionResponse(Message msg) {
 
         WalletEvolutionMessage wallet = (WalletEvolutionMessage)msg;
@@ -323,7 +334,7 @@ public class Client extends Thread {
         send(wallet);
     }
 
-    //Gestiona la solicitud d'ingres de diners
+    /**Gestiona la solicitud d'ingres de diners */
     private void deposit(Transaction transaction) {
 
         if(Seguretat.desencripta(user.getPassword()).equals(Seguretat.desencripta(transaction.getPassword()))){
@@ -614,7 +625,7 @@ public class Client extends Thread {
         }
     }
 
-
+//TODO: comentar
     private void BJIaAddValor(Card carta) {
         if (carta.getValue() == 11) {
             if (valorIA + 11 <= 21) {

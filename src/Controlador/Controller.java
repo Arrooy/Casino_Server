@@ -59,6 +59,11 @@ public class Controller implements ActionListener, WindowListener, MouseListener
         System.exit(status);
     }
 
+    /**
+     * Mètode que s'executa quan es realitza una interacció de l'usuari amb algun
+     * element de swing del Servidor
+     * @param e Event generat
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()){
@@ -91,6 +96,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
         }
     }
 
+    //TODO: comentar
 
     private void updateGraph() {
         if(top5.isResize()) generateGraph(top5.getLastGraphSelected());
@@ -148,7 +154,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
         return max;
     }
 
-
+    /** Getter del Network Manager */
     public NetworkManager getNetworkManager() {
         return networkManager;
     }
@@ -207,62 +213,27 @@ public class Controller implements ActionListener, WindowListener, MouseListener
     }
 
     @Override
-    public void componentShown(ComponentEvent e) {
-
-    }
-
+    public void componentShown(ComponentEvent e) {}
     @Override
-    public void componentHidden(ComponentEvent e) {
-
-    }
-
+    public void componentHidden(ComponentEvent e) {}
     @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
+    public void mouseClicked(MouseEvent e) {}
     @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
+    public void mouseReleased(MouseEvent e) {}
     @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
+    public void mouseEntered(MouseEvent e) {}
     @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
-
+    public void mouseExited(MouseEvent e) {}
     @Override
-    public void windowOpened(WindowEvent e) {
-
-    }
-
+    public void windowOpened(WindowEvent e) {}
     @Override
-    public void windowClosed(WindowEvent e) {
-
-    }
-
+    public void windowClosed(WindowEvent e) {}
     @Override
-    public void windowIconified(WindowEvent e) {
-
-    }
-
+    public void windowIconified(WindowEvent e) {}
     @Override
-    public void windowDeiconified(WindowEvent e) {
-
-    }
-
+    public void windowDeiconified(WindowEvent e) {}
     @Override
-    public void windowActivated(WindowEvent e) {
-
-    }
-
+    public void windowActivated(WindowEvent e) {}
     @Override
-    public void windowDeactivated(WindowEvent e) {
-
-    }
+    public void windowDeactivated(WindowEvent e) {}
 }
