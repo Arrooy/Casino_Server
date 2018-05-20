@@ -99,7 +99,7 @@ public class HorseRaceThread extends Thread  {
         HorseBet horseBet;
         for(int i = horseRaceModel.getPendingBets().size() - 1; i >= 0 ; i--){
             horseBet = horseRaceModel.getPendingBets().get(i);
-            if(horseBet.getName() == name){
+            if(horseBet.getName().equals(name)){
                 horseRaceModel.getPendingBets().remove(i);
             }
         }
