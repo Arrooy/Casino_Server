@@ -195,6 +195,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
             exitProgram(0);
     }
 
+    /** Quan la finestra modifica el seu tamany, s'actualitzen les grafiques si estan inicialitzades*/
     @Override
     public void componentResized(ComponentEvent e) {
         if(coinHistoryView != null)
@@ -203,7 +204,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
             updateGraph();
 
     }
-
+    /** Quan la finestra modifica la seva posicio, s'actualitzen les grafiques si estan inicialitzades*/
     @Override
     public void componentMoved(ComponentEvent e) {
         if(coinHistoryView != null)
@@ -212,6 +213,7 @@ public class Controller implements ActionListener, WindowListener, MouseListener
             updateGraph();
     }
 
+    /** Si es fa dobleClick a la taula del ranking, sobre la grafica particular d'aquell usuari directament*/
     @Override
     public void mousePressed(MouseEvent e) {
         if(e.getSource() instanceof JTable && e.getClickCount() >= 2){
