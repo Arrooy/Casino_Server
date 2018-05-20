@@ -77,10 +77,8 @@ public class PointGain {
         }
     }
 
-    /** Setter que permet o no visualitzar la informació de la transacció */
     public synchronized void setDrawInfo(boolean b) {drawInfo = b;}
 
-    /** Setter de la posició del punt en la pantalla */
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
@@ -103,6 +101,7 @@ public class PointGain {
      * @param g Element en el que pintar
      * @param ended Ha acabat la animació?
      * @param color Color amb el que pintar
+     * @param width Amplada de la finestra
      */
     public void renderInfo(Graphics g, boolean ended, Color color, int width) {
         if (drawInfo && ended) {
@@ -229,22 +228,18 @@ public class PointGain {
         return new Polygon(xa, ya, 7);
     }
 
-    /** Getter de la X */
     public int getX() {
         return x;
     }
 
-    /** Getter de la y */
     public int getY() {
         return y;
     }
 
-    /** Getter del valor del punt */
     public long getValue() {
         return value;
     }
 
-    /** Getter de la transacció */
     public Transaction getTransaction() {
         return transaction;
     }

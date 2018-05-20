@@ -161,7 +161,10 @@ public class CoinHistoryController implements GraphicsController {
         pressed = false;
     }
 
-    /** Setter del llistat de guanys */
+    /**
+     * Setter del llistat de guanys
+     * @param gains Llista de transaccions
+     */
     public static void setGains(LinkedList<Transaction> gains) {
         CoinHistoryController.gains = gains;
     }
@@ -468,7 +471,7 @@ public class CoinHistoryController implements GraphicsController {
 
     /**
      * Es detecta si l'usuari passa per sobre d'un punt per així mostrar la seva informació
-     * @param e
+     * @param e Event generat
      */
     @Override
     public void mouseMoved(MouseEvent e) {

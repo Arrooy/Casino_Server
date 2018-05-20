@@ -49,7 +49,7 @@ public class GraphicsManager implements Runnable {
      * Crea un gestor per a controlar els grafics custom d'un jpanel extern.
      *
      * @param PanellObjectiu Panell on s'enganxará l'imatge resultant del update i render. MOLT IMPORTANT QUE EL PANELL TINGUI MIDA!
-     * @param c Controlador que gestiona les interaccions(Mouse&Key listeners) de la persona amb el custom rendering panel.
+     * @param c Controlador que gestiona les interaccions(Mouse i Key listeners) de la persona amb el custom rendering panel
      */
     public GraphicsManager(JPanel PanellObjectiu, GraphicsController c) {
         clearColor = Color.white;

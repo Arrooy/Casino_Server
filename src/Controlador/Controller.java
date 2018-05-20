@@ -41,19 +41,30 @@ public class Controller implements ActionListener, WindowListener, MouseListener
     /** Gestor de la network*/
     private NetworkManager networkManager;
 
-    /** Inicialitza el controlador del servidor*/
+    /**
+     * Inicialitza el controlador del servidor
+     * @param vista Finestra principal
+     * @param networkManager Comunicador amb el client
+     */
     public Controller(Finestra vista, NetworkManager networkManager){
         this.vista = vista;
         this.networkManager = networkManager;
         this.horseRaceModel = new HorseRaceModel();
     }
 
-    /** Mostra un error amb una alerta al centre de la finestra grafica*/
+    /**
+     * Mostra un error amb una alerta al centre de la finestra grafica
+     * @param title Titol del option pane
+     * @param errorText missatge a mostrar
+     */
     public void displayError(String title, String errorText){
         vista.displayError(title,errorText);
     }
 
-    /** Metode per a tencar el servidor de forma segura.*/
+    /**
+     * Metode per a tencar el servidor de forma segura.
+     * @param status Estat
+     */
     public void exitProgram(int status){
         Tray.exit();
         vista.dispose();
@@ -215,7 +226,9 @@ public class Controller implements ActionListener, WindowListener, MouseListener
             updateGraph();
     }
 
-    /** Si es fa dobleClick a la taula del ranking, sobre la grafica particular d'aquell usuari directament*/
+    /** Si es fa dobleClick a la taula del ranking, sobre la grafica particular d'aquell usuari directament
+     * @param e Event generat
+     */
     @Override
     public void mousePressed(MouseEvent e) {
         if(e.getSource() instanceof JTable && e.getClickCount() >= 2){
