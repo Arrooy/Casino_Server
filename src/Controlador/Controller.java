@@ -16,12 +16,24 @@ import java.awt.event.*;
 public class Controller implements ActionListener, WindowListener, MouseListener, ComponentListener{
 
     /** Finestra grafica del servidor*/
-    /** Finestra grafica del client*/
     private Finestra vista;
+
+    /**Vista principal del servidor que conte els botons per accedir a les diferents opcions de les quals disposa,
+     * veure el ranking i veure el top 5*/
     private MainView mainView;
+
+    /**Vista que conte 3 botons per escollir quina de les 3 grafiques del top 5 es vol visualitzar (BJ, cavalls, ruleta),
+     * a mes a mes tambe conte un panell per visualitzar la grafica seleccionada*/
     private Top5OptionsView top5;
+
+    /**Vista que mostra el ranking per mitja d'una taula on es pot veure amb
+     *ordre ascendent les monedes de les quals disposa cada usuari*/
     private RankingView ranking;
+
+    /**Vista que mostra per mitja d'una grafica l'evolucio monetaria de l'usuari*/
     private CoinHistoryView coinHistoryView;
+
+    /**Model de la cursa de cavalls*/
     private HorseRaceModel horseRaceModel;
 
     /** Gestor de la network*/
