@@ -1,10 +1,6 @@
 package Vista;
 
 import Controlador.Controller;
-import Model.Database;
-import Model.Transaction;
-import Model.User;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -117,18 +113,17 @@ public class Top5OptionsView extends View {
         jbRoulette.addActionListener(c);
     }
 
-    /**Donat un array d'usuaris, retorna el valor de la cartera més alta.
-     * @param users Array dels usuaris existents en la base de dades
-     * @return enter amb el valor de la cartera més alta*/
-    private int maxWallet(User [] users){
-        int max = 0;
-        for(User u : users){
-            if(u.getWallet() > max) max = (int)u.getWallet();
-        }
-        return max;
-    }
 
-    public void createGraph(Graphics g,User[] user,Color color,String title) {
+    /**
+     * Crea una grafica de barres amb 5 usuaris i les seves 5 carteres.
+     * @param g panell on es pinta la grafica
+     * @param color color de les barres de la grafica
+     * @param title titol de la grafica
+     * @param noms noms de les 5 barres
+     * @param maxWallet valor maxim de la grafica
+     * @param wallets diners de cada usuari
+     */
+    public void createGraph(Graphics g,Color color,String title,String[] noms,long maxWallet, long [] wallets) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -138,12 +133,13 @@ public class Top5OptionsView extends View {
         g.setFont(new Font(g.getFont().getFontName(),Font.PLAIN,15));
         FontMetrics metrics = g.getFontMetrics();
 
-        int max = maxWallet(user) == 0 ? 500 : maxWallet(user),height = jpGraphicContainer.getHeight(),width = jpGraphicContainer.getWidth();
-        int interval = max/10;
+        long max = maxWallet == 0 ? 500 : maxWallet;
+        int height = jpGraphicContainer.getHeight(),width = jpGraphicContainer.getWidth();
+        long interval = max/10;
         int y = metrics.getAscent(),x = 0;
 
         g.setColor(Color.white);
-        for(int i = max; i >= 0; i -= interval){
+        for(long i = max; i >= 0; i -= interval){
 
             g.drawString(i + "",0,y);
             g.drawLine(metrics.stringWidth(i + "") + 2,y - metrics.getAscent()/2,width,y - metrics.getAscent()/2);
@@ -151,13 +147,13 @@ public class Top5OptionsView extends View {
         }
 
         for(int j = 0; j < 5; j++){
-            String name = user[j].getUsername() == null ? "noData" : user[j].getUsername();
+            String name = noms[j] == null ? "noGainData" : noms[j];
             if(name.length() > 12) {
                 name = name.substring(0,9);
                 name += "...";
             }
             g.setColor(color);
-            int ypos = (int)map((int)user[j].getWallet(),0,max,height,0);
+            int ypos = (int)map((int)wallets[j],0,max,height,0);
             g.fillRect(x + metrics.stringWidth(max + "") + 20 ,ypos,80,height - ypos - metrics.getAscent());
 
             g.setColor(Color.white);
@@ -170,7 +166,6 @@ public class Top5OptionsView extends View {
         metrics = g.getFontMetrics();
         title += " top 5";
         g.drawString(title,width/2 - metrics.stringWidth(title)/2,metrics.getAscent() + 5);
-
     }
 
 

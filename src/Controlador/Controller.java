@@ -3,6 +3,7 @@ package Controlador;
 import Model.Database;
 import Model.HorseRace_Model.HorseRaceModel;
 import Model.Transaction;
+import Model.User;
 import Network.NetworkManager;
 import Vista.*;
 
@@ -104,20 +105,53 @@ public class Controller implements ActionListener, WindowListener, MouseListener
 
         top5.setLastGraphSelected(obj);
 
-        switch (obj){
+        User[] user;
+        switch (obj) {
             case "b":
-                top5.createGraph(g,Database.getTop(Transaction.TRANSACTION_BLACKJACK),new Color(92, 131, 47),"BlackJack");
+                user = Database.getTop(Transaction.TRANSACTION_BLACKJACK);
                 break;
             case "h":
-                top5.createGraph(g,Database.getTop(Transaction.TRANSACTION_HORSES),Color.blue,"Horses");
+                user = Database.getTop(Transaction.TRANSACTION_HORSES);
+                break;
+            default:
+                    user = Database.getTop(Transaction.TRANSACTION_BLACKJACK);
+        }
+
+        String[] noms = new String[user.length];
+        long maxWallet = maxWallet(user);
+        long[] wallets = new long[user.length];
+        int i = 0;
+        for(User u : user){
+            noms[i] = u.getUsername();
+            wallets[i++] = u.getWallet();
+        }
+
+        switch (obj){
+            case "b":
+                top5.createGraph(g,new Color(92, 131, 47),"BlackJack",noms,maxWallet,wallets);
+                break;
+            case "h":
+                top5.createGraph(g,new Color(166, 32, 49),"Horses",noms,maxWallet,wallets);
                 break;
             case "r":
-                top5.createGraph(g,Database.getTop(Transaction.TRANSACTION_ROULETTE),Color.red,"Roulette");
+                top5.createGraph(g,new Color(56, 37, 19),"Roulette",noms,maxWallet,wallets);
                 break;
         }
 
         g.dispose();
     }
+
+    /**Donat un array d'usuaris, retorna el valor de la cartera més alta.
+     * @param users Array dels usuaris existents en la base de dades
+     * @return enter amb el valor de la cartera més alta*/
+    private int maxWallet(User [] users){
+        int max = 0;
+        for(User u : users){
+            if(u.getWallet() > max) max = (int)u.getWallet();
+        }
+        return max;
+    }
+
 
     public NetworkManager getNetworkManager() {
         return networkManager;
