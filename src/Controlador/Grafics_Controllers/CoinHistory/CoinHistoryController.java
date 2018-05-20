@@ -32,7 +32,7 @@ public class CoinHistoryController implements GraphicsController {
     private long[] wallet;
 
     /** Llistat de transaccions registrades a mostrar */
-    private LinkedList<Transaction> gains;
+    private static LinkedList<Transaction> gains;
 
     /** Llista de punts que es mostren realment */
     private LinkedList<PointGain> pointGains;
@@ -84,13 +84,12 @@ public class CoinHistoryController implements GraphicsController {
      * Constructor de la classe.
      * @param width Dimensions de la finestra
      * @param height Dimensions de la finestra
-     * @param gains Llistat de transaccions a mostrar
      * @param username Nom de l'usuari de la gràfica
      * @param c Controlador generic de la finestra
      */
-    public CoinHistoryController(int width, int height, LinkedList<Transaction> gains, String username, Controller c) {
+    public CoinHistoryController(int width, int height, String username, Controller c) {
         this.generalController = c;
-        initGraf(width, height, gains, username);
+        initGraf(width, height, username);
     }
 
     /**
@@ -122,10 +121,9 @@ public class CoinHistoryController implements GraphicsController {
      * funcionament de la gràfica.
      * @param width Dimensions de la finestra
      * @param height Dimensions de la finestra
-     * @param gains Llistat de transaccions a mostrar
      * @param username Nom de l'usuari de la gràfica
      */
-    public void initGraf(int width, int height, LinkedList<Transaction> gains, String username) {
+    public void initGraf(int width, int height, String username) {
         this.width = width;
         this.height = height;
         this.username = username;
@@ -143,7 +141,7 @@ public class CoinHistoryController implements GraphicsController {
         }
 
         realSize = gains.size();
-        this.gains = gains;
+
         division = totalSize / realSize;
         maxValue = 0;
 
@@ -161,6 +159,11 @@ public class CoinHistoryController implements GraphicsController {
         bw = 200;
         bh = (int) (height * .08);
         pressed = false;
+    }
+
+    /** Setter del llistat de guanys */
+    public static void setGains(LinkedList<Transaction> gains) {
+        CoinHistoryController.gains = gains;
     }
 
     /**

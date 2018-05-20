@@ -1,5 +1,6 @@
 package Controlador;
 
+import Controlador.Grafics_Controllers.CoinHistory.CoinHistoryController;
 import Model.Database;
 import Model.HorseRace_Model.HorseRaceModel;
 import Model.Transaction;
@@ -218,7 +219,8 @@ public class Controller implements ActionListener, WindowListener, MouseListener
     @Override
     public void mousePressed(MouseEvent e) {
         if(e.getSource() instanceof JTable && e.getClickCount() >= 2){
-            vista.setCoinHistoryView(ranking.getUsername(), Database.getTransactions(ranking.getUsername()));
+            CoinHistoryController.setGains(Database.getTransactions(ranking.getUsername()));
+            vista.setCoinHistoryView(ranking.getUsername());
             coinHistoryView.updateSize(false);
         }
     }

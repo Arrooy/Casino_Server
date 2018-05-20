@@ -1,14 +1,12 @@
 package Vista;
 
 import Controlador.Controller;
-import Model.Transaction;
 import Utils.Tray;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.util.LinkedList;
 
 /**
  * Finestra principal del programa del servidor. Aquesta mostra
@@ -111,10 +109,10 @@ public class Finestra extends JFrame {
     }
 
     /** Mostra la vista del CoinHistoryView*/
-    public void setCoinHistoryView(String username, LinkedList<Transaction> transactions) {
+    public void setCoinHistoryView(String username) {
         setPreferredSize(getSize());
         setResizable(false);
-        coinHistoryView.createCoinHistory(username, getWidth(), getHeight(), transactions);
+        coinHistoryView.createCoinHistory(username, getWidth(), getHeight());
         layout.show(getContentPane(), "coinHistory");
     }
     /** Mostra la main view*/

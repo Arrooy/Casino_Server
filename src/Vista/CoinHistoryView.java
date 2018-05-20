@@ -2,9 +2,6 @@ package Vista;
 
 import Controlador.Controller;
 import Controlador.Grafics_Controllers.CoinHistory.CoinHistoryController;
-import Model.Transaction;
-
-import java.util.LinkedList;
 
 /**
  * Classe que gestiona els "coin history" del servidor.
@@ -34,13 +31,12 @@ public class CoinHistoryView extends View {
      * @param username Nom del usuari a generar la taula
      * @param width Amplada inicial de la pantalla
      * @param height Alçada inicial de la pantalla
-     * @param info Informació de les transaccions
      */
-    public void createCoinHistory(String username, int width, int height, LinkedList<Transaction> info) {
+    public void createCoinHistory(String username, int width, int height) {
         if (chc == null) {
-            chc = new CoinHistoryController(width, height, info, username, cg);
+            chc = new CoinHistoryController(width, height, username, cg);
         } else {
-            chc.initGraf(width, height, info, username);
+            chc.initGraf(width, height, username);
         }
 
         gp = new GraphicsManager(this, chc);
