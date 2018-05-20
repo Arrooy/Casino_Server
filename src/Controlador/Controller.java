@@ -96,12 +96,17 @@ public class Controller implements ActionListener, WindowListener, MouseListener
         }
     }
 
-    //TODO: comentar
-
+    /**
+     * S'actualitza la grafica del top 5
+     */
     private void updateGraph() {
         if(top5.isResize()) generateGraph(top5.getLastGraphSelected());
     }
 
+    /**
+     * Es genera la grafica del top 5.
+     * @param obj indica el tipus de joc, b = blackjack, h = cavalls, r = ruleta.
+     */
     private void generateGraph(String obj) {
         Graphics g =  top5.getGraphicsOfView();
 
@@ -159,6 +164,9 @@ public class Controller implements ActionListener, WindowListener, MouseListener
         return networkManager;
     }
 
+    /**
+     * Es mostra la vista del ranking
+     */
     public void viewRankingView(){
         vista.setResizable(true);
         vista.setRankings();
