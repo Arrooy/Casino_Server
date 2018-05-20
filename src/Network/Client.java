@@ -98,12 +98,22 @@ public class Client extends Thread {
 
     /**Indica si el client esta connectat a la ruleta*/
     private boolean connectedToRoulette;
+
     /**Indica si el client esta connectat als cavalls*/
     private boolean playingHorses;
+
     /**Fil d'execucui del joc de la ruleta*/
     private RouletteThread rouletteThread;
+
     /**Thread que controla la logica dels cavalls*/
     private HorseRaceThread horseRaceThread;
+
+    /** Nombre de A del blackJack que te l'usuari amb valor 11*/
+    private int numAssUser;
+
+    /** Nombre de A del blackJack que te la IA amb valor 11*/
+    private int numAssIA;
+
 
     /** Inicialitza un nou client.*/
     public Client(ArrayList<Client> usuarisConnectats, Socket socket, Controller controller, HorseRaceThread horseRaceThread, RouletteThread rouletteThread) {
@@ -246,7 +256,7 @@ public class Client extends Thread {
         } catch (Exception e) {
             //Usuari s'ha desconectat sense avisar al servidor
             Tray.showNotification("Usuari ha marxat inesperadament","una tragedia...");
-            e.printStackTrace();
+
             if(this.user != null)
                 HorseRaceThread.removeBets(this.user.getUsername());
             this.playingHorses = false;
@@ -520,6 +530,9 @@ public class Client extends Thread {
         valorUsuari = 0;
         valorIA = 0;
 
+        numAssUser = 0;
+        numAssIA = 0;
+
         //Es reinicia el nombre maxim de cartes d'una persona
         numberOfUserCards = 0;
 
@@ -547,11 +560,7 @@ public class Client extends Thread {
             if(!baralla.isEmpty() && numberOfUserCards <= 12) {
 
                 //Omplim la carta amb les dades necesaries
-                if(OFF_LINE){
-                    carta.setReverseName("back-red.png");
-                }else{
-                    carta.setReverseName(Database.getUserColor(user.getUsername()));
-                }
+                carta.setReverseName(Database.getUserColor(user.getUsername()));
 
                 carta.setCardName(baralla.pop());
                 carta.setValue(calculaValorBlackJackCard(carta.getCardName()));
@@ -564,16 +573,18 @@ public class Client extends Thread {
                     }else {
                         BJIaAddValor(carta);
                         if (valorIA > 21) {
-                            if (carta.getValent11() >= 1) {
-                                carta.setValent11(carta.getValent11() - 1);
+                            if (numAssIA >= 1) {
+                                numAssIA--;
                                 carta.setValue(carta.getValue() - 10);
-                            } else {
-                                carta.setDerrota("IA");
-                                if(valorUsuari == 21 && numberOfUserCards == 2) {
-                                    acabaPartidaBlackJack((long) (userBet * 1.5));
+                                valorIA -= 10;
+
+                                if(valorIA > 21){
+                                    IAEndGame(carta);
                                 }else{
-                                    acabaPartidaBlackJack(userBet * 2);
+                                    carta.setDerrota("false");
                                 }
+                            } else {
+                                IAEndGame(carta);
                             }
                         }else {
                             if (valorIA >= valorUsuari) {
@@ -598,7 +609,7 @@ public class Client extends Thread {
                         if(carta.getValue() == 11) {
                             if (valorUsuari + 11 <= 21) {
                                 carta.setValue(11);
-                                carta.setValent11(carta.getValent11() + 1);
+                                numAssUser++;
                             } else {
                                 carta.setValue(1);
                             }
@@ -606,9 +617,16 @@ public class Client extends Thread {
 
                         valorUsuari += carta.getValue();
                         if(valorUsuari > 21) {
-                            if(carta.getValent11() >= 1){
+                            if(numAssUser >= 1){
+                                numAssUser--;
                                 carta.setValue(carta.getValue() - 10);
-                                carta.setValent11(carta.getValent11() - 1);
+                                valorUsuari -= 10;
+                                if(valorUsuari > 21){
+                                    carta.setDerrota("user");
+                                    acabaPartidaBlackJack(userBet * -1);
+                                }else{
+                                    carta.setDerrota("user");
+                                }
                             }else{
                                 carta.setDerrota("user");
                                 acabaPartidaBlackJack(userBet * -1);
@@ -625,12 +643,23 @@ public class Client extends Thread {
         }
     }
 
-//TODO: comentar
+    //Controla la victoria de l'usuari sobre la IA
+    private void IAEndGame(Card carta) {
+        carta.setDerrota("IA");
+        if(valorUsuari == 21 && numberOfUserCards == 2) {
+            acabaPartidaBlackJack((long) (userBet * 1.5));
+        }else{
+            acabaPartidaBlackJack(userBet * 2);
+        }
+    }
+
+
+    //Afegeix el valor d'una nova carta a la IA
     private void BJIaAddValor(Card carta) {
         if (carta.getValue() == 11) {
             if (valorIA + 11 <= 21) {
                 carta.setValue(11);
-                carta.setValent11(carta.getValent11() + 1);
+                numAssIA++;
             } else {
                 carta.setValue(1);
             }

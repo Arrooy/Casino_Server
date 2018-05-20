@@ -195,6 +195,7 @@ public class Card extends Message {
     }
 
     public void setValent11(int valent11) {
+        System.out.println("SET VALENT A " + valent11);
         this.valent11 = valent11;
     }
 
