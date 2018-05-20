@@ -1,13 +1,8 @@
 package Vista;
 
 import Controlador.Controller;
-import javafx.scene.layout.Border;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 import java.awt.*;
 
 /**Classe que crea la vista del ranking, on per mitja d'una taula es pot veure amb
@@ -54,8 +49,7 @@ public class RankingView extends View {
         Object[][] data = {};
 
         //Creació de la taula
-        Object[][] rankingData = data;
-        jtRanking = new JTable(rankingData, columnNames);
+        jtRanking = new JTable(data, columnNames);
         jtRanking.setColumnSelectionAllowed(false);
         jtRanking.setFocusable(false);
 

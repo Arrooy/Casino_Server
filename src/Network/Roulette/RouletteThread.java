@@ -1,6 +1,5 @@
 package Network.Roulette;
 
-import Controlador.Controller;
 import Model.Database;
 import Model.RouletteModel.RouletteMessage;
 import Model.Transaction;
@@ -97,6 +96,7 @@ public class RouletteThread extends Thread {
      * Fil d'execució que controla la lògica de la ruleta i manté a tots els usuaris
      * informats de cada tirada i acció.
      */
+    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run() {
         while (true) {

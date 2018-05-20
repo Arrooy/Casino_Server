@@ -53,6 +53,7 @@ public class NetworkManager extends Thread{
         return rouletteThread;
     }
 
+    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run() {
         while(true){

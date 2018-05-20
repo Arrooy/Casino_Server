@@ -8,7 +8,6 @@ import Model.HorseRace_Model.HorseResult;
 import Model.HorseRace_Model.HorseSchedule;
 import Model.Transaction;
 import Network.Client;
-import Network.NetworkManager;
 
 
 import java.sql.Timestamp;
@@ -118,11 +117,10 @@ public class HorseRaceThread extends Thread  {
      * @param client Client que ja no vol jugar
      */
     public static synchronized void removeRequests(Client client) {
-        if (playRequests.contains(client)){
-            playRequests.remove(client);
-        }
+        playRequests.remove(client);
     }
 
+    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run() {
 

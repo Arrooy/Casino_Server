@@ -5,7 +5,6 @@ import Utils.Seguretat;
 
 import java.sql.*;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -369,13 +368,12 @@ public class Database {
 
             Object[][] list = new Object[users.size()][3];
 
-            for(int i = 0; i < users.size(); i++) for (int j = 0; j < 3; j++) list[i][j] = users.get(i)[j];
+            for(int i = 0; i < users.size(); i++) System.arraycopy(users.get(i), 0, list[i], 0, 3);
             return list;
         } catch (Exception e) {
             System.out.println("Hellowis Bebitos " + e.getMessage());
             e.printStackTrace();
-            Object[][] data = {};
-            return  data;
+            return new Object[][]{};
         }
     }
 
@@ -402,6 +400,7 @@ public class Database {
     }
 
     /**
+     * TODO: MIQUEL QUE FOT AIXO
      * Mètode que retorna
      * @param type
      * @return

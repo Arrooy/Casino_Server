@@ -7,7 +7,6 @@ import Model.HorseRace_Model.HorseBet;
 import Model.HorseRace_Model.HorseMessage;
 import Model.RouletteModel.RouletteMessage;
 import Model.RouletteModel.RouletteBetMessage;
-import Network.Roulette.RouletteManager;
 import Network.Roulette.RouletteThread;
 import Utils.Seguretat;
 import Vista.Tray;
@@ -27,6 +26,7 @@ import static Model.Casino_Server.OFF_LINE;
  * La classe client, a mes a mes, s'encarrega de gestionar el logIn, logOut i registre del usuari.
  */
 
+@SuppressWarnings("Duplicates")
 public class Client extends Thread {
 
     /** Constant per a contexualitzar els missatges entre client i servidor*/
@@ -96,13 +96,13 @@ public class Client extends Thread {
     /** Valor de l'aposta del usuari*/
     private long userBet;
 
-    //TODO COMMENT
+    /**Indica si el client esta connectat a la ruleta*/
     private boolean connectedToRoulette;
-
+    /**Indica si el client esta connectat als cavalls*/
     private boolean playingHorses;
-
+    /**Fil d'execucui del joc de la ruleta*/
     private RouletteThread rouletteThread;
-
+    /**Thread que controla la logica dels cavalls*/
     private HorseRaceThread horseRaceThread;
 
     /** Inicialitza un nou client.*/
@@ -409,7 +409,7 @@ public class Client extends Thread {
             try {
                 request.setCredentialsOk(false);
                 send(request);
-            } catch (Exception e) {}
+            } catch (Exception ignored) {}
         }
     }
 

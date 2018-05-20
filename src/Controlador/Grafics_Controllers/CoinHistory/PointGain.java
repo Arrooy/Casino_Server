@@ -3,11 +3,7 @@ package Controlador.Grafics_Controllers.CoinHistory;
 import Model.Database;
 import Model.Transaction;
 
-import javax.swing.*;
-import javax.xml.crypto.Data;
 import java.awt.*;
-import java.sql.Timestamp;
-import java.time.Instant;
 
 //TODO: IMPORTANT - que conio passa quan executes dos cops
 public class PointGain {
