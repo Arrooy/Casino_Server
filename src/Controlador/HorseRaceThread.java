@@ -18,22 +18,29 @@ import java.util.ArrayList;
  * Thread per el joc dels cavalls encarregat de gestionar els jugadors i la logica del joc
  * */
 public class HorseRaceThread extends Thread  {
+    /**Model de la cursa*/
     private  static HorseRaceModel horseRaceModel;
+    /**Estat de la cursa*/
     private  static boolean racing;
+    /**Jugadors que han acabat de veure la cursa*/
     private  static int finished;
+    /**Compta enrere per començar la cursa*/
     private  static long countdown;
+    /**Temps per començar la cursa*/
     private  long   startTime;
 
-    private NetworkManager networkManager;
+    /**Clients*/
     private  static ArrayList<Client> clients;
+    /**Clients que han solicitat jugar*/
     private static ArrayList<Client> playRequests;
 
-    private static final long WAITTIME = 15 * 1000;
+    /**Temps d'espera*/
+    private static final long WAITTIME = 60 * 1000;
+    /**Premi per una apota guanyada*/
     private static final int PRIZE_MULTIPLIER = 11;
 
-    public HorseRaceThread(HorseRaceModel horseRaceModel, ArrayList<Client> clients, NetworkManager networkManager){
+    public HorseRaceThread(HorseRaceModel horseRaceModel, ArrayList<Client> clients){
         this.horseRaceModel = horseRaceModel;
-        this.networkManager = networkManager;
         this.racing = false;
         this.finished = 0;
         this.clients = clients;

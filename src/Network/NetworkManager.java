@@ -40,7 +40,7 @@ public class NetworkManager extends Thread{
         }
 
         rouletteThread = new RouletteThread(usuarisConnectats);
-        this.horseRaceThread = new HorseRaceThread(new HorseRaceModel(), usuarisConnectats, this);
+        this.horseRaceThread = new HorseRaceThread(new HorseRaceModel(), usuarisConnectats);
     }
 
     /** Inicia la acceptacio de nous usuaris*/

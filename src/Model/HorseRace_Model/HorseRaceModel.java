@@ -6,11 +6,10 @@ import java.util.ArrayList;
 
 /**Model de la cursa de cavalls*/
 public class HorseRaceModel {
+    /**Temps de cada cavall a cada seccio*/
     private HorseSchedule horseSchedule;
+    /**Apostes que queden per gestionar*/
     private ArrayList<HorseBet> pendingBets;
-
-    private static final int MAX_HORSES = 12;
-    private static final int SECTIONS = 5;
 
     public HorseRaceModel (){
      this.pendingBets = new ArrayList<>();
