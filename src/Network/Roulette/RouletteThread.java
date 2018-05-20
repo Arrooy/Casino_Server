@@ -168,7 +168,6 @@ public class RouletteThread extends Thread {
      * @param username Nom del usuari a borrar
      */
     public synchronized void cleanUserBets(String username) {
-        System.out.println(username);
         for (int i = bets.size() - 1; i >= 0; i--) if (bets.get(i).username.equals(username)) bets.remove(i);
         addBet(null, -1, -1, false);
     }

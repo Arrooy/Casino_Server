@@ -9,6 +9,7 @@ import java.awt.*;
 import java.io.File;
 import java.util.LinkedList;
 
+//TODO: comentar
 public class Finestra extends JFrame {
 
     private CardLayout layout;

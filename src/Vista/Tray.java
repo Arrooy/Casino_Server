@@ -5,6 +5,7 @@ import Controlador.Controller;
 import javax.swing.*;
 import java.awt.*;
 
+//TODO: comentar
 public class Tray {
 
     private static MenuItem sortir;

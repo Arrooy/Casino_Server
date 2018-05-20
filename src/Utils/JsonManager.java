@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+//TODO: comentar
 public class JsonManager {
 
     private final static String CONFIG_FILENAME = "config.json";
