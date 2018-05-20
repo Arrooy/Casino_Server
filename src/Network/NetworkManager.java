@@ -5,7 +5,7 @@ import Controlador.HorseRaceThread;
 import Model.HorseRace_Model.HorseRaceModel;
 import Utils.JsonManager;
 import Network.Roulette.RouletteThread;
-import Vista.Tray;
+import Utils.Tray;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -9,7 +9,7 @@ import Model.RouletteModel.RouletteMessage;
 import Model.RouletteModel.RouletteBetMessage;
 import Network.Roulette.RouletteThread;
 import Utils.Seguretat;
-import Vista.Tray;
+import Utils.Tray;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,8 +18,6 @@ import java.net.Socket;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
-
-import static Model.Casino_Server.OFF_LINE;
 
 /**
  * ServidorDedicat a un client. Si el client vols jugar al blackJack, es aquesta clase qui gestiona la seva logica.

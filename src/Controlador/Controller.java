@@ -5,6 +5,7 @@ import Model.HorseRace_Model.HorseRaceModel;
 import Model.Transaction;
 import Model.User;
 import Network.NetworkManager;
+import Utils.Tray;
 import Vista.*;
 
 import javax.swing.*;

@@ -2,6 +2,7 @@ package Vista;
 
 import Controlador.Controller;
 import Model.Transaction;
+import Utils.Tray;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
