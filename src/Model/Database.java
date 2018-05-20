@@ -400,10 +400,10 @@ public class Database {
     }
 
     /**
-     * TODO: MIQUEL QUE FOT AIXO
-     * Mètode que retorna
-     * @param type
-     * @return
+     * Mètode que retorna una llista dels 5 usuaris que han guanyat mes diners en el joc selecionat per type.
+     * En el cas de no tenir suficients usuaris com per retornar 5, es retorna null en lloc d'un usuari.
+     * @param type Tipo de joc que es vol fer la consulta per al top 5
+     * @return Array dels 5 Usuaris mes bons del casino en un joc determinat
      */
     public static User[] getTop(int type) {
         User[] top = new User[5];
