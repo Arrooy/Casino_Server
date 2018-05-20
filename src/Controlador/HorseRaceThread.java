@@ -1,7 +1,7 @@
 package Controlador;
 
 import Model.Database;
-import Model.HorseRace_Model.HorseMessage;
+import Network.HorseMessage;
 import Model.HorseRace_Model.HorseBet;
 import Model.HorseRace_Model.HorseRaceModel;
 import Model.HorseRace_Model.HorseResult;

@@ -4,7 +4,6 @@ import Controlador.Controller;
 import Controlador.HorseRaceThread;
 import Model.*;
 import Model.HorseRace_Model.HorseBet;
-import Model.HorseRace_Model.HorseMessage;
 import Model.RouletteModel.RouletteMessage;
 import Model.RouletteModel.RouletteBetMessage;
 import Network.Roulette.RouletteThread;
