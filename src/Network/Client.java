@@ -452,7 +452,7 @@ public class Client extends Thread {
             Database.updateUser(request, false);
 
             //S'indica que s'ha desconectat un user
-            Tray.showNotification("Usuari desconectat " + user.getUsername(),"Total de clients actius: " + (usuarisConnectats.size() - 1));
+            Tray.showNotification("Usuari desconectat " + (user.getUsername() == null ? "un simple guest" : user.getUsername()),"Total de clients actius: " + (usuarisConnectats.size() - 1));
 
             //Modifiquem el setOnline per sortir de bucle infinit en el thread.
             if(user != null){
