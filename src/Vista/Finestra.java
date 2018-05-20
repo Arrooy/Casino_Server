@@ -9,8 +9,19 @@ import java.awt.*;
 import java.io.File;
 import java.util.LinkedList;
 
-//TODO: comentar
+/**
+ * Finestra principal del programa del servidor. Aquesta mostra
+ * en un inici dues opcions, una per visualitzar el rànking de usuaris
+ * ordenats de menys a més diners, i seguidament es veu un botó per accedir
+ * als Top 5 d'usuaris que han guanyat més diners en jocs concrets.
+ *
+ * Dins el rànking, si es selecciona un usuari, es pot visualitzar la seva evolució
+ * temporal en quant a diners, i en els Top 5, es pot seleccionar quina gràfica visualitzar
+ * en tot moment.
+ */
 public class Finestra extends JFrame {
+
+    //TODO: comentar
 
     private CardLayout layout;
     private MainView mainView;
