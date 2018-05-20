@@ -361,7 +361,7 @@ public class Database {
                     s[1] = 0;
                 }
 
-                s[2] = getPassedTime(rs.getTimestamp("lastLogin"));//getDelayedTime(rs.getTimestamp("lastLogin"), -2);
+                s[2] = getPassedTime(rs.getTimestamp("lastLogin"));
 
                 users.add(s);
             }
@@ -371,7 +371,6 @@ public class Database {
             for(int i = 0; i < users.size(); i++) System.arraycopy(users.get(i), 0, list[i], 0, 3);
             return list;
         } catch (Exception e) {
-            System.out.println("Hellowis Bebitos " + e.getMessage());
             e.printStackTrace();
             return new Object[][]{};
         }
