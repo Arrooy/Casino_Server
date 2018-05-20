@@ -42,7 +42,7 @@ public class HorseSchedule implements Serializable {
     }
 
     /**Retorna el temps total de la carrera*/
-    private int getRaceTime(){
+    public int getRaceTime(){
         int slowestTime = -1;
         int[] totalTime = new int[12];
 
