@@ -155,10 +155,9 @@ public class Top5OptionsView extends View {
             g.setColor(color);
             int ypos = (int)map((int)wallets[j],0,max,height,0);
             g.fillRect(x + metrics.stringWidth(max + "") + 20 ,ypos,40,height - ypos - metrics.getAscent());
-
             g.setColor(Color.white);
             g.drawRect(x + metrics.stringWidth(max + "") + 20 ,ypos,40,height - ypos - metrics.getAscent());
-            g.drawString(name,x + metrics.stringWidth(max + "") + 20 + 20 - metrics.stringWidth(name)/2,height - 3);
+            g.drawString(name,x + metrics.stringWidth(max + "") + 20 + 20 - metrics.stringWidth(name)/2,height - 2);
             x += (width - metrics.stringWidth(max + "") + 20) / 5;
         }
 
